@@ -29,12 +29,28 @@ export class RegisterComponent {
     name: ['', [Validators.required, Validators.minLength(2)]],
     email: ['', [Validators.required, Validators.email]],
     phone: ['', [Validators.required]],
-    verificationCode: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]],
     password: ['', [Validators.required, Validators.minLength(8)]],
-    acceptTerms: [false, [Validators.requiredTrue]]
+    acceptTerms: [false, [Validators.requiredTrue]],
+    verificationCode: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]]
   });
 
+  isVerifying = false;
+
   onSubmit(): void {
+    const mainForm = this.fb.group({
+      name: this.registerForm.get('name'),
+      email: this.registerForm.get('email'),
+      phone: this.registerForm.get('phone'),
+      password: this.registerForm.get('password'),
+      acceptTerms: this.registerForm.get('acceptTerms')
+    });
+
+    if (mainForm.valid) {
+      this.isVerifying = true;
+    }
+  }
+
+  confirmAndCreate(): void {
     if (this.registerForm.valid) {
       console.log('Form submitted:', this.registerForm.value);
     }
