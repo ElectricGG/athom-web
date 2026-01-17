@@ -59,4 +59,8 @@ export class RegisterComponent {
   goBackToRegistration(): void {
     this.isVerifying = false;
   }
+
+  resendCode(): void {
+    console.log('Resending verification code...');
+  }
 }
