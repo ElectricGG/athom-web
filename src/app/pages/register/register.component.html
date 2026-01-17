@@ -1,0 +1,155 @@
+<div class="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 flex flex-col justify-center py-8 px-4">
+  <div class="w-full max-w-md mx-auto">
+    <!-- Logo -->
+    <div class="text-center mb-8">
+      <a routerLink="/" class="inline-flex items-center gap-2">
+        <div class="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center">
+          <i class="pi pi-wallet text-white text-xl"></i>
+        </div>
+        <span class="text-2xl font-bold text-gray-900">Athom</span>
+      </a>
+    </div>
+
+    <!-- Form card -->
+    <div class="bg-white rounded-2xl shadow-xl p-6 md:p-8 border border-gray-100">
+      <div class="text-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-900 mb-2">Crear cuenta gratis</h1>
+        <p class="text-gray-600">Comienza a controlar tus finanzas hoy</p>
+      </div>
+
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-5">
+        <!-- Nombre -->
+        <div>
+          <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+            Nombre completo
+          </label>
+          <span class="p-input-icon-left w-full">
+            <i class="pi pi-user"></i>
+            <input
+              pInputText
+              id="name"
+              formControlName="name"
+              placeholder="Tu nombre"
+              class="w-full py-3 pl-10"
+            />
+          </span>
+          @if (registerForm.get('name')?.invalid && registerForm.get('name')?.touched) {
+            <small class="text-red-500 text-sm mt-1 block">El nombre es requerido</small>
+          }
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+            Correo electrónico
+          </label>
+          <span class="p-input-icon-left w-full">
+            <i class="pi pi-envelope"></i>
+            <input
+              pInputText
+              id="email"
+              type="email"
+              formControlName="email"
+              placeholder="tu@email.com"
+              class="w-full py-3 pl-10"
+            />
+          </span>
+          @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
+            <small class="text-red-500 text-sm mt-1 block">Ingresa un email válido</small>
+          }
+        </div>
+
+        <!-- Teléfono -->
+        <div>
+          <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
+            Número de WhatsApp
+          </label>
+          <span class="p-input-icon-left w-full">
+            <i class="pi pi-whatsapp"></i>
+            <p-inputMask
+              id="phone"
+              formControlName="phone"
+              mask="+51 999 999 999"
+              placeholder="+51 999 999 999"
+              styleClass="w-full py-3 pl-10"
+            />
+          </span>
+          @if (registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched) {
+            <small class="text-red-500 text-sm mt-1 block">El número de WhatsApp es requerido</small>
+          }
+        </div>
+
+        <!-- Contraseña -->
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+            Contraseña
+          </label>
+          <p-password
+            id="password"
+            formControlName="password"
+            [toggleMask]="true"
+            placeholder="Mínimo 8 caracteres"
+            styleClass="w-full"
+            inputStyleClass="w-full py-3"
+            [feedback]="true"
+            promptLabel="Ingresa una contraseña"
+            weakLabel="Débil"
+            mediumLabel="Media"
+            strongLabel="Fuerte"
+          />
+          @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
+            <small class="text-red-500 text-sm mt-1 block">La contraseña debe tener al menos 8 caracteres</small>
+          }
+        </div>
+
+        <!-- Terms -->
+        <div class="flex items-start gap-3">
+          <p-checkbox
+            formControlName="acceptTerms"
+            [binary]="true"
+            inputId="terms"
+          />
+          <label for="terms" class="text-sm text-gray-600 leading-relaxed">
+            Acepto los
+            <a href="#" class="text-green-600 hover:text-green-700 font-medium">términos y condiciones</a>
+            y la
+            <a href="#" class="text-green-600 hover:text-green-700 font-medium">política de privacidad</a>
+          </label>
+        </div>
+
+        <!-- Submit button -->
+        <p-button
+          type="submit"
+          label="Crear cuenta"
+          icon="pi pi-user-plus"
+          severity="success"
+          [disabled]="registerForm.invalid"
+          styleClass="w-full py-3 text-base font-semibold shadow-lg shadow-green-500/30"
+        />
+      </form>
+
+      <!-- Divider -->
+      <div class="flex items-center gap-4 my-6">
+        <div class="flex-1 h-px bg-gray-200"></div>
+        <span class="text-gray-400 text-sm">o</span>
+        <div class="flex-1 h-px bg-gray-200"></div>
+      </div>
+
+      <!-- Login link -->
+      <p class="text-center text-gray-600">
+        ¿Ya tienes cuenta?
+        <a routerLink="/login" class="text-green-600 hover:text-green-700 font-semibold ml-1">
+          Inicia sesión
+        </a>
+      </p>
+    </div>
+
+    <!-- Back to home -->
+    <div class="text-center mt-6">
+      <a routerLink="/" class="text-gray-500 hover:text-gray-700 text-sm inline-flex items-center gap-1">
+        <i class="pi pi-arrow-left text-xs"></i>
+        Volver al inicio
+      </a>
+    </div>
+  </div>
+</div>

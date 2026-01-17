@@ -1,0 +1,38 @@
+import { Component } from '@angular/core';
+import { HeroComponent } from '../../components/hero/hero.component';
+import { HowItWorksComponent } from '../../components/how-it-works/how-it-works.component';
+import { ExpensesComponent } from '../../components/expenses/expenses.component';
+import { IncomeComponent } from '../../components/income/income.component';
+import { BudgetsComponent } from '../../components/budgets/budgets.component';
+import { CategoriesComponent } from '../../components/categories/categories.component';
+import { ReportsComponent } from '../../components/reports/reports.component';
+import { VideoDemoComponent } from '../../components/video-demo/video-demo.component';
+import { PricingComponent } from '../../components/pricing/pricing.component';
+import { BenefitsComponent } from '../../components/benefits/benefits.component';
+import { FaqComponent } from '../../components/faq/faq.component';
+import { CtaFinalComponent } from '../../components/cta-final/cta-final.component';
+import { FooterComponent } from '../../components/footer/footer.component';
+import { HeaderComponent } from '../../components/header/header.component';
+
+@Component({
+  selector: 'app-landing',
+  standalone: true,
+  imports: [
+    HeaderComponent,
+    HeroComponent,
+    HowItWorksComponent,
+    ExpensesComponent,
+    IncomeComponent,
+    BudgetsComponent,
+    CategoriesComponent,
+    ReportsComponent,
+    VideoDemoComponent,
+    PricingComponent,
+    BenefitsComponent,
+    FaqComponent,
+    CtaFinalComponent,
+    FooterComponent
+  ],
+  templateUrl: './landing.component.html'
+})
+export class LandingComponent {}

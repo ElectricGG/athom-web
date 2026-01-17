@@ -1,0 +1,115 @@
+<section class="py-16 md:py-24 px-4 bg-white" id="planes">
+  <div class="max-w-5xl mx-auto">
+    <div class="text-center mb-12 md:mb-16">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        Elige tu plan
+      </h2>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+        Comienza gratis y mejora cuando lo necesites
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto">
+      <!-- Plan Gratis -->
+      <div class="bg-white rounded-2xl border-2 border-gray-200 p-6 md:p-8 shadow-sm hover:shadow-md transition-shadow">
+        <div class="text-center mb-6">
+          <h3 class="text-xl font-bold text-gray-900 mb-2">Plan Gratis</h3>
+          <div class="flex items-baseline justify-center gap-1">
+            <span class="text-4xl font-bold text-gray-900">S/ 0</span>
+            <span class="text-gray-500">/mes</span>
+          </div>
+          <p class="text-sm text-gray-500 mt-2">Hasta 5 mensajes por día</p>
+        </div>
+
+        <ul class="space-y-4 mb-8">
+          @for (feature of freeFeatures; track feature) {
+            <li class="flex items-start gap-3">
+              <i class="pi pi-check text-green-500 text-lg mt-0.5"></i>
+              <span class="text-gray-700">{{ feature }}</span>
+            </li>
+          }
+        </ul>
+
+        <a routerLink="/register" class="block">
+          <p-button
+            label="Empezar gratis"
+            severity="secondary"
+            [outlined]="true"
+            styleClass="w-full py-3 text-base font-semibold"
+          />
+        </a>
+      </div>
+
+      <!-- Plan Premium -->
+      <div class="relative bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl border-2 border-green-500 p-6 md:p-8 shadow-lg">
+        <!-- Badge -->
+        <div class="absolute -top-4 left-1/2 -translate-x-1/2">
+          <span class="bg-green-500 text-white px-4 py-1 rounded-full text-sm font-semibold shadow-lg">
+            Más popular
+          </span>
+        </div>
+
+        <div class="text-center mb-6 mt-2">
+          <h3 class="text-xl font-bold text-gray-900 mb-2">Plan Premium</h3>
+          <div class="flex items-baseline justify-center gap-1">
+            <span class="text-4xl font-bold text-green-600">S/ 19.90</span>
+            <span class="text-gray-500">/mes</span>
+          </div>
+          <p class="text-sm text-green-600 mt-2 font-medium">Sin límite de mensajes</p>
+        </div>
+
+        <ul class="space-y-4 mb-6">
+          @for (feature of premiumFeatures; track feature) {
+            <li class="flex items-start gap-3">
+              <i class="pi pi-check-circle text-green-600 text-lg mt-0.5"></i>
+              <span class="text-gray-700">{{ feature }}</span>
+            </li>
+          }
+        </ul>
+
+        <!-- Bonus section -->
+        <div class="bg-white/60 rounded-xl p-4 mb-6 border border-green-200">
+          <p class="text-sm font-semibold text-green-700 mb-2">
+            <i class="pi pi-gift mr-2"></i>Beneficios exclusivos:
+          </p>
+          <ul class="space-y-2">
+            <li class="flex items-start gap-2 text-sm text-gray-600">
+              <i class="pi pi-tag text-green-500 mt-0.5"></i>
+              <span>Cupones de descuento y ofertas</span>
+            </li>
+            <li class="flex items-start gap-2 text-sm text-gray-600">
+              <i class="pi pi-building text-green-500 mt-0.5"></i>
+              <span>Ofertas de establecimientos aliados</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="space-y-3">
+          <a routerLink="/register" class="block">
+            <p-button
+              label="Pasar a Premium"
+              icon="pi pi-star"
+              severity="success"
+              styleClass="w-full py-3 text-base font-semibold shadow-lg shadow-green-500/30"
+            />
+          </a>
+          <p-button
+            label="Ver establecimientos aliados"
+            icon="pi pi-external-link"
+            severity="success"
+            [outlined]="true"
+            styleClass="w-full py-2 text-sm"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Guarantee -->
+    <div class="text-center mt-10">
+      <div class="inline-flex items-center gap-2 text-gray-500 text-sm">
+        <i class="pi pi-shield text-green-500"></i>
+        <span>Cancela cuando quieras, sin compromisos</span>
+      </div>
+    </div>
+  </div>
+</section>

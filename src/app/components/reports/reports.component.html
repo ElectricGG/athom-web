@@ -1,0 +1,63 @@
+<section class="py-16 md:py-24 px-4 bg-gradient-to-br from-slate-50 to-gray-100" id="reportes">
+  <div class="max-w-6xl mx-auto">
+    <div class="flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
+      <!-- Content -->
+      <div class="flex-1 text-center lg:text-left">
+        <div class="inline-flex items-center gap-2 bg-slate-200 text-slate-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
+          <i class="pi pi-chart-bar"></i>
+          <span>Reportes</span>
+        </div>
+
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          Reportes y resúmenes al instante
+        </h2>
+
+        <p class="text-lg text-gray-600 mb-6 max-w-lg mx-auto lg:mx-0">
+          Pregunta lo que necesites saber. Obtén resúmenes diarios, semanales o mensuales en segundos.
+        </p>
+
+        <ul class="space-y-3 text-left max-w-md mx-auto lg:mx-0">
+          <li class="flex items-start gap-3">
+            <i class="pi pi-calendar text-slate-600 text-xl mt-0.5"></i>
+            <span class="text-gray-700">Resúmenes por período</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <i class="pi pi-filter text-slate-600 text-xl mt-0.5"></i>
+            <span class="text-gray-700">Filtros por categoría</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <i class="pi pi-percentage text-slate-600 text-xl mt-0.5"></i>
+            <span class="text-gray-700">Comparativas y tendencias</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Chat examples -->
+      <div class="flex-1 w-full max-w-md">
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
+          <div class="bg-[#075E54] px-4 py-3">
+            <p class="text-white font-medium text-sm">Consultas de reportes</p>
+          </div>
+          <div class="bg-[#ECE5DD] p-4 space-y-4">
+            @for (example of reportExamples; track example.message) {
+              <div class="space-y-2">
+                <!-- User message -->
+                <div class="flex justify-end">
+                  <div class="bg-[#DCF8C6] rounded-lg rounded-tr-none px-4 py-2 max-w-[85%] shadow">
+                    <p class="text-sm text-gray-800">{{ example.message }}</p>
+                  </div>
+                </div>
+                <!-- Bot response -->
+                <div class="flex justify-start">
+                  <div class="bg-white rounded-lg rounded-tl-none px-4 py-2 max-w-[90%] shadow">
+                    <p class="text-sm text-gray-800 whitespace-pre-line">{{ example.response }}</p>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

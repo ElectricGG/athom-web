@@ -1,0 +1,25 @@
+<section class="py-16 md:py-24 px-4 bg-gradient-to-br from-emerald-50 to-green-50" id="beneficios">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-12 md:mb-16">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        ¿Por qué elegir Athom?
+      </h2>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+        La forma más simple de controlar tu dinero
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      @for (benefit of benefits; track benefit.title) {
+        <div class="bg-white rounded-2xl p-6 shadow-md hover:shadow-lg transition-shadow border border-gray-100">
+          <div class="w-14 h-14 rounded-xl flex items-center justify-center mb-4"
+               [class]="benefit.bgColor">
+            <i [class]="benefit.icon + ' text-2xl ' + benefit.iconColor"></i>
+          </div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ benefit.title }}</h3>
+          <p class="text-gray-600 text-sm leading-relaxed">{{ benefit.description }}</p>
+        </div>
+      }
+    </div>
+  </div>
+</section>

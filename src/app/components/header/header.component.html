@@ -1,0 +1,106 @@
+<header class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100">
+  <div class="max-w-6xl mx-auto px-4">
+    <div class="flex items-center justify-between h-16 md:h-20">
+      <!-- Logo -->
+      <a routerLink="/" class="flex items-center gap-2">
+        <div class="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center">
+          <i class="pi pi-wallet text-white text-lg"></i>
+        </div>
+        <span class="text-xl font-bold text-gray-900">Athom</span>
+      </a>
+
+      <!-- Desktop nav -->
+      <nav class="hidden md:flex items-center gap-8">
+        <a href="#como-funciona" class="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors">
+          Cómo funciona
+        </a>
+        <a href="#planes" class="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors">
+          Planes
+        </a>
+        <a href="#faq" class="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors">
+          FAQ
+        </a>
+      </nav>
+
+      <!-- Desktop CTAs -->
+      <div class="hidden md:flex items-center gap-3">
+        <a routerLink="/login">
+          <p-button
+            label="Iniciar sesión"
+            [text]="true"
+            styleClass="text-gray-700 font-medium"
+          />
+        </a>
+        <a routerLink="/register">
+          <p-button
+            label="Crear cuenta"
+            severity="success"
+            styleClass="font-semibold shadow-md shadow-green-500/20"
+          />
+        </a>
+      </div>
+
+      <!-- Mobile menu button -->
+      <button
+        class="md:hidden w-10 h-10 flex items-center justify-center text-gray-700"
+        (click)="mobileMenuOpen.set(true)"
+        aria-label="Abrir menú"
+      >
+        <i class="pi pi-bars text-xl"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile drawer -->
+  <p-drawer
+    [(visible)]="mobileMenuOpen"
+    position="right"
+    styleClass="w-72"
+    header="Athom"
+  >
+    <nav class="flex flex-col gap-2">
+      <a
+        href="#como-funciona"
+        class="px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors"
+        (click)="mobileMenuOpen.set(false)"
+      >
+        Cómo funciona
+      </a>
+      <a
+        href="#planes"
+        class="px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors"
+        (click)="mobileMenuOpen.set(false)"
+      >
+        Planes
+      </a>
+      <a
+        href="#faq"
+        class="px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors"
+        (click)="mobileMenuOpen.set(false)"
+      >
+        FAQ
+      </a>
+    </nav>
+
+    <div class="mt-8 space-y-3 px-4">
+      <a routerLink="/login" class="block" (click)="mobileMenuOpen.set(false)">
+        <p-button
+          label="Iniciar sesión"
+          severity="secondary"
+          [outlined]="true"
+          styleClass="w-full py-3 font-semibold"
+        />
+      </a>
+      <a routerLink="/register" class="block" (click)="mobileMenuOpen.set(false)">
+        <p-button
+          label="Crear cuenta gratis"
+          severity="success"
+          styleClass="w-full py-3 font-semibold"
+        />
+      </a>
+    </div>
+  </p-drawer>
+</header>
+
+<!-- Spacer for fixed header -->
+<div class="h-16 md:h-20"></div>

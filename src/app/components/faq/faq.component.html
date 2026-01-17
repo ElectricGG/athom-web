@@ -1,0 +1,37 @@
+<section class="py-16 md:py-24 px-4 bg-white" id="faq">
+  <div class="max-w-3xl mx-auto">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        Preguntas frecuentes
+      </h2>
+      <p class="text-lg text-gray-600">
+        Todo lo que necesitas saber sobre Athom
+      </p>
+    </div>
+
+    <p-accordion [multiple]="true">
+      @for (item of faqItems; track item.question; let i = $index) {
+        <p-accordion-panel [value]="i.toString()">
+          <p-accordion-header>
+            <div class="flex items-center gap-3 py-2">
+              <i class="pi pi-question-circle text-green-500"></i>
+              <span class="font-semibold text-gray-900">{{ item.question }}</span>
+            </div>
+          </p-accordion-header>
+          <p-accordion-content>
+            <p class="text-gray-600 leading-relaxed pl-8">{{ item.answer }}</p>
+          </p-accordion-content>
+        </p-accordion-panel>
+      }
+    </p-accordion>
+
+    <div class="mt-10 text-center">
+      <p class="text-gray-500 text-sm">
+        ¿Tienes más preguntas?
+        <a href="mailto:hola@athom.com" class="text-green-600 hover:text-green-700 font-medium ml-1">
+          Escríbenos
+        </a>
+      </p>
+    </div>
+  </div>
+</section>
