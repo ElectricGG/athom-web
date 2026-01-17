@@ -29,6 +29,7 @@ export class RegisterComponent {
     name: ['', [Validators.required, Validators.minLength(2)]],
     email: ['', [Validators.required, Validators.email]],
     phone: ['', [Validators.required]],
+    verificationCode: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]],
     password: ['', [Validators.required, Validators.minLength(8)]],
     acceptTerms: [false, [Validators.requiredTrue]]
   });
