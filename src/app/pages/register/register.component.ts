@@ -55,4 +55,8 @@ export class RegisterComponent {
       console.log('Form submitted:', this.registerForm.value);
     }
   }
+
+  goBackToRegistration(): void {
+    this.isVerifying = false;
+  }
 }

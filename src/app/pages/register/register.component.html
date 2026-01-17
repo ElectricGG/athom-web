@@ -135,7 +135,7 @@
         </div>
         <form [formGroup]="registerForm" (ngSubmit)="confirmAndCreate()" class="space-y-5">
           <!-- Código de verificación de WhatsApp -->
-          <div>
+          <div class="mb-5">
             <label for="verificationCode" class="block text-sm font-medium text-gray-700 mb-2">
               Código de verificación
             </label>
@@ -157,15 +157,27 @@
             }
           </div>
 
-          <!-- Submit button -->
-          <p-button
-            type="submit"
-            label="Confirmar y crear"
-            icon="pi pi-check"
-            severity="success"
-            [disabled]="registerForm.invalid"
-            styleClass="w-full py-3 text-base font-semibold shadow-lg shadow-green-500/30"
-          />
+          <!-- Buttons container -->
+          <div class="flex flex-col items-center mt-5 gap-4">
+            <!-- Confirm and create button -->
+            <p-button
+              type="submit"
+              label="Confirmar y crear"
+              icon="pi pi-check"
+              severity="success"
+              [disabled]="registerForm.invalid"
+              styleClass="w-full py-3 text-base font-semibold shadow-lg shadow-green-500/30"
+            />
+
+            <!-- Back button -->
+            <p-button
+              type="button"
+              label="Retroceder"
+              icon="pi pi-arrow-left"
+              (click)="goBackToRegistration()"
+              styleClass="w-full p-button-text text-gray-600 hover:text-gray-800 font-semibold"
+            />
+          </div>
         </form>
       }
 
