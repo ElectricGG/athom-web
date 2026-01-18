@@ -8,6 +8,7 @@ import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { AuthService } from '../../services/auth.service';
+import { InputMaskModule } from 'primeng/inputmask'; // Added for phone input
 
 @Component({
   selector: 'app-login',
@@ -18,7 +19,8 @@ import { AuthService } from '../../services/auth.service';
     InputTextModule,
     PasswordModule,
     ButtonModule,
-    CheckboxModule
+    CheckboxModule,
+    InputMaskModule // Added for phone input
   ],
   templateUrl: './login.component.html'
 })
@@ -31,7 +33,7 @@ export class LoginComponent {
   errorMessage: string | null = null;
 
   loginForm: FormGroup = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
+    phone: ['', [Validators.required]], // Changed from 'email' to 'phone'
     password: ['', [Validators.required]],
     rememberMe: [false]
   });
@@ -45,19 +47,23 @@ export class LoginComponent {
     this.isLoading = true;
     this.errorMessage = null;
 
+    const rawPhone = this.loginForm.get('phone')?.value || '';
+    const numeroWhatsapp = rawPhone.replace(/\s/g, '').replace('+', ''); // Clean phone number
+    const rememberMe = this.loginForm.value.rememberMe; // Get rememberMe value
+
     const credentials = {
-      email: this.loginForm.value.email,
+      numeroWhatsapp: numeroWhatsapp, // Changed from 'email' to 'numeroWhatsapp'
       contrasena: this.loginForm.value.password
     };
 
-    this.authService.login(credentials).pipe(
+    this.authService.login(credentials, rememberMe).pipe( // Pass rememberMe flag
       finalize(() => this.isLoading = false)
     ).subscribe({
       next: () => {
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
-        this.errorMessage = 'Email o contraseña incorrectos. Por favor, intente de nuevo.';
+        this.errorMessage = 'Número de WhatsApp o contraseña incorrectos. Por favor, intente de nuevo.';
         console.error(err);
       }
     });

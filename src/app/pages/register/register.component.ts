@@ -36,7 +36,7 @@ export class RegisterComponent {
 
   registerForm: FormGroup = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
-    email: ['', [Validators.required, Validators.email]],
+    // email: ['', [Validators.required, Validators.email]], // Removed
     phone: ['', [Validators.required]],
     password: ['', [Validators.required, Validators.minLength(8)]],
     acceptTerms: [false, [Validators.requiredTrue]],
@@ -47,77 +47,15 @@ export class RegisterComponent {
   isLoading = false;
   errorMessage: string | null = null;
 
-  // Form for the main registration data
-  get mainForm(): FormGroup {
-    return this.fb.group({
-      name: this.registerForm.get('name'),
-      email: this.registerForm.get('email'),
-      phone: this.registerForm.get('phone'),
-      password: this.registerForm.get('password'),
-      acceptTerms: this.registerForm.get('acceptTerms')
-    });
-  }
-
-  sendVerificationCode(): void {
-    console.log("Verifyyyyyy");
-    if (this.mainForm.invalid) {
-      this.mainForm.markAllAsTouched();
+  onSubmit(): void {
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
       return;
     }
 
     this.isLoading = true;
     this.errorMessage = null;
 
-    const phoneValue = this.registerForm.get('phone')?.value.replace(/\s/g, ''); // Remove spaces
-    const payload = { numeroWhatsApp: phoneValue };
-
-    this.http.post(this.sendCodeUrl, payload).pipe(
-      finalize(() => this.isLoading = false)
-    ).subscribe({
-      next: () => {
-        this.isVerifying = true;
-      },
-      error: (err) => {
-        this.errorMessage = 'Error al enviar el código. Por favor, intente de nuevo.';
-        console.error(err);
-      }
-    });
-  }
-
-  confirmAndCreate(): void {
-    console.log('Attempting to confirm and create...');
-    if (this.verificationCode.invalid) {
-      console.log('Verification code is invalid. Errors:', this.verificationCode.errors);
-      this.verificationCode.markAsTouched();
-      return;
-    }
-
-    this.isLoading = true;
-    this.errorMessage = null;
-
-    const phoneValue = this.registerForm.get('phone')?.value.replace(/\s/g, ''); // Remove spaces
-    const verifyPayload = {
-      numeroWhatsApp: phoneValue,
-      codigo: this.verificationCode.value
-    };
-
-    console.log('Calling verification API with payload:', verifyPayload);
-    // 1. Verify Code
-    this.http.post(this.verifyCodeUrl, verifyPayload).subscribe({
-      next: () => {
-        console.log('Verification successful. Proceeding to create user.');
-        // 2. Create User if code is valid
-        this.createUser();
-      },
-      error: (err) => {
-        console.error('Verification API failed:', err);
-        this.isLoading = false;
-        this.errorMessage = 'El código de verificación es incorrecto.';
-      }
-    });
-  }
-
-  private createUser(): void {
     const rawPhone = this.registerForm.get('phone')?.value || '';
     const phoneParts = rawPhone.replace('+', '').split(' ');
     const countryCode = phoneParts.length > 1 ? phoneParts[0] : '';
@@ -127,35 +65,93 @@ export class RegisterComponent {
       nombreUsuario: this.registerForm.get('name')?.value,
       nombres: this.registerForm.get('name')?.value,
       apellidos: this.registerForm.get('name')?.value,
-      email: this.registerForm.get('email')?.value,
+      email: '', // Always send empty string
       contrasena: this.registerForm.get('password')?.value,
       codigoPais: countryCode,
       telefono: phoneNumber,
       numeroWhatsapp: countryCode + phoneNumber
     };
 
-    console.log('Calling create user API with payload:', createPayload);
-    this.http.post(this.createUserUrl, createPayload).pipe(
+    // 1. Create User
+    this.http.post(this.createUserUrl, createPayload).subscribe({
+      next: () => {
+        // 2. Send verification code
+        this.executeSendCode();
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.errorMessage = 'Error al crear la cuenta. El email ya podría estar en uso.';
+        console.error(err);
+      }
+    });
+  }
+
+  private executeSendCode(): void {
+    this.isLoading = true; // Keep loading state
+    const phoneValue = this.registerForm.get('phone')?.value.replace(/\s/g, '').replace('+', ''); // Remove '+'
+    const payload = { numeroWhatsApp: phoneValue };
+
+    this.http.post(this.sendCodeUrl, payload).pipe(
       finalize(() => this.isLoading = false)
     ).subscribe({
       next: () => {
-        console.log('User creation successful. Navigating to login.');
+        this.isVerifying = true;
+      },
+      error: (err) => {
+        this.errorMessage = 'Cuenta creada, pero hubo un error al enviar el código de verificación.';
+        console.error(err);
+      }
+    });
+  }
+
+  confirmAndCreate(): void {
+    console.log('--- Debugging confirmAndCreate ---');
+    console.log('Function triggered.');
+    console.log('isLoading flag:', this.isLoading);
+    console.log('Verification control status:', this.verificationCode.status);
+    console.log('Verification control value:', `'${this.verificationCode.value}'`);
+    console.log('Verification control errors:', this.verificationCode.errors);
+
+    if (this.verificationCode.invalid) {
+      console.log('Verification code is INVALID. Returning...');
+      this.verificationCode.markAsTouched();
+      return;
+    }
+
+    this.isLoading = true;
+    this.errorMessage = null;
+
+    const phoneValue = this.registerForm.get('phone')?.value.replace(/\s/g, '').replace('+', ''); // Remove '+'
+    const verifyPayload = {
+      numeroWhatsApp: phoneValue,
+      codigo: this.verificationCode.value
+    };
+
+    console.log('Code is valid. Proceeding to call verification API with payload:', verifyPayload);
+    // Verify Code and then redirect
+    this.http.post(this.verifyCodeUrl, verifyPayload).pipe(
+      finalize(() => this.isLoading = false)
+    ).subscribe({
+      next: () => {
+        console.log('Verification successful. Navigating to /login');
         this.router.navigate(['/login']);
       },
       error: (err) => {
-        console.error('Create user API failed:', err);
-        this.errorMessage = 'Error al crear la cuenta. Inténtelo más tarde.';
+        this.errorMessage = 'El código de verificación es incorrecto.';
+        console.error('Verification API failed:', err);
       }
     });
   }
 
   goBackToRegistration(): void {
-    this.isVerifying = false;
-    this.errorMessage = null;
-    this.verificationCode.reset();
+    // This action is less meaningful now, as the user is already created.
+    // For simplicity, we'll just navigate them to the login page.
+    this.router.navigate(['/login']);
   }
 
   resendCode(): void {
-    this.sendVerificationCode();
+    // We don't want to create the user again, just resend the code.
+    this.executeSendCode();
   }
 }
+

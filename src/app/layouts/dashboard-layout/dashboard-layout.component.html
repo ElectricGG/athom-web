@@ -150,10 +150,10 @@
       <!-- User Info -->
       <div class="flex items-center gap-3 mb-4">
         <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold">
-          {{ userInitial }}
+          {{ userInitial$ | async }}
         </div>
         <div class="flex-1 min-w-0">
-          <p class="font-semibold text-gray-900 truncate">{{ userName }}</p>
+          <p class="font-semibold text-gray-900 truncate">{{ userName$ | async }}</p>
           <div class="flex items-center gap-1">
             @if (userPlan === 'premium') {
               <span class="px-2 py-0.5 text-xs bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-full font-semibold">

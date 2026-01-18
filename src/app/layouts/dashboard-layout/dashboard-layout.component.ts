@@ -1,8 +1,11 @@
 import { Component, signal, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterLink, RouterLinkActive, RouterOutlet, Router } from '@angular/router';
+import { CommonModule, AsyncPipe } from '@angular/common'; // Import AsyncPipe
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { DrawerModule } from 'primeng/drawer';
 import { ButtonModule } from 'primeng/button';
+import { AuthService } from '../../services/auth.service'; // Import AuthService
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dashboard-layout',
@@ -13,29 +16,30 @@ import { ButtonModule } from 'primeng/button';
     RouterLinkActive,
     RouterOutlet,
     DrawerModule,
-    ButtonModule
+    ButtonModule,
+    AsyncPipe // Add AsyncPipe
   ],
   templateUrl: './dashboard-layout.component.html'
 })
 export class DashboardLayoutComponent {
-  private router = inject(Router);
+  private authService = inject(AuthService); // Inject AuthService
 
   sidebarVisible = signal(false);
 
-  // Mock user data - esto vendría de un servicio de autenticación
-  userName = 'Juan Pérez';
-  userPlan: 'free' | 'premium' = 'premium';
+  userPlan: 'free' | 'premium' = 'premium'; // Keep as mock for now
 
-  get userInitial(): string {
-    return this.userName.charAt(0).toUpperCase();
-  }
+  userName$: Observable<string> = this.authService.currentUserData.pipe(
+    map(user => user ? user.nombreUsuario : 'Invitado')
+  );
+  userInitial$: Observable<string> = this.userName$.pipe(
+    map(name => name ? name.charAt(0).toUpperCase() : '?')
+  );
 
   closeSidebar(): void {
     this.sidebarVisible.set(false);
   }
 
   logout(): void {
-    // Aquí iría la lógica de logout
-    this.router.navigate(['/login']);
+    this.authService.logout(); // Call the service's logout method
   }
 }
