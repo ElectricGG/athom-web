@@ -18,7 +18,7 @@
           <p class="text-gray-600">Comienza a controlar tus finanzas hoy</p>
         </div>
 
-        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-5">
+        <form [formGroup]="registerForm" (ngSubmit)="sendVerificationCode()" class="space-y-5">
           <!-- Nombre -->
           <div>
             <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
@@ -124,7 +124,8 @@
             label="Crear cuenta"
             icon="pi pi-user-plus"
             severity="success"
-            [disabled]="registerForm.get('name')?.invalid || registerForm.get('email')?.invalid || registerForm.get('phone')?.invalid || registerForm.get('password')?.invalid || registerForm.get('acceptTerms')?.invalid"
+            [disabled]="mainForm.invalid || isLoading"
+            [loading]="isLoading"
             styleClass="w-full py-3 text-base font-semibold shadow-lg shadow-green-500/30"
           />
         </form>
@@ -133,7 +134,7 @@
           <h1 class="text-2xl font-bold text-gray-900 mb-2">Verifiquemos tu whatsapp</h1>
           <p class="text-gray-600">Te enviamos un código de 6 dígitos.</p>
         </div>
-        <form [formGroup]="registerForm" (ngSubmit)="confirmAndCreate()" class="space-y-5">
+        <div class="space-y-5">
           <!-- Código de verificación de WhatsApp -->
           <div class="mb-5">
             <label for="verificationCode" class="block text-sm font-medium text-gray-700 mb-2">
@@ -145,14 +146,14 @@
                 <input
                   pInputText
                   id="verificationCode"
-                  formControlName="verificationCode"
+                  [formControl]="verificationCode"
                   placeholder="Ingresa los 6 dígitos"
                   class="w-full py-3 pl-10"
                   maxlength="6"
                 />
               </span>
             </div>
-            @if (registerForm.get('verificationCode')?.invalid && registerForm.get('verificationCode')?.touched) {
+            @if (verificationCode.invalid && verificationCode.touched) {
               <small class="text-red-500 text-sm mt-1 block">Ingresa el código de 6 dígitos</small>
             }
             <div class="text-right mt-2">
@@ -160,20 +161,29 @@
                 type="button"
                 label="Reenviar código"
                 (click)="resendCode()"
+                [disabled]="isLoading"
                 styleClass="p-button-text text-green-600 hover:text-green-800 text-sm p-0"
               />
             </div>
           </div>
 
+          <!-- Error Message -->
+          @if (errorMessage) {
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md relative" role="alert">
+              <span class="block sm:inline">{{ errorMessage }}</span>
+            </div>
+          }
+
           <!-- Buttons container -->
           <div class="flex flex-col items-center mt-5 gap-4">
             <!-- Confirm and create button -->
             <p-button
-              type="submit"
+              (click)="confirmAndCreate()"
               label="Confirmar y crear"
               icon="pi pi-check"
               severity="success"
-              [disabled]="registerForm.invalid"
+              [disabled]="verificationCode.invalid || isLoading"
+              [loading]="isLoading"
               styleClass="w-full py-3 text-base font-semibold shadow-lg shadow-green-500/30"
             />
 
@@ -183,10 +193,11 @@
               label="Retroceder"
               icon="pi pi-arrow-left"
               (click)="goBackToRegistration()"
+              [disabled]="isLoading"
               styleClass="w-full p-button-text text-gray-600 hover:text-gray-800 font-semibold"
             />
           </div>
-        </form>
+        </div>
       }
 
       <!-- Divider -->
