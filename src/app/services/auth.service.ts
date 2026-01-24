@@ -1,29 +1,95 @@
 import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
-import { Observable, BehaviorSubject, of } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { tap, finalize } from 'rxjs/operators';
+
+interface AuthResponse {
+  usuarioId: number;
+  numeroWhatsapp: string;
+  nombreUsuario: string;
+  accessToken: string;
+  refreshToken: string;
+  accessTokenExpiration: string;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private loginUrl = 'http://localhost:5041/api/Auth/login';
-  private logoutUrl = 'http://localhost:5041/api/Auth/logout';
-  private isBrowser: boolean;
+  private readonly baseUrl = 'http://localhost:5041/api/Auth';
+  private readonly isBrowser: boolean;
 
-  private currentUserDataSubject: BehaviorSubject<any | null>;
-  public currentUserData: Observable<any | null>;
+  private currentUserDataSubject: BehaviorSubject<AuthResponse | null>;
+  public currentUserData: Observable<AuthResponse | null>;
 
   constructor(
     private http: HttpClient,
-    private router: Router,
     @Inject(PLATFORM_ID) platformId: object
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
-    this.currentUserDataSubject = new BehaviorSubject<any | null>(this.getStoredUserData());
+    this.currentUserDataSubject = new BehaviorSubject<AuthResponse | null>(this.getStoredUserData());
     this.currentUserData = this.currentUserDataSubject.asObservable();
+  }
+
+  login(credentials: { numeroWhatsapp: string; contrasena: string }, rememberMe: boolean): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.baseUrl}/login`, credentials).pipe(
+      tap(response => this.saveUserData(response, rememberMe))
+    );
+  }
+
+  refreshToken(): Observable<AuthResponse> {
+    const currentRefreshToken = this.getRefreshToken();
+    const useLocalStorage = this.isUsingLocalStorage();
+
+    return this.http.post<AuthResponse>(`${this.baseUrl}/refresh`, {
+      refreshToken: currentRefreshToken
+    }).pipe(
+      tap(response => this.saveUserData(response, useLocalStorage))
+    );
+  }
+
+  logout(): void {
+    if (!this.isBrowser) return;
+
+    const refreshToken = this.getRefreshToken();
+
+    if (refreshToken) {
+      this.http.post(`${this.baseUrl}/logout`, { refreshToken }).pipe(
+        finalize(() => this.clearSession())
+      ).subscribe();
+    } else {
+      this.clearSession();
+    }
+  }
+
+  clearSession(): void {
+    if (!this.isBrowser) return;
+
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('userData');
+    sessionStorage.removeItem('accessToken');
+    sessionStorage.removeItem('userData');
+    this.currentUserDataSubject.next(null);
+  }
+
+  isLoggedIn(): boolean {
+    return !!this.getAccessToken();
+  }
+
+  getAccessToken(): string | null {
+    const storage = this.getStorage();
+    return storage ? storage.getItem('accessToken') : null;
+  }
+
+  getRefreshToken(): string | null {
+    const userData = this.getStoredUserData();
+    return userData?.refreshToken ?? null;
+  }
+
+  private isUsingLocalStorage(): boolean {
+    if (!this.isBrowser) return false;
+    return !!localStorage.getItem('accessToken');
   }
 
   private getStorage(): Storage | null {
@@ -37,7 +103,7 @@ export class AuthService {
     return null;
   }
 
-  private getStoredUserData(): any | null {
+  private getStoredUserData(): AuthResponse | null {
     const storage = this.getStorage();
     if (storage) {
       const userData = storage.getItem('userData');
@@ -46,10 +112,10 @@ export class AuthService {
     return null;
   }
 
-  private saveUserData(data: any, rememberMe: boolean): void {
+  private saveUserData(data: AuthResponse, useLocalStorage: boolean): void {
     if (!this.isBrowser) return;
 
-    const storage = rememberMe ? localStorage : sessionStorage;
+    const storage = useLocalStorage ? localStorage : sessionStorage;
 
     localStorage.removeItem('accessToken');
     localStorage.removeItem('userData');
@@ -59,49 +125,5 @@ export class AuthService {
     storage.setItem('accessToken', data.accessToken);
     storage.setItem('userData', JSON.stringify(data));
     this.currentUserDataSubject.next(data);
-  }
-
-  login(credentials: { numeroWhatsapp: string; contrasena: string }, rememberMe: boolean): Observable<any> {
-    return this.http.post<any>(this.loginUrl, credentials).pipe(
-      tap(response => {
-        this.saveUserData(response, rememberMe);
-      })
-    );
-  }
-
-  logout(): void {
-    if (!this.isBrowser) return;
-
-    const userData = this.getStoredUserData();
-    const refreshToken = userData?.refreshToken;
-
-    const cleanup = () => {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('userData');
-      sessionStorage.removeItem('accessToken');
-      sessionStorage.removeItem('userData');
-      this.currentUserDataSubject.next(null);
-      this.router.navigate(['/login']);
-    };
-
-    if (refreshToken) {
-      this.http.post(this.logoutUrl, { refreshToken }).pipe(
-        finalize(cleanup)
-      ).subscribe({
-        next: () => console.log('Successfully logged out on server.'),
-        error: (err) => console.error('Server logout failed, but logging out client-side.', err)
-      });
-    } else {
-      cleanup();
-    }
-  }
-
-  isLoggedIn(): boolean {
-    return !!this.getAccessToken();
-  }
-
-  getAccessToken(): string | null {
-    const storage = this.getStorage();
-    return storage ? storage.getItem('accessToken') : null;
   }
 }

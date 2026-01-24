@@ -1,22 +1,41 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { DatePipe, DecimalPipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
+import { Transaction, TransactionType, ExpenseDistribution, BalanceSummary } from '../../../models/transaction.model';
+import { TransactionService } from '../../../services/transaction.service';
+
+interface PeriodOption {
+  label: string;
+  value: number;
+}
+
+const VISIBLE_CATEGORIES_LIMIT = 7;
 
 @Component({
   selector: 'app-dashboard-home',
   standalone: true,
-  imports: [RouterLink, ButtonModule],
+  imports: [RouterLink, ButtonModule, DatePipe, DecimalPipe, FormsModule],
   templateUrl: './home.component.html'
 })
-export class DashboardHomeComponent {
-  userName = 'Juan';
+export class DashboardHomeComponent implements OnInit {
+  private transactionService = inject(TransactionService);
 
-  expenseCategories = [
-    { name: 'Alimentación', icon: '🍔', amount: '450.00', percentage: 36, color: '#f97316' },
-    { name: 'Transporte', icon: '🚗', amount: '280.00', percentage: 22, color: '#3b82f6' },
-    { name: 'Entretenimiento', icon: '🎬', amount: '200.00', percentage: 16, color: '#8b5cf6' },
-    { name: 'Servicios', icon: '💡', amount: '180.00', percentage: 14, color: '#eab308' },
-    { name: 'Otros', icon: '📦', amount: '140.00', percentage: 12, color: '#6b7280' }
+  userName = 'Juan';
+  recentTransactions: Transaction[] = [];
+  expenseDistribution: ExpenseDistribution[] = [];
+  balanceSummary: BalanceSummary | null = null;
+  isLoadingTransactions = false;
+  isLoadingDistribution = false;
+  isLoadingBalance = false;
+  selectedPeriod = 1;
+  showAllCategories = false;
+
+  periodOptions: PeriodOption[] = [
+    { label: 'Este mes', value: 1 },
+    { label: 'Últimos 2 meses', value: 2 },
+    { label: 'Últimos 3 meses', value: 3 }
   ];
 
   savingGoals = [
@@ -25,11 +44,95 @@ export class DashboardHomeComponent {
     { name: 'Laptop nueva', current: '1,200', target: '4,000', percentage: 30 }
   ];
 
-  recentTransactions = [
-    { id: 1, description: 'Sueldo mensual', category: 'Sueldo', date: '15 Ene', amount: '3,500.00', type: 'income' },
-    { id: 2, description: 'Supermercado Wong', category: 'Alimentación', date: '14 Ene', amount: '185.50', type: 'expense' },
-    { id: 3, description: 'Uber', category: 'Transporte', date: '14 Ene', amount: '25.00', type: 'expense' },
-    { id: 4, description: 'Freelance diseño', category: 'Freelance', date: '13 Ene', amount: '500.00', type: 'income' },
-    { id: 5, description: 'Netflix', category: 'Entretenimiento', date: '12 Ene', amount: '44.90', type: 'expense' }
-  ];
+  get visibleCategories(): ExpenseDistribution[] {
+    if (this.showAllCategories) {
+      return this.expenseDistribution;
+    }
+    return this.expenseDistribution.slice(0, VISIBLE_CATEGORIES_LIMIT);
+  }
+
+  get hasMoreCategories(): boolean {
+    return this.expenseDistribution.length > VISIBLE_CATEGORIES_LIMIT;
+  }
+
+  get hiddenCategoriesCount(): number {
+    return this.expenseDistribution.length - VISIBLE_CATEGORIES_LIMIT;
+  }
+
+  ngOnInit(): void {
+    this.loadBalanceSummary();
+    this.loadRecentTransactions();
+    this.loadExpenseDistribution();
+  }
+
+  isIncome(transaction: Transaction): boolean {
+    return transaction.tipo === TransactionType.Ingreso;
+  }
+
+  onPeriodChange(): void {
+    this.showAllCategories = false;
+    this.loadExpenseDistribution();
+  }
+
+  toggleShowAllCategories(): void {
+    this.showAllCategories = !this.showAllCategories;
+  }
+
+  getDefaultIcon(nombre: string): string {
+    const iconMap: Record<string, string> = {
+      'alimentación': '🍔',
+      'transporte': '🚗',
+      'entretenimiento': '🎬',
+      'servicios': '💡',
+      'salud': '💊',
+      'educación': '📚',
+      'vivienda': '🏠',
+      'ropa': '👕'
+    };
+    return iconMap[nombre.toLowerCase()] ?? '📦';
+  }
+
+  getDefaultColor(index: number): string {
+    const colors = ['#f97316', '#3b82f6', '#8b5cf6', '#eab308', '#ef4444', '#10b981', '#06b6d4', '#6b7280'];
+    return colors[index % colors.length];
+  }
+
+  private loadRecentTransactions(): void {
+    this.isLoadingTransactions = true;
+    this.transactionService.getRecentTransactions(10).subscribe({
+      next: (transactions) => {
+        this.recentTransactions = transactions;
+        this.isLoadingTransactions = false;
+      },
+      error: () => {
+        this.isLoadingTransactions = false;
+      }
+    });
+  }
+
+  private loadExpenseDistribution(): void {
+    this.isLoadingDistribution = true;
+    this.transactionService.getExpenseDistribution(this.selectedPeriod).subscribe({
+      next: (distribution) => {
+        this.expenseDistribution = distribution;
+        this.isLoadingDistribution = false;
+      },
+      error: () => {
+        this.isLoadingDistribution = false;
+      }
+    });
+  }
+
+  private loadBalanceSummary(): void {
+    this.isLoadingBalance = true;
+    this.transactionService.getBalanceSummary().subscribe({
+      next: (summary) => {
+        this.balanceSummary = summary;
+        this.isLoadingBalance = false;
+      },
+      error: () => {
+        this.isLoadingBalance = false;
+      }
+    });
+  }
 }

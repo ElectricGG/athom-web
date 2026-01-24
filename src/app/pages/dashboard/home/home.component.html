@@ -18,65 +18,90 @@
 
   <!-- Balance Cards -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-    <!-- Balance Total -->
-    <div class="bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl p-5 text-white">
-      <div class="flex items-center justify-between mb-3">
-        <span class="text-green-100 text-sm font-medium">Balance Total</span>
-        <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-          <i class="pi pi-wallet text-lg"></i>
+    @if (isLoadingBalance) {
+      @for (i of [1, 2, 3, 4]; track i) {
+        <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm animate-pulse">
+          <div class="flex items-center justify-between mb-3">
+            <div class="h-4 bg-gray-200 rounded w-24"></div>
+            <div class="w-10 h-10 bg-gray-200 rounded-xl"></div>
+          </div>
+          <div class="h-8 bg-gray-200 rounded w-32 mb-2"></div>
+          <div class="h-4 bg-gray-200 rounded w-28"></div>
         </div>
+      }
+    } @else {
+      <!-- Balance Total -->
+      <div class="bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl p-5 text-white">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-green-100 text-sm font-medium">Balance Total</span>
+          <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+            <i class="pi pi-wallet text-lg"></i>
+          </div>
+        </div>
+        <p class="text-3xl font-bold">S/ {{ (balanceSummary?.balance ?? 0) | number:'1.2-2' }}</p>
+        <p class="text-green-100 text-sm mt-2">
+          @if ((balanceSummary?.porcentajeCambioBalance ?? 0) >= 0) {
+            <i class="pi pi-arrow-up text-xs mr-1"></i>
+          } @else {
+            <i class="pi pi-arrow-down text-xs mr-1"></i>
+          }
+          {{ (balanceSummary?.porcentajeCambioBalance ?? 0) >= 0 ? '+' : '' }}{{ balanceSummary?.porcentajeCambioBalance ?? 0 }}% vs mes anterior
+        </p>
       </div>
-      <p class="text-3xl font-bold">S/ 4,250.00</p>
-      <p class="text-green-100 text-sm mt-2">
-        <i class="pi pi-arrow-up text-xs mr-1"></i>
-        +12.5% vs mes anterior
-      </p>
-    </div>
 
-    <!-- Ingresos -->
-    <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-      <div class="flex items-center justify-between mb-3">
-        <span class="text-gray-500 text-sm font-medium">Ingresos</span>
-        <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-          <i class="pi pi-arrow-up text-blue-600 text-lg"></i>
+      <!-- Ingresos -->
+      <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-gray-500 text-sm font-medium">Ingresos</span>
+          <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+            <i class="pi pi-arrow-up text-blue-600 text-lg"></i>
+          </div>
         </div>
+        <p class="text-2xl font-bold text-gray-900">S/ {{ (balanceSummary?.totalIngresos ?? 0) | number:'1.2-2' }}</p>
+        <p [class]="(balanceSummary?.porcentajeCambioIngresos ?? 0) >= 0 ? 'text-green-600' : 'text-red-600'" class="text-sm mt-2">
+          @if ((balanceSummary?.porcentajeCambioIngresos ?? 0) >= 0) {
+            <i class="pi pi-arrow-up text-xs mr-1"></i>
+          } @else {
+            <i class="pi pi-arrow-down text-xs mr-1"></i>
+          }
+          {{ (balanceSummary?.porcentajeCambioIngresos ?? 0) >= 0 ? '+' : '' }}{{ balanceSummary?.porcentajeCambioIngresos ?? 0 }}% vs mes anterior
+        </p>
       </div>
-      <p class="text-2xl font-bold text-gray-900">S/ 5,500.00</p>
-      <p class="text-green-600 text-sm mt-2">
-        <i class="pi pi-arrow-up text-xs mr-1"></i>
-        +8.2% vs mes anterior
-      </p>
-    </div>
 
-    <!-- Gastos -->
-    <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-      <div class="flex items-center justify-between mb-3">
-        <span class="text-gray-500 text-sm font-medium">Gastos</span>
-        <div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
-          <i class="pi pi-arrow-down text-red-600 text-lg"></i>
+      <!-- Gastos -->
+      <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-gray-500 text-sm font-medium">Gastos</span>
+          <div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
+            <i class="pi pi-arrow-down text-red-600 text-lg"></i>
+          </div>
         </div>
+        <p class="text-2xl font-bold text-gray-900">S/ {{ (balanceSummary?.totalGastos ?? 0) | number:'1.2-2' }}</p>
+        <p [class]="(balanceSummary?.porcentajeCambioGastos ?? 0) <= 0 ? 'text-green-600' : 'text-red-600'" class="text-sm mt-2">
+          @if ((balanceSummary?.porcentajeCambioGastos ?? 0) >= 0) {
+            <i class="pi pi-arrow-up text-xs mr-1"></i>
+          } @else {
+            <i class="pi pi-arrow-down text-xs mr-1"></i>
+          }
+          {{ (balanceSummary?.porcentajeCambioGastos ?? 0) >= 0 ? '+' : '' }}{{ balanceSummary?.porcentajeCambioGastos ?? 0 }}% vs mes anterior
+        </p>
       </div>
-      <p class="text-2xl font-bold text-gray-900">S/ 1,250.00</p>
-      <p class="text-red-600 text-sm mt-2">
-        <i class="pi pi-arrow-up text-xs mr-1"></i>
-        +3.1% vs mes anterior
-      </p>
-    </div>
 
-    <!-- Ahorro -->
-    <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-      <div class="flex items-center justify-between mb-3">
-        <span class="text-gray-500 text-sm font-medium">Ahorro del mes</span>
-        <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
-          <i class="pi pi-piggy-bank text-purple-600 text-lg"></i>
+      <!-- Promedio Diario -->
+      <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-gray-500 text-sm font-medium">Promedio diario</span>
+          <div class="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
+            <i class="pi pi-calendar text-orange-600 text-lg"></i>
+          </div>
         </div>
+        <p class="text-2xl font-bold text-gray-900">S/ {{ (balanceSummary?.promedioDiarioGastos ?? 0) | number:'1.2-2' }}</p>
+        <p class="text-orange-600 text-sm mt-2">
+          <i class="pi pi-chart-bar text-xs mr-1"></i>
+          Gasto promedio por día
+        </p>
       </div>
-      <p class="text-2xl font-bold text-gray-900">S/ 850.00</p>
-      <p class="text-purple-600 text-sm mt-2">
-        <i class="pi pi-check text-xs mr-1"></i>
-        Meta: S/ 1,000
-      </p>
-    </div>
+    }
   </div>
 
   <!-- Charts Section -->
@@ -85,30 +110,60 @@
     <div class="lg:col-span-2 bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
       <div class="flex items-center justify-between mb-4">
         <h3 class="font-semibold text-gray-900">Gastos por categoría</h3>
-        <select class="text-sm border border-gray-200 rounded-lg px-3 py-1.5 text-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500">
-          <option>Este mes</option>
-          <option>Último mes</option>
-          <option>Últimos 3 meses</option>
+        <select
+          [(ngModel)]="selectedPeriod"
+          (ngModelChange)="onPeriodChange()"
+          class="text-sm border border-gray-200 rounded-lg px-3 py-1.5 text-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+        >
+          @for (option of periodOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
         </select>
       </div>
       <div class="space-y-4">
-        @for (category of expenseCategories; track category.name) {
-          <div>
-            <div class="flex items-center justify-between mb-1">
-              <div class="flex items-center gap-2">
-                <span class="text-lg">{{ category.icon }}</span>
-                <span class="text-sm font-medium text-gray-700">{{ category.name }}</span>
-              </div>
-              <span class="text-sm font-semibold text-gray-900">S/ {{ category.amount }}</span>
-            </div>
-            <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
-              <div
-                class="h-full rounded-full transition-all"
-                [style.width.%]="category.percentage"
-                [style.backgroundColor]="category.color"
-              ></div>
-            </div>
+        @if (isLoadingDistribution) {
+          <div class="flex justify-center py-8">
+            <i class="pi pi-spin pi-spinner text-2xl text-gray-400"></i>
           </div>
+        } @else if (expenseDistribution.length === 0) {
+          <div class="text-center py-8 text-gray-500">
+            <i class="pi pi-chart-bar text-4xl mb-2"></i>
+            <p>No hay gastos en este período</p>
+          </div>
+        } @else {
+          @for (category of visibleCategories; track category.categoriaId; let i = $index) {
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <div class="flex items-center gap-2">
+                  <span class="text-lg">{{ category.icono ?? getDefaultIcon(category.nombre) }}</span>
+                  <span class="text-sm font-medium text-gray-700">{{ category.nombre }}</span>
+                </div>
+                <span class="text-sm font-semibold text-gray-900">S/ {{ category.monto | number:'1.2-2' }}</span>
+              </div>
+              <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                <div
+                  class="h-full rounded-full transition-all"
+                  [style.width.%]="category.porcentaje"
+                  [style.backgroundColor]="category.color ?? getDefaultColor(i)"
+                ></div>
+              </div>
+            </div>
+          }
+          @if (hasMoreCategories) {
+            <button
+              type="button"
+              (click)="toggleShowAllCategories()"
+              class="w-full mt-2 py-2 text-sm font-medium text-green-600 hover:text-green-700 hover:bg-green-50 rounded-lg transition-colors"
+            >
+              @if (showAllCategories) {
+                <i class="pi pi-chevron-up mr-1"></i>
+                Ver menos
+              } @else {
+                <i class="pi pi-chevron-down mr-1"></i>
+                Ver más ({{ hiddenCategoriesCount }})
+              }
+            </button>
+          }
         }
       </div>
     </div>
@@ -147,50 +202,58 @@
   <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
     <div class="flex items-center justify-between mb-4">
       <h3 class="font-semibold text-gray-900">Transacciones recientes</h3>
-      <a routerLink="/dashboard/gastos" class="text-green-600 text-sm font-medium hover:text-green-700">
-        Ver todas
-      </a>
     </div>
     <div class="overflow-x-auto">
-      <table class="w-full">
-        <thead>
-          <tr class="border-b border-gray-100">
-            <th class="text-left py-3 px-2 text-xs font-semibold text-gray-500 uppercase">Descripción</th>
-            <th class="text-left py-3 px-2 text-xs font-semibold text-gray-500 uppercase hidden sm:table-cell">Categoría</th>
-            <th class="text-left py-3 px-2 text-xs font-semibold text-gray-500 uppercase hidden md:table-cell">Fecha</th>
-            <th class="text-right py-3 px-2 text-xs font-semibold text-gray-500 uppercase">Monto</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (transaction of recentTransactions; track transaction.id) {
-            <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-              <td class="py-3 px-2">
-                <div class="flex items-center gap-3">
-                  <div class="w-9 h-9 rounded-lg flex items-center justify-center"
-                       [class]="transaction.type === 'income' ? 'bg-green-100' : 'bg-red-100'">
-                    <i [class]="transaction.type === 'income' ? 'pi pi-arrow-up text-green-600' : 'pi pi-arrow-down text-red-600'"></i>
-                  </div>
-                  <div>
-                    <p class="font-medium text-gray-900 text-sm">{{ transaction.description }}</p>
-                    <p class="text-xs text-gray-500 sm:hidden">{{ transaction.category }}</p>
-                  </div>
-                </div>
-              </td>
-              <td class="py-3 px-2 hidden sm:table-cell">
-                <span class="px-2 py-1 bg-gray-100 rounded-lg text-xs font-medium text-gray-600">
-                  {{ transaction.category }}
-                </span>
-              </td>
-              <td class="py-3 px-2 text-sm text-gray-500 hidden md:table-cell">{{ transaction.date }}</td>
-              <td class="py-3 px-2 text-right">
-                <span [class]="transaction.type === 'income' ? 'text-green-600' : 'text-red-600'" class="font-semibold text-sm">
-                  {{ transaction.type === 'income' ? '+' : '-' }}S/ {{ transaction.amount }}
-                </span>
-              </td>
+      @if (isLoadingTransactions) {
+        <div class="flex justify-center py-8">
+          <i class="pi pi-spin pi-spinner text-2xl text-gray-400"></i>
+        </div>
+      } @else if (recentTransactions.length === 0) {
+        <div class="text-center py-8 text-gray-500">
+          <i class="pi pi-inbox text-4xl mb-2"></i>
+          <p>No hay transacciones recientes</p>
+        </div>
+      } @else {
+        <table class="w-full">
+          <thead>
+            <tr class="border-b border-gray-100">
+              <th class="text-left py-3 px-2 text-xs font-semibold text-gray-500 uppercase">Descripción</th>
+              <th class="text-left py-3 px-2 text-xs font-semibold text-gray-500 uppercase hidden sm:table-cell">Categoría</th>
+              <th class="text-left py-3 px-2 text-xs font-semibold text-gray-500 uppercase hidden md:table-cell">Fecha</th>
+              <th class="text-right py-3 px-2 text-xs font-semibold text-gray-500 uppercase">Monto</th>
             </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            @for (transaction of recentTransactions; track transaction.id) {
+              <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                <td class="py-3 px-2">
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg flex items-center justify-center"
+                         [class]="isIncome(transaction) ? 'bg-green-100' : 'bg-red-100'">
+                      <i [class]="isIncome(transaction) ? 'pi pi-arrow-up text-green-600' : 'pi pi-arrow-down text-red-600'"></i>
+                    </div>
+                    <div>
+                      <p class="font-medium text-gray-900 text-sm">{{ transaction.descripcion }}</p>
+                      <p class="text-xs text-gray-500 sm:hidden">{{ transaction.categoria }}</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-3 px-2 hidden sm:table-cell">
+                  <span class="px-2 py-1 bg-gray-100 rounded-lg text-xs font-medium text-gray-600">
+                    {{ transaction.categoria }}
+                  </span>
+                </td>
+                <td class="py-3 px-2 text-sm text-gray-500 hidden md:table-cell">{{ transaction.fecha | date:'d MMM' }}</td>
+                <td class="py-3 px-2 text-right">
+                  <span [class]="isIncome(transaction) ? 'text-green-600' : 'text-red-600'" class="font-semibold text-sm">
+                    {{ isIncome(transaction) ? '+' : '-' }}S/ {{ transaction.monto | number:'1.2-2' }}
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
     </div>
   </div>
 </div>
