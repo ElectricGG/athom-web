@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Transaction, ExpenseDistribution, BalanceSummary } from '../models/transaction.model';
+import { Transaction, ExpenseDistribution, BalanceSummary, TendenciaMensual } from '../models/transaction.model';
 
 @Injectable({
   providedIn: 'root'
@@ -25,5 +25,11 @@ export class TransactionService {
 
   getBalanceSummary(): Observable<BalanceSummary> {
     return this.http.get<BalanceSummary>(`${this.baseUrl}/resumen/balance`);
+  }
+
+  getMonthlyTrend(meses: number = 12): Observable<TendenciaMensual[]> {
+    return this.http.get<TendenciaMensual[]>(`${this.baseUrl}/tendencia-mensual`, {
+      params: { meses: meses.toString() }
+    });
   }
 }

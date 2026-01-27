@@ -29,6 +29,14 @@ export interface BalanceSummary {
   porcentajeCambioBalance: number;
 }
 
+export interface TendenciaMensual {
+  etiqueta: string;
+  anio: number;
+  mes: number;
+  totalIngresos: number;
+  totalGastos: number;
+}
+
 export enum TransactionType {
   Gasto = 1,
   Ingreso = 2
