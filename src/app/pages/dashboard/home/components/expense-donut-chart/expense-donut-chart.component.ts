@@ -3,6 +3,9 @@ import { CommonModule, DecimalPipe } from '@angular/common';
 import { ChartModule } from 'primeng/chart';
 import { ExpenseDistribution } from '../../../../../models/transaction.model';
 
+const MAX_VISIBLE = 5;
+const OTROS_COLOR = '#9ca3af';
+
 @Component({
     selector: 'app-expense-donut-chart',
     standalone: true,
@@ -13,13 +16,13 @@ import { ExpenseDistribution } from '../../../../../models/transaction.model';
         <div class="flex flex-col lg:flex-row items-center gap-6 lg:gap-10">
           <!-- Compact Chart Container -->
           <div class="relative w-full max-w-[200px] sm:max-w-[240px] aspect-square flex items-center justify-center shrink-0">
-            <p-chart 
-              type="doughnut" 
-              [data]="chartData" 
-              [options]="chartOptions" 
+            <p-chart
+              type="doughnut"
+              [data]="chartData"
+              [options]="chartOptions"
               class="w-full h-full"
             ></p-chart>
-            
+
             <!-- Center Text -->
             <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
               <span class="text-gray-400 text-[10px] font-bold uppercase tracking-wider">Total</span>
@@ -31,20 +34,20 @@ import { ExpenseDistribution } from '../../../../../models/transaction.model';
 
           <!-- Ultra-Compact Grid with Interactive Indicators -->
           <div class="flex-1 w-full">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1">
-              @for (item of data; track item.categoriaId; let i = $index) {
-                <div 
-                  class="group relative flex items-center py-1.5 px-3 rounded-lg hover:bg-gray-50 transition-all cursor-pointer overflow-hidden hover:scale-[1.02] transform-gpu" 
+            <div class="grid grid-cols-1 gap-y-1 max-h-[260px] overflow-y-auto pr-1">
+              @for (item of displayData; track item.nombre; let i = $index) {
+                <div
+                  class="relative flex items-center py-1.5 px-3 rounded-lg overflow-hidden"
                 >
                   <!-- Solid Color Indicator -->
-                  <div 
+                  <div
                     class="absolute left-0 top-1 bottom-1 w-[4px] rounded-r-full"
                     [style.backgroundColor]="item.color || getDefaultColor(i)"
                   ></div>
 
                   <!-- Minimal Icon -->
-                  <div 
-                    class="w-6 h-6 rounded-md mr-2.5 shrink-0 flex items-center justify-center text-xs shadow-sm transition-all group-hover:shadow-md" 
+                  <div
+                    class="w-6 h-6 rounded-md mr-2.5 shrink-0 flex items-center justify-center text-xs shadow-sm"
                     [style.backgroundColor]="(item.color || getDefaultColor(i)) + '15'"
                     [style.color]="item.color || getDefaultColor(i)"
                   >
@@ -54,7 +57,7 @@ import { ExpenseDistribution } from '../../../../../models/transaction.model';
                   <!-- Info -->
                   <div class="flex flex-1 min-w-0 items-center justify-between gap-2">
                     <div class="flex items-center min-w-0 flex-1">
-                      <span class="text-[11px] font-bold text-gray-700 truncate group-hover:whitespace-normal mr-1.5">{{ item.nombre }}</span>
+                      <span class="text-[11px] font-bold text-gray-700 truncate mr-1.5">{{ item.nombre }}</span>
                       <span class="text-[9px] font-bold text-gray-400 shrink-0">{{ item.porcentaje }}%</span>
                     </div>
                     <span class="text-[11px] font-black text-gray-900 shrink-0">S/{{ item.monto | number:'1.0-0' }}</span>
@@ -62,6 +65,24 @@ import { ExpenseDistribution } from '../../../../../models/transaction.model';
                 </div>
               }
             </div>
+
+            <!-- Ver más / Ver menos button -->
+            @if (hasOtros) {
+              <div class="mt-3 text-center">
+                <button
+                  (click)="toggleShowAll()"
+                  class="text-xs font-semibold text-green-600 hover:text-green-700 transition-colors inline-flex items-center gap-1"
+                >
+                  @if (showAll) {
+                    <i class="pi pi-chevron-up text-[10px]"></i>
+                    Ver menos
+                  } @else {
+                    <i class="pi pi-chevron-down text-[10px]"></i>
+                    Ver más ({{ otrosCount }} categorías)
+                  }
+                </button>
+              </div>
+            }
           </div>
         </div>
       } @else {
@@ -88,30 +109,76 @@ export class ExpenseDonutChartComponent implements OnInit, OnChanges {
     chartData: any;
     chartOptions: any;
     totalExpenses: number = 0;
+    showAll = false;
+    hasOtros = false;
+    otrosCount = 0;
+
+    /** Data currently shown in the list and chart */
+    displayData: ExpenseDistribution[] = [];
 
     ngOnInit() {
-        this.initChart();
+        this.buildDisplay();
     }
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes['data']) {
+            this.showAll = false;
             this.calculateTotal();
-            this.initChart();
+            this.buildDisplay();
         }
+    }
+
+    toggleShowAll(): void {
+        this.showAll = !this.showAll;
+        this.buildDisplay();
     }
 
     private calculateTotal() {
         this.totalExpenses = this.data.reduce((sum, item) => sum + item.monto, 0);
     }
 
+    /**
+     * Sort by monto desc, take top 5, group rest as "Otros".
+     * When showAll=true, show all individual categories.
+     */
+    private buildDisplay(): void {
+        const sorted = [...this.data].sort((a, b) => b.monto - a.monto);
+        this.otrosCount = Math.max(0, sorted.length - MAX_VISIBLE);
+        this.hasOtros = this.otrosCount > 0;
+
+        if (this.showAll || !this.hasOtros) {
+            this.displayData = sorted;
+        } else {
+            const top = sorted.slice(0, MAX_VISIBLE);
+            const rest = sorted.slice(MAX_VISIBLE);
+            const otrosMonto = rest.reduce((sum, item) => sum + item.monto, 0);
+            const otrosPorcentaje = this.totalExpenses > 0
+                ? Math.round((otrosMonto / this.totalExpenses) * 100)
+                : 0;
+
+            const otrosItem: ExpenseDistribution = {
+                categoriaId: null,
+                nombre: 'Otros',
+                icono: '📊',
+                color: OTROS_COLOR,
+                monto: otrosMonto,
+                porcentaje: otrosPorcentaje
+            };
+
+            this.displayData = [...top, otrosItem];
+        }
+
+        this.initChart();
+    }
+
     private initChart() {
         this.chartData = {
-            labels: this.data.map(d => d.nombre),
+            labels: this.displayData.map(d => d.nombre),
             datasets: [
                 {
-                    data: this.data.map(d => d.monto),
-                    backgroundColor: this.data.map((d, i) => d.color || this.getDefaultColor(i)),
-                    hoverBackgroundColor: this.data.map((d, i) => this.lightenColor(d.color || this.getDefaultColor(i), 15)),
+                    data: this.displayData.map(d => d.monto),
+                    backgroundColor: this.displayData.map((d, i) => d.color || this.getDefaultColor(i)),
+                    hoverBackgroundColor: this.displayData.map((d, i) => this.lightenColor(d.color || this.getDefaultColor(i), 15)),
                     borderWidth: 0,
                     borderRadius: 4,
                     spacing: 2,
@@ -159,7 +226,8 @@ export class ExpenseDonutChartComponent implements OnInit, OnChanges {
     getDefaultIcon(nombre: string): string {
         const iconMap: Record<string, string> = {
             'alimentación': '🍔', 'transporte': '🚗', 'entretenimiento': '🎬',
-            'servicios': '💡', 'salud': '💊', 'educación': '📚', 'vivienda': '🏠', 'ropa': '👕'
+            'servicios': '💡', 'salud': '💊', 'educación': '📚', 'vivienda': '🏠', 'ropa': '👕',
+            'otros': '📊'
         };
         return iconMap[nombre.toLowerCase()] ?? '📦';
     }

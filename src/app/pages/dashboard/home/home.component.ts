@@ -59,7 +59,7 @@ export class DashboardHomeComponent implements OnInit {
 
   private loadRecentTransactions(): void {
     this.isLoadingTransactions = true;
-    this.transactionService.getRecentTransactions(10).subscribe({
+    this.transactionService.getRecentTransactions(5).subscribe({
       next: (transactions) => {
         this.recentTransactions = transactions;
         this.isLoadingTransactions = false;
