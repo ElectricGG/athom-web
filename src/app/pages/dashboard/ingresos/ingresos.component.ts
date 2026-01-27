@@ -1,52 +1,290 @@
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DatePickerModule } from 'primeng/datepicker';
+import { ToastModule } from 'primeng/toast';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { MessageService, ConfirmationService } from 'primeng/api';
+import { IngresoService } from '../../../services/ingreso.service';
+import {
+  Ingreso,
+  CategoriaIngreso,
+  ResumenIngresos
+} from '../../../models/ingreso.model';
+
+interface MesOption {
+  label: string;
+  mes: number;
+  anio: number;
+}
 
 @Component({
   selector: 'app-ingresos',
   standalone: true,
   imports: [
+    CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     ButtonModule,
     InputTextModule,
     SelectModule,
     DialogModule,
     InputNumberModule,
-    DatePickerModule
+    DatePickerModule,
+    ToastModule,
+    ConfirmDialogModule,
+    IconFieldModule,
+    InputIconModule
   ],
+  providers: [MessageService, ConfirmationService],
   templateUrl: './ingresos.component.html'
 })
-export class IngresosComponent {
+export class IngresosComponent implements OnInit {
+  private readonly fb = inject(FormBuilder);
+  private readonly ingresoService = inject(IngresoService);
+  private readonly messageService = inject(MessageService);
+  private readonly confirmationService = inject(ConfirmationService);
+
+  // Estado
+  ingresos: Ingreso[] = [];
+  categorias: CategoriaIngreso[] = [];
+  resumen: ResumenIngresos | null = null;
+  isLoading = false;
+  isSaving = false;
   showDialog = false;
+  isEditing = false;
+  selectedIngresoId: number | null = null;
+
+  // Filtros
   searchTerm = '';
-  selectedCategory: string | null = null;
-  selectedMonth: string | null = null;
+  selectedCategoriaId: number | null = null;
+  selectedMes: MesOption | null = null;
 
-  categories = [
-    { label: 'Sueldo', value: 'sueldo' },
-    { label: 'Freelance', value: 'freelance' },
-    { label: 'Inversiones', value: 'inversiones' },
-    { label: 'Ventas', value: 'ventas' },
-    { label: 'Otros', value: 'otros' }
-  ];
+  // Opciones de filtro
+  mesesOptions: MesOption[] = [];
+  today = new Date();
 
-  months = [
-    { label: 'Enero 2026', value: '01-2026' },
-    { label: 'Diciembre 2025', value: '12-2025' },
-    { label: 'Noviembre 2025', value: '11-2025' }
-  ];
+  // Formulario
+  ingresoForm: FormGroup = this.fb.group({
+    descripcion: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(200)]],
+    monto: [null, [Validators.required, Validators.min(0.01)]],
+    categoriaId: [null],
+    categoriaNombre: [''],
+    fechaRegistro: [new Date()]
+  });
 
-  incomes = [
-    { id: 1, description: 'Sueldo mensual', category: 'Sueldo', date: '15 Ene 2026', amount: '3,500.00' },
-    { id: 2, description: 'Proyecto freelance', category: 'Freelance', date: '13 Ene 2026', amount: '500.00' },
-    { id: 3, description: 'Dividendos acciones', category: 'Inversiones', date: '10 Ene 2026', amount: '250.00' },
-    { id: 4, description: 'Venta artículo usado', category: 'Ventas', date: '08 Ene 2026', amount: '150.00' },
-    { id: 5, description: 'Bono navideño', category: 'Sueldo', date: '24 Dic 2025', amount: '1,000.00' },
-    { id: 6, description: 'Trabajo extra', category: 'Freelance', date: '20 Dic 2025', amount: '300.00' }
-  ];
+  // Getters para filtros
+  get ingresosFiltrados(): Ingreso[] {
+    let resultado = this.ingresos;
+
+    if (this.searchTerm.trim()) {
+      const term = this.searchTerm.toLowerCase();
+      resultado = resultado.filter(i =>
+        i.descripcion.toLowerCase().includes(term) ||
+        i.categoriaNombre.toLowerCase().includes(term)
+      );
+    }
+
+    if (this.selectedCategoriaId) {
+      resultado = resultado.filter(i => i.categoriaId === this.selectedCategoriaId);
+    }
+
+    return resultado;
+  }
+
+  ngOnInit(): void {
+    this.inicializarMeses();
+    this.cargarDatos();
+  }
+
+  private inicializarMeses(): void {
+    const now = new Date();
+    for (let i = 0; i < 6; i++) {
+      const fecha = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      this.mesesOptions.push({
+        label: this.formatearMes(fecha),
+        mes: fecha.getMonth() + 1,
+        anio: fecha.getFullYear()
+      });
+    }
+    this.selectedMes = this.mesesOptions[0];
+  }
+
+  private formatearMes(fecha: Date): string {
+    return fecha.toLocaleDateString('es-PE', { month: 'long', year: 'numeric' });
+  }
+
+  cargarDatos(): void {
+    this.isLoading = true;
+    const mes = this.selectedMes?.mes;
+    const anio = this.selectedMes?.anio;
+
+    // Cargar ingresos, categorías y resumen en paralelo
+    Promise.all([
+      this.ingresoService.getIngresos(mes, anio).toPromise(),
+      this.ingresoService.getCategorias().toPromise(),
+      this.ingresoService.getResumen().toPromise()
+    ]).then(([ingresos, categorias, resumen]) => {
+      this.ingresos = ingresos || [];
+      this.categorias = categorias || [];
+      this.resumen = resumen || null;
+      this.isLoading = false;
+    }).catch(() => {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'No se pudieron cargar los datos'
+      });
+      this.isLoading = false;
+    });
+  }
+
+  onMesChange(): void {
+    this.cargarDatos();
+  }
+
+  abrirDialogoNuevo(): void {
+    this.isEditing = false;
+    this.selectedIngresoId = null;
+    this.ingresoForm.reset({
+      descripcion: '',
+      monto: null,
+      categoriaId: null,
+      categoriaNombre: '',
+      fechaRegistro: new Date()
+    });
+    this.showDialog = true;
+  }
+
+  abrirDialogoEditar(ingreso: Ingreso): void {
+    this.isEditing = true;
+    this.selectedIngresoId = ingreso.ingresoId;
+    this.ingresoForm.patchValue({
+      descripcion: ingreso.descripcion,
+      monto: ingreso.monto,
+      categoriaId: ingreso.categoriaId,
+      categoriaNombre: '',
+      fechaRegistro: new Date(ingreso.fechaRegistro)
+    });
+    this.showDialog = true;
+  }
+
+  guardarIngreso(): void {
+    if (this.ingresoForm.invalid) {
+      this.ingresoForm.markAllAsTouched();
+      return;
+    }
+
+    this.isSaving = true;
+    const formValue = this.ingresoForm.value;
+
+    if (this.isEditing && this.selectedIngresoId) {
+      // Actualizar
+      this.ingresoService.actualizar(this.selectedIngresoId, {
+        descripcion: formValue.descripcion,
+        monto: formValue.monto,
+        categoriaId: formValue.categoriaId,
+        fechaRegistro: formValue.fechaRegistro?.toISOString()
+      }).subscribe({
+        next: () => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Actualizado',
+            detail: 'Ingreso actualizado correctamente'
+          });
+          this.showDialog = false;
+          this.isSaving = false;
+          this.cargarDatos();
+        },
+        error: (err) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: err.error?.message || 'No se pudo actualizar el ingreso'
+          });
+          this.isSaving = false;
+        }
+      });
+    } else {
+      // Crear
+      this.ingresoService.crear({
+        descripcion: formValue.descripcion,
+        monto: formValue.monto,
+        categoriaId: formValue.categoriaId || undefined,
+        categoriaNombre: formValue.categoriaNombre || undefined,
+        fechaRegistro: formValue.fechaRegistro?.toISOString()
+      }).subscribe({
+        next: () => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Creado',
+            detail: 'Ingreso registrado correctamente'
+          });
+          this.showDialog = false;
+          this.isSaving = false;
+          this.cargarDatos();
+        },
+        error: (err) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: err.error?.message || 'No se pudo registrar el ingreso'
+          });
+          this.isSaving = false;
+        }
+      });
+    }
+  }
+
+  confirmarEliminar(ingreso: Ingreso): void {
+    this.confirmationService.confirm({
+      message: `¿Estás seguro de eliminar "${ingreso.descripcion}"?`,
+      header: 'Confirmar eliminación',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sí, eliminar',
+      rejectLabel: 'Cancelar',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => this.eliminarIngreso(ingreso)
+    });
+  }
+
+  eliminarIngreso(ingreso: Ingreso): void {
+    this.ingresoService.eliminar(ingreso.ingresoId).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Eliminado',
+          detail: 'Ingreso eliminado correctamente'
+        });
+        this.cargarDatos();
+      },
+      error: (err) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: err.error?.message || 'No se pudo eliminar el ingreso'
+        });
+      }
+    });
+  }
+
+  formatearFecha(fecha: string): string {
+    return new Date(fecha).toLocaleDateString('es-PE', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    });
+  }
+
+  limpiarFiltros(): void {
+    this.searchTerm = '';
+    this.selectedCategoriaId = null;
+  }
 }

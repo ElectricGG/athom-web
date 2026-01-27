@@ -20,7 +20,9 @@ export interface ExpenseDistribution {
 export interface BalanceSummary {
   totalIngresos: number;
   totalGastos: number;
+  totalAhorros: number;
   balance: number;
+  disponible: number;
   promedioDiarioGastos: number;
   porcentajeCambioIngresos: number;
   porcentajeCambioGastos: number;
@@ -28,6 +30,6 @@ export interface BalanceSummary {
 }
 
 export enum TransactionType {
-  Ingreso = 0,
-  Gasto = 1
+  Gasto = 1,
+  Ingreso = 2
 }

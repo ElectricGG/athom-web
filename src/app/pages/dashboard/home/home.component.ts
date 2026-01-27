@@ -4,33 +4,36 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { Transaction, TransactionType, ExpenseDistribution, BalanceSummary } from '../../../models/transaction.model';
+import { ResumenMetaAhorro } from '../../../models/meta-ahorro.model';
 import { TransactionService } from '../../../services/transaction.service';
+import { MetaAhorroService } from '../../../services/meta-ahorro.service';
+import { ExpenseDonutChartComponent } from './components/expense-donut-chart/expense-donut-chart.component';
 
 interface PeriodOption {
   label: string;
   value: number;
 }
 
-const VISIBLE_CATEGORIES_LIMIT = 7;
-
 @Component({
   selector: 'app-dashboard-home',
   standalone: true,
-  imports: [RouterLink, ButtonModule, DatePipe, DecimalPipe, FormsModule],
+  imports: [RouterLink, ButtonModule, DatePipe, DecimalPipe, FormsModule, ExpenseDonutChartComponent],
   templateUrl: './home.component.html'
 })
 export class DashboardHomeComponent implements OnInit {
   private transactionService = inject(TransactionService);
+  private metaAhorroService = inject(MetaAhorroService);
 
   userName = 'Juan';
   recentTransactions: Transaction[] = [];
   expenseDistribution: ExpenseDistribution[] = [];
   balanceSummary: BalanceSummary | null = null;
+  savingGoals: ResumenMetaAhorro[] = [];
   isLoadingTransactions = false;
   isLoadingDistribution = false;
   isLoadingBalance = false;
+  isLoadingSavingGoals = false;
   selectedPeriod = 1;
-  showAllCategories = false;
 
   periodOptions: PeriodOption[] = [
     { label: 'Este mes', value: 1 },
@@ -38,31 +41,11 @@ export class DashboardHomeComponent implements OnInit {
     { label: 'Últimos 3 meses', value: 3 }
   ];
 
-  savingGoals = [
-    { name: 'Fondo de emergencia', current: '2,500', target: '5,000', percentage: 50 },
-    { name: 'Vacaciones', current: '800', target: '2,000', percentage: 40 },
-    { name: 'Laptop nueva', current: '1,200', target: '4,000', percentage: 30 }
-  ];
-
-  get visibleCategories(): ExpenseDistribution[] {
-    if (this.showAllCategories) {
-      return this.expenseDistribution;
-    }
-    return this.expenseDistribution.slice(0, VISIBLE_CATEGORIES_LIMIT);
-  }
-
-  get hasMoreCategories(): boolean {
-    return this.expenseDistribution.length > VISIBLE_CATEGORIES_LIMIT;
-  }
-
-  get hiddenCategoriesCount(): number {
-    return this.expenseDistribution.length - VISIBLE_CATEGORIES_LIMIT;
-  }
-
   ngOnInit(): void {
     this.loadBalanceSummary();
     this.loadRecentTransactions();
     this.loadExpenseDistribution();
+    this.loadSavingGoals();
   }
 
   isIncome(transaction: Transaction): boolean {
@@ -70,32 +53,9 @@ export class DashboardHomeComponent implements OnInit {
   }
 
   onPeriodChange(): void {
-    this.showAllCategories = false;
     this.loadExpenseDistribution();
   }
 
-  toggleShowAllCategories(): void {
-    this.showAllCategories = !this.showAllCategories;
-  }
-
-  getDefaultIcon(nombre: string): string {
-    const iconMap: Record<string, string> = {
-      'alimentación': '🍔',
-      'transporte': '🚗',
-      'entretenimiento': '🎬',
-      'servicios': '💡',
-      'salud': '💊',
-      'educación': '📚',
-      'vivienda': '🏠',
-      'ropa': '👕'
-    };
-    return iconMap[nombre.toLowerCase()] ?? '📦';
-  }
-
-  getDefaultColor(index: number): string {
-    const colors = ['#f97316', '#3b82f6', '#8b5cf6', '#eab308', '#ef4444', '#10b981', '#06b6d4', '#6b7280'];
-    return colors[index % colors.length];
-  }
 
   private loadRecentTransactions(): void {
     this.isLoadingTransactions = true;
@@ -132,6 +92,19 @@ export class DashboardHomeComponent implements OnInit {
       },
       error: () => {
         this.isLoadingBalance = false;
+      }
+    });
+  }
+
+  private loadSavingGoals(): void {
+    this.isLoadingSavingGoals = true;
+    this.metaAhorroService.getResumen(5).subscribe({
+      next: (goals) => {
+        this.savingGoals = goals;
+        this.isLoadingSavingGoals = false;
+      },
+      error: () => {
+        this.isLoadingSavingGoals = false;
       }
     });
   }

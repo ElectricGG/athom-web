@@ -35,6 +35,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/dashboard/gastos/gastos.component').then(m => m.GastosComponent)
       },
       {
+        path: 'presupuestos',
+        loadComponent: () => import('./pages/dashboard/presupuestos/presupuestos.component').then(m => m.PresupuestosComponent)
+      },
+      {
         path: 'metas',
         loadComponent: () => import('./pages/dashboard/metas/metas.component').then(m => m.MetasComponent)
       },

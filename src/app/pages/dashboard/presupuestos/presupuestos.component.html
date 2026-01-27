@@ -1,0 +1,536 @@
+<p-toast />
+<p-confirmDialog />
+
+<div class="p-4 lg:p-6 space-y-6">
+  @if (!presupuestoSeleccionado()) {
+    <!-- ==================== -->
+    <!-- VISTA: LISTA DE PRESUPUESTOS -->
+    <!-- ==================== -->
+
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <h1 class="text-2xl lg:text-3xl font-bold text-gray-900">Presupuestos</h1>
+        <p class="text-gray-500 mt-1">Gestiona tus presupuestos mensuales</p>
+      </div>
+      <p-button
+        label="Nuevo presupuesto"
+        icon="pi pi-plus"
+        severity="success"
+        (onClick)="abrirDialogoNuevoPresupuesto()"
+      />
+    </div>
+
+    @if (isLoading()) {
+      <!-- Loading State -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        @for (i of [1, 2, 3]; track i) {
+          <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm animate-pulse">
+            <div class="h-6 bg-gray-200 rounded w-3/4 mb-3"></div>
+            <div class="h-4 bg-gray-200 rounded w-1/2 mb-4"></div>
+            <div class="h-2 bg-gray-200 rounded w-full mb-2"></div>
+            <div class="h-4 bg-gray-200 rounded w-1/3"></div>
+          </div>
+        }
+      </div>
+    } @else if (presupuestos().length === 0) {
+      <!-- Empty State -->
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center">
+        <div class="w-20 h-20 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
+          <i class="pi pi-calculator text-4xl text-gray-400"></i>
+        </div>
+        <h2 class="text-xl font-bold text-gray-900 mb-2">No hay presupuestos</h2>
+        <p class="text-gray-500 mb-6 max-w-md mx-auto">
+          Crea tu primer presupuesto mensual para comenzar a planificar tus gastos.
+        </p>
+        <p-button
+          label="Crear primer presupuesto"
+          icon="pi pi-plus"
+          severity="success"
+          (onClick)="abrirDialogoNuevoPresupuesto()"
+        />
+      </div>
+    } @else {
+      <!-- Lista de Presupuestos -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        @for (presupuesto of presupuestos(); track presupuesto.presupuestoId) {
+          <div
+            class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover:shadow-md hover:border-emerald-200 transition-all cursor-pointer group"
+            (click)="seleccionarPresupuesto(presupuesto)"
+          >
+            <!-- Header del card -->
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1">
+                <div class="flex items-center gap-2 mb-1">
+                  <h3 class="font-bold text-gray-900 group-hover:text-emerald-600 transition-colors">
+                    {{ presupuesto.nombre }}
+                  </h3>
+                  @if (esMesActual(presupuesto)) {
+                    <span class="px-2 py-0.5 text-xs bg-emerald-100 text-emerald-700 rounded-full font-medium">
+                      Actual
+                    </span>
+                  }
+                </div>
+                <p class="text-sm text-gray-500 capitalize">
+                  {{ formatearMesAnio(presupuesto.mes, presupuesto.anio) }}
+                </p>
+              </div>
+              <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                  class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                  (click)="abrirDialogoEditarPresupuesto(presupuesto, $event)"
+                  pTooltip="Editar"
+                >
+                  <i class="pi pi-pencil text-sm"></i>
+                </button>
+                <button
+                  class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  (click)="confirmarEliminarPresupuesto(presupuesto, $event)"
+                  pTooltip="Eliminar"
+                >
+                  <i class="pi pi-trash text-sm"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Barra de progreso -->
+            <div class="mb-3">
+              <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                <div
+                  class="h-full transition-all duration-500 rounded-full"
+                  [style.width.%]="Math.min(getPorcentajePresupuesto(presupuesto), 100)"
+                  [style.background-color]="getColorBarra(getPorcentajePresupuesto(presupuesto))"
+                ></div>
+              </div>
+            </div>
+
+            <!-- Totales -->
+            <div class="flex items-center justify-between text-sm">
+              <div>
+                <span class="text-gray-500">Gastado:</span>
+                <span class="font-semibold text-gray-900 ml-1">S/ {{ getTotalGastado(presupuesto) | number:'1.2-2' }}</span>
+              </div>
+              <div>
+                <span class="text-gray-500">de</span>
+                <span class="font-semibold text-gray-900 ml-1">S/ {{ getTotalPresupuesto(presupuesto) | number:'1.2-2' }}</span>
+              </div>
+            </div>
+
+            <!-- Categorías -->
+            <div class="mt-3 pt-3 border-t border-gray-100">
+              <p class="text-xs text-gray-500">
+                <i class="pi pi-folder mr-1"></i>
+                {{ getCantidadCategorias(presupuesto) }} categoría{{ getCantidadCategorias(presupuesto) !== 1 ? 's' : '' }}
+              </p>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+  } @else {
+    <!-- ==================== -->
+    <!-- VISTA: DETALLE DEL PRESUPUESTO -->
+    <!-- ==================== -->
+
+    <!-- Header con breadcrumb -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <button
+          class="flex items-center gap-2 text-gray-500 hover:text-emerald-600 transition-colors mb-2"
+          (click)="volverALista()"
+        >
+          <i class="pi pi-arrow-left"></i>
+          <span class="text-sm font-medium">Volver a presupuestos</span>
+        </button>
+        <h1 class="text-2xl lg:text-3xl font-bold text-gray-900">{{ presupuestoSeleccionado()?.nombre }}</h1>
+        <p class="text-gray-500 mt-1 capitalize">{{ formatearMesAnio(presupuestoSeleccionado()!.mes, presupuestoSeleccionado()!.anio) }}</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <p-button
+          icon="pi pi-pencil"
+          severity="secondary"
+          [text]="true"
+          (onClick)="abrirDialogoEditarPresupuesto(presupuestoSeleccionado()!, $event)"
+          pTooltip="Editar presupuesto"
+        />
+        <p-button
+          label="Agregar categoría"
+          icon="pi pi-plus"
+          severity="success"
+          (onClick)="abrirDialogoNuevaCategoria()"
+          [disabled]="categoriasSinPresupuesto().length === 0"
+        />
+      </div>
+    </div>
+
+    @if (isLoadingDetalle()) {
+      <!-- Loading State -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        @for (i of [1, 2, 3, 4]; track i) {
+          <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm animate-pulse">
+            <div class="h-4 bg-gray-200 rounded w-24 mb-2"></div>
+            <div class="h-8 bg-gray-200 rounded w-32"></div>
+          </div>
+        }
+      </div>
+    } @else {
+      <!-- Summary Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl p-5 text-white">
+          <p class="text-emerald-100 text-sm font-medium mb-1">Total presupuestado</p>
+          <p class="text-2xl font-bold">S/ {{ (resumen()?.totalPresupuestado ?? 0) | number:'1.2-2' }}</p>
+          <p class="text-emerald-100 text-sm mt-2">
+            {{ resumen()?.categoriasConPresupuesto ?? 0 }} categorías
+          </p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+          <p class="text-gray-500 text-sm font-medium mb-1">Total gastado</p>
+          <p class="text-2xl font-bold text-gray-900">S/ {{ (resumen()?.totalGastado ?? 0) | number:'1.2-2' }}</p>
+          <p class="text-sm mt-2" [class]="(resumen()?.porcentajeUtilizado ?? 0) >= 80 ? 'text-red-500' : 'text-gray-500'">
+            {{ resumen()?.porcentajeUtilizado ?? 0 }}% utilizado
+          </p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+          <p class="text-gray-500 text-sm font-medium mb-1">Disponible</p>
+          <p class="text-2xl font-bold" [class]="(resumen()?.disponible ?? 0) >= 0 ? 'text-emerald-600' : 'text-red-600'">
+            S/ {{ (resumen()?.disponible ?? 0) | number:'1.2-2' }}
+          </p>
+          <p class="text-gray-500 text-sm mt-2">
+            @if ((resumen()?.disponible ?? 0) >= 0) {
+              Aún puedes gastar
+            } @else {
+              Te has excedido
+            }
+          </p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+          <p class="text-gray-500 text-sm font-medium mb-1">Sin presupuesto</p>
+          <p class="text-2xl font-bold text-gray-900">{{ resumen()?.categoriasSinPresupuesto ?? 0 }}</p>
+          <p class="text-gray-500 text-sm mt-2">categorías</p>
+        </div>
+      </div>
+
+      <!-- Progress Overview -->
+      <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-semibold text-gray-900">Progreso general</h3>
+          <span class="text-sm font-medium" [class]="(resumen()?.porcentajeUtilizado ?? 0) >= 100 ? 'text-red-600' : 'text-gray-600'">
+            {{ resumen()?.porcentajeUtilizado ?? 0 }}%
+          </span>
+        </div>
+        <div class="h-4 bg-gray-100 rounded-full overflow-hidden">
+          <div
+            class="h-full transition-all duration-500 rounded-full"
+            [style.width.%]="Math.min(resumen()?.porcentajeUtilizado ?? 0, 100)"
+            [style.background-color]="getColorBarra(resumen()?.porcentajeUtilizado ?? 0)"
+          ></div>
+        </div>
+        <div class="flex justify-between mt-2 text-xs text-gray-500">
+          <span>S/ {{ (resumen()?.totalGastado ?? 0) | number:'1.0-0' }}</span>
+          <span>de S/ {{ (resumen()?.totalPresupuestado ?? 0) | number:'1.0-0' }}</span>
+        </div>
+      </div>
+
+      <!-- Categories List -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold text-gray-900">Desglose por categoría</h3>
+        </div>
+
+        @if (categorias().length === 0) {
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center">
+            <i class="pi pi-folder-open text-4xl text-gray-300 mb-3"></i>
+            <p class="text-gray-500">No hay categorías en este presupuesto</p>
+            <p class="text-sm text-gray-400 mt-1">Agrega categorías para empezar a planificar</p>
+          </div>
+        } @else {
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            @for (cat of categoriasOrdenadas(); track cat.presupuestoCategoriaId) {
+              <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover:shadow-md transition-shadow">
+                <div class="flex items-start justify-between mb-4">
+                  <div class="flex items-center gap-3">
+                    <div
+                      class="w-12 h-12 rounded-xl flex items-center justify-center text-xl"
+                      [style.background-color]="(cat.categoriaColor || '#6b7280') + '20'"
+                    >
+                      @if (cat.categoriaIcono) {
+                        {{ cat.categoriaIcono }}
+                      } @else {
+                        <i class="pi pi-folder" [style.color]="cat.categoriaColor || '#6b7280'"></i>
+                      }
+                    </div>
+                    <div>
+                      <h4 class="font-semibold text-gray-900">{{ cat.categoriaNombre }}</h4>
+                      <p class="text-sm text-gray-500">{{ cat.descripcion }}</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <span
+                      class="px-2 py-1 rounded-lg text-xs font-medium"
+                      [class]="getEstadoCategoria(cat).class"
+                    >
+                      {{ getEstadoCategoria(cat).label }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Progress bar -->
+                <div class="mb-3">
+                  <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      class="h-full transition-all duration-500 rounded-full"
+                      [style.width.%]="Math.min(getPorcentaje(cat), 100)"
+                      [style.background-color]="getColorBarra(getPorcentaje(cat))"
+                    ></div>
+                  </div>
+                </div>
+
+                <!-- Amounts -->
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-4">
+                    <div>
+                      <p class="text-xs text-gray-500">Gastado</p>
+                      <p class="font-semibold text-gray-900">S/ {{ cat.montoGastado | number:'1.2-2' }}</p>
+                    </div>
+                    <div class="text-gray-300">|</div>
+                    <div>
+                      <p class="text-xs text-gray-500">Presupuesto</p>
+                      <p class="font-semibold text-gray-900">S/ {{ cat.monto | number:'1.2-2' }}</p>
+                    </div>
+                    <div class="text-gray-300">|</div>
+                    <div>
+                      <p class="text-xs text-gray-500">Disponible</p>
+                      <p class="font-semibold" [class]="(cat.monto - cat.montoGastado) >= 0 ? 'text-emerald-600' : 'text-red-600'">
+                        S/ {{ (cat.monto - cat.montoGastado) | number:'1.2-2' }}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <button
+                      class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      (click)="abrirDialogoEditarCategoria(cat)"
+                      pTooltip="Editar"
+                    >
+                      <i class="pi pi-pencil text-sm"></i>
+                    </button>
+                    <button
+                      class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      (click)="confirmarEliminarCategoria(cat)"
+                      pTooltip="Eliminar"
+                    >
+                      <i class="pi pi-trash text-sm"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Categorías con gastos sin presupuesto -->
+      @if (categoriasSinPresupuesto().length > 0) {
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900">Gastos sin presupuesto</h3>
+              <p class="text-sm text-gray-500">Tienes gastos en estas categorías pero no les has asignado un presupuesto</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+            @for (cat of categoriasSinPresupuesto(); track cat.categoriaId) {
+              <button
+                (click)="abrirDialogoAgregarRapida(cat)"
+                class="bg-white border-2 border-dashed border-amber-200 rounded-xl p-4 hover:border-emerald-400 hover:bg-emerald-50 transition-all group text-left"
+              >
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 rounded-lg flex items-center justify-center text-lg transition-colors group-hover:scale-110"
+                    [style.background-color]="(cat.color || '#6b7280') + '20'"
+                  >
+                    @if (cat.icono) {
+                      {{ cat.icono }}
+                    } @else {
+                      <i class="pi pi-folder" [style.color]="cat.color || '#6b7280'"></i>
+                    }
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="font-medium text-gray-900 truncate">{{ cat.nombreCategoria }}</p>
+                    <p class="text-sm text-amber-600 font-medium">S/ {{ cat.montoGastado | number:'1.2-2' }} gastado</p>
+                  </div>
+                  <i class="pi pi-plus text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                </div>
+              </button>
+            }
+          </div>
+        </div>
+      }
+    }
+  }
+</div>
+
+<!-- Dialog Crear/Editar Presupuesto Mensual -->
+<p-dialog
+  [header]="isEditingPresupuesto() ? 'Editar presupuesto' : 'Nuevo presupuesto'"
+  [(visible)]="showDialogPresupuesto"
+  [modal]="true"
+  [style]="{ width: '450px' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <form [formGroup]="presupuestoForm" class="space-y-4">
+    <!-- Nombre -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-2">Nombre *</label>
+      <input
+        pInputText
+        formControlName="nombre"
+        class="w-full"
+        placeholder="Ej: Presupuesto Enero 2026"
+      />
+      @if (presupuestoForm.get('nombre')?.touched && presupuestoForm.get('nombre')?.invalid) {
+        <small class="text-red-500 text-xs mt-1">El nombre es requerido (mín. 3 caracteres)</small>
+      }
+    </div>
+
+    <!-- Mes y Año -->
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Mes *</label>
+        <p-select
+          formControlName="mes"
+          [options]="mesesOptions"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Seleccionar mes"
+          styleClass="w-full"
+        />
+        @if (presupuestoForm.get('mes')?.touched && presupuestoForm.get('mes')?.invalid) {
+          <small class="text-red-500 text-xs mt-1">Selecciona un mes</small>
+        }
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Año *</label>
+        <p-select
+          formControlName="anio"
+          [options]="aniosOptions"
+          placeholder="Seleccionar año"
+          styleClass="w-full"
+        />
+        @if (presupuestoForm.get('anio')?.touched && presupuestoForm.get('anio')?.invalid) {
+          <small class="text-red-500 text-xs mt-1">Selecciona un año</small>
+        }
+      </div>
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <p-button
+      label="Cancelar"
+      severity="secondary"
+      [text]="true"
+      (onClick)="showDialogPresupuesto.set(false)"
+      [disabled]="isSaving()"
+    />
+    <p-button
+      [label]="isEditingPresupuesto() ? 'Actualizar' : 'Crear'"
+      severity="success"
+      (onClick)="guardarPresupuesto()"
+      [loading]="isSaving()"
+      [disabled]="isSaving()"
+    />
+  </ng-template>
+</p-dialog>
+
+<!-- Dialog Agregar/Editar Categoría -->
+<p-dialog
+  [header]="isEditingCategoria() ? 'Editar presupuesto de categoría' : 'Agregar categoría'"
+  [(visible)]="showDialogCategoria"
+  [modal]="true"
+  [style]="{ width: '450px' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <form [formGroup]="categoriaForm" class="space-y-4">
+    <!-- Categoría (solo al crear) -->
+    @if (!isEditingCategoria()) {
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Categoría *</label>
+        <p-select
+          formControlName="categoriaId"
+          [options]="categoriasSinPresupuesto()"
+          optionLabel="nombreCategoria"
+          optionValue="categoriaId"
+          placeholder="Seleccionar categoría"
+          styleClass="w-full"
+        >
+          <ng-template pTemplate="item" let-cat>
+            <div class="flex items-center gap-2">
+              @if (cat.icono) {
+                <span>{{ cat.icono }}</span>
+              } @else {
+                <i class="pi pi-folder" [style.color]="cat.color || '#6b7280'"></i>
+              }
+              <span>{{ cat.nombreCategoria }}</span>
+            </div>
+          </ng-template>
+        </p-select>
+        @if (categoriaForm.get('categoriaId')?.touched && categoriaForm.get('categoriaId')?.invalid) {
+          <small class="text-red-500 text-xs mt-1">Selecciona una categoría</small>
+        }
+      </div>
+    }
+
+    <!-- Descripción -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-2">Descripción *</label>
+      <input
+        pInputText
+        formControlName="descripcion"
+        class="w-full"
+        placeholder="Ej: Gastos de alimentación mensual"
+      />
+      @if (categoriaForm.get('descripcion')?.touched && categoriaForm.get('descripcion')?.invalid) {
+        <small class="text-red-500 text-xs mt-1">La descripción es requerida (mín. 2 caracteres)</small>
+      }
+    </div>
+
+    <!-- Monto -->
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-2">Monto presupuestado *</label>
+      <p-inputNumber
+        formControlName="monto"
+        mode="currency"
+        currency="PEN"
+        locale="es-PE"
+        styleClass="w-full"
+        placeholder="0.00"
+      />
+      @if (categoriaForm.get('monto')?.touched && categoriaForm.get('monto')?.invalid) {
+        <small class="text-red-500 text-xs mt-1">El monto debe ser mayor a 0</small>
+      }
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <p-button
+      label="Cancelar"
+      severity="secondary"
+      [text]="true"
+      (onClick)="showDialogCategoria.set(false)"
+      [disabled]="isSaving()"
+    />
+    <p-button
+      [label]="isEditingCategoria() ? 'Actualizar' : 'Agregar'"
+      severity="success"
+      (onClick)="guardarCategoria()"
+      [loading]="isSaving()"
+      [disabled]="isSaving()"
+    />
+  </ng-template>
+</p-dialog>

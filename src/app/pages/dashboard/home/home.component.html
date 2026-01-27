@@ -17,9 +17,9 @@
   </div>
 
   <!-- Balance Cards -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
     @if (isLoadingBalance) {
-      @for (i of [1, 2, 3, 4]; track i) {
+      @for (i of [1, 2, 3, 4, 5]; track i) {
         <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm animate-pulse">
           <div class="flex items-center justify-between mb-3">
             <div class="h-4 bg-gray-200 rounded w-24"></div>
@@ -101,6 +101,21 @@
           Gasto promedio por día
         </p>
       </div>
+
+      <!-- Ahorros del Mes -->
+      <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-gray-500 text-sm font-medium">Ahorros del mes</span>
+          <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+            <i class="pi pi-bookmark text-purple-600 text-lg"></i>
+          </div>
+        </div>
+        <p class="text-2xl font-bold text-gray-900">S/ {{ (balanceSummary?.totalAhorros ?? 0) | number:'1.2-2' }}</p>
+        <p class="text-purple-600 text-sm mt-2">
+          <i class="pi pi-flag text-xs mr-1"></i>
+          Destinado a metas
+        </p>
+      </div>
     }
   </div>
 
@@ -120,50 +135,14 @@
           }
         </select>
       </div>
-      <div class="space-y-4">
+      <div class="mt-4">
         @if (isLoadingDistribution) {
-          <div class="flex justify-center py-8">
-            <i class="pi pi-spin pi-spinner text-2xl text-gray-400"></i>
-          </div>
-        } @else if (expenseDistribution.length === 0) {
-          <div class="text-center py-8 text-gray-500">
-            <i class="pi pi-chart-bar text-4xl mb-2"></i>
-            <p>No hay gastos en este período</p>
+          <div class="flex flex-col items-center justify-center py-20">
+            <i class="pi pi-spin pi-spinner text-3xl text-green-500 mb-4"></i>
+            <p class="text-gray-500 animate-pulse">Cargando distribución...</p>
           </div>
         } @else {
-          @for (category of visibleCategories; track category.categoriaId; let i = $index) {
-            <div>
-              <div class="flex items-center justify-between mb-1">
-                <div class="flex items-center gap-2">
-                  <span class="text-lg">{{ category.icono ?? getDefaultIcon(category.nombre) }}</span>
-                  <span class="text-sm font-medium text-gray-700">{{ category.nombre }}</span>
-                </div>
-                <span class="text-sm font-semibold text-gray-900">S/ {{ category.monto | number:'1.2-2' }}</span>
-              </div>
-              <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
-                <div
-                  class="h-full rounded-full transition-all"
-                  [style.width.%]="category.porcentaje"
-                  [style.backgroundColor]="category.color ?? getDefaultColor(i)"
-                ></div>
-              </div>
-            </div>
-          }
-          @if (hasMoreCategories) {
-            <button
-              type="button"
-              (click)="toggleShowAllCategories()"
-              class="w-full mt-2 py-2 text-sm font-medium text-green-600 hover:text-green-700 hover:bg-green-50 rounded-lg transition-colors"
-            >
-              @if (showAllCategories) {
-                <i class="pi pi-chevron-up mr-1"></i>
-                Ver menos
-              } @else {
-                <i class="pi pi-chevron-down mr-1"></i>
-                Ver más ({{ hiddenCategoriesCount }})
-              }
-            </button>
-          }
+          <app-expense-donut-chart [data]="expenseDistribution"></app-expense-donut-chart>
         }
       </div>
     </div>
@@ -177,22 +156,52 @@
         </a>
       </div>
       <div class="space-y-4">
-        @for (goal of savingGoals; track goal.name) {
-          <div class="p-3 bg-gray-50 rounded-xl">
-            <div class="flex items-center justify-between mb-2">
-              <span class="font-medium text-gray-900 text-sm">{{ goal.name }}</span>
-              <span class="text-xs text-gray-500">{{ goal.percentage }}%</span>
+        @if (isLoadingSavingGoals) {
+          @for (i of [1, 2, 3]; track i) {
+            <div class="p-3 bg-gray-50 rounded-xl animate-pulse">
+              <div class="flex items-center justify-between mb-2">
+                <div class="h-4 bg-gray-200 rounded w-24"></div>
+                <div class="h-4 bg-gray-200 rounded w-10"></div>
+              </div>
+              <div class="h-2 bg-gray-200 rounded-full mb-2"></div>
+              <div class="h-3 bg-gray-200 rounded w-28"></div>
             </div>
-            <div class="h-2 bg-gray-200 rounded-full overflow-hidden mb-2">
-              <div
-                class="h-full bg-green-500 rounded-full transition-all"
-                [style.width.%]="goal.percentage"
-              ></div>
-            </div>
-            <p class="text-xs text-gray-500">
-              S/ {{ goal.current }} de S/ {{ goal.target }}
-            </p>
+          }
+        } @else if (savingGoals.length === 0) {
+          <div class="text-center py-6 text-gray-500">
+            <i class="pi pi-flag text-3xl mb-2"></i>
+            <p class="text-sm">No tienes metas de ahorro</p>
+            <a routerLink="/dashboard/metas/nueva" class="text-green-600 text-sm font-medium hover:text-green-700 mt-2 inline-block">
+              Crear primera meta
+            </a>
           </div>
+        } @else {
+          @for (goal of savingGoals; track goal.metaAhorroId) {
+            <div class="p-3 bg-gray-50 rounded-xl">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2">
+                  @if (goal.icono) {
+                    <span class="text-lg">{{ goal.icono }}</span>
+                  }
+                  <span class="font-medium text-gray-900 text-sm">{{ goal.nombre }}</span>
+                </div>
+                <span class="text-xs font-semibold" [class]="goal.porcentaje >= 100 ? 'text-green-600' : 'text-gray-500'">
+                  {{ goal.porcentaje | number:'1.0-0' }}%
+                </span>
+              </div>
+              <div class="h-2 bg-gray-200 rounded-full overflow-hidden mb-2">
+                <div
+                  class="h-full rounded-full transition-all"
+                  [class]="goal.porcentaje >= 100 ? 'bg-green-500' : 'bg-emerald-500'"
+                  [style.width.%]="goal.porcentaje > 100 ? 100 : goal.porcentaje"
+                  [style.background-color]="goal.color"
+                ></div>
+              </div>
+              <p class="text-xs text-gray-500">
+                S/ {{ goal.montoActual | number:'1.2-2' }} de S/ {{ goal.montoObjetivo | number:'1.2-2' }}
+              </p>
+            </div>
+          }
         }
       </div>
     </div>
