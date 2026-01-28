@@ -2,13 +2,12 @@ import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ButtonModule } from 'primeng/button';
-import { Transaction, TransactionType, ExpenseDistribution, BalanceSummary, TendenciaMensual } from '../../../models/transaction.model';
+import { Transaction, TransactionType, ExpenseDistribution, BalanceSummary } from '../../../models/transaction.model';
 import { ResumenMetaAhorro } from '../../../models/meta-ahorro.model';
 import { TransactionService } from '../../../services/transaction.service';
 import { MetaAhorroService } from '../../../services/meta-ahorro.service';
 import { ExpenseDonutChartComponent } from './components/expense-donut-chart/expense-donut-chart.component';
-import { MonthlyTrendChartComponent } from './components/monthly-trend-chart/monthly-trend-chart.component';
+import { IncomeExpenseTrendComponent } from './components/income-expense-trend/income-expense-trend.component';
 
 interface PeriodOption {
   label: string;
@@ -18,7 +17,7 @@ interface PeriodOption {
 @Component({
   selector: 'app-dashboard-home',
   standalone: true,
-  imports: [RouterLink, ButtonModule, DatePipe, DecimalPipe, FormsModule, ExpenseDonutChartComponent, MonthlyTrendChartComponent],
+  imports: [RouterLink, DatePipe, DecimalPipe, FormsModule, ExpenseDonutChartComponent, IncomeExpenseTrendComponent],
   templateUrl: './home.component.html'
 })
 export class DashboardHomeComponent implements OnInit {
@@ -28,12 +27,10 @@ export class DashboardHomeComponent implements OnInit {
   userName = 'Juan';
   recentTransactions: Transaction[] = [];
   expenseDistribution: ExpenseDistribution[] = [];
-  monthlyTrend: TendenciaMensual[] = [];
   balanceSummary: BalanceSummary | null = null;
   savingGoals: ResumenMetaAhorro[] = [];
   isLoadingTransactions = false;
   isLoadingDistribution = false;
-  isLoadingMonthlyTrend = false;
   isLoadingBalance = false;
   isLoadingSavingGoals = false;
   selectedPeriod = 1;
@@ -48,7 +45,6 @@ export class DashboardHomeComponent implements OnInit {
     this.loadBalanceSummary();
     this.loadRecentTransactions();
     this.loadExpenseDistribution();
-    this.loadMonthlyTrend();
     this.loadSavingGoals();
   }
 
@@ -83,19 +79,6 @@ export class DashboardHomeComponent implements OnInit {
       },
       error: () => {
         this.isLoadingDistribution = false;
-      }
-    });
-  }
-
-  private loadMonthlyTrend(): void {
-    this.isLoadingMonthlyTrend = true;
-    this.transactionService.getMonthlyTrend(12).subscribe({
-      next: (trend) => {
-        this.monthlyTrend = trend;
-        this.isLoadingMonthlyTrend = false;
-      },
-      error: () => {
-        this.isLoadingMonthlyTrend = false;
       }
     });
   }

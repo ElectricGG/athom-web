@@ -5,15 +5,6 @@
       <h1 class="text-2xl lg:text-3xl font-bold text-gray-900">Dashboard</h1>
       <p class="text-gray-500 mt-1">Bienvenido de vuelta, {{ userName }}</p>
     </div>
-    <div class="flex gap-2">
-      <p-button
-        label="Nuevo gasto"
-        icon="pi pi-plus"
-        severity="success"
-        size="small"
-        styleClass="text-sm"
-      />
-    </div>
   </div>
 
   <!-- Balance Cards -->
@@ -119,6 +110,9 @@
     }
   </div>
 
+  <!-- Ingresos vs Gastos (full width) -->
+  <app-income-expense-trend></app-income-expense-trend>
+
   <!-- Charts Section -->
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
     <!-- Gastos por categoría -->
@@ -204,24 +198,6 @@
           }
         }
       </div>
-    </div>
-  </div>
-
-  <!-- Tendencia Mensual Ingresos vs Gastos -->
-  <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-    <div class="flex items-center justify-between mb-4">
-      <h3 class="font-semibold text-gray-900">Ingresos vs Gastos</h3>
-      <span class="text-xs text-gray-400 font-medium">Últimos 12 meses</span>
-    </div>
-    <div>
-      @if (isLoadingMonthlyTrend) {
-        <div class="flex flex-col items-center justify-center py-20">
-          <i class="pi pi-spin pi-spinner text-3xl text-green-500 mb-4"></i>
-          <p class="text-gray-500 animate-pulse">Cargando tendencia...</p>
-        </div>
-      } @else {
-        <app-monthly-trend-chart [data]="monthlyTrend"></app-monthly-trend-chart>
-      }
     </div>
   </div>
 

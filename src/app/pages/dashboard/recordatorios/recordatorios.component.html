@@ -9,122 +9,178 @@
       label="Nuevo recordatorio"
       icon="pi pi-plus"
       severity="success"
-      (onClick)="showDialog = true"
+      (onClick)="openCreateDialog()"
     />
   </div>
 
   <!-- Summary -->
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-    <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
-          <i class="pi pi-exclamation-triangle text-red-600"></i>
-        </div>
-        <div>
-          <p class="text-gray-500 text-sm">Vencidos</p>
-          <p class="text-xl font-bold text-red-600">2</p>
-        </div>
-      </div>
-    </div>
-    <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
-          <i class="pi pi-clock text-amber-600"></i>
-        </div>
-        <div>
-          <p class="text-gray-500 text-sm">Próximos 7 días</p>
-          <p class="text-xl font-bold text-amber-600">3</p>
-        </div>
-      </div>
-    </div>
-    <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
-          <i class="pi pi-check-circle text-green-600"></i>
-        </div>
-        <div>
-          <p class="text-gray-500 text-sm">Completados este mes</p>
-          <p class="text-xl font-bold text-green-600">5</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Reminders List -->
-  <div class="space-y-3">
-    @for (reminder of reminders; track reminder.id) {
-      <div class="bg-white rounded-2xl p-4 border shadow-sm transition-all hover:shadow-md"
-           [class.border-red-200]="reminder.status === 'overdue'"
-           [class.border-amber-200]="reminder.status === 'upcoming'"
-           [class.border-gray-100]="reminder.status === 'pending'">
-        <div class="flex items-center gap-4">
-          <!-- Checkbox -->
-          <button
-            class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors"
-            [class.border-gray-300]="!reminder.completed"
-            [class.border-green-500]="reminder.completed"
-            [class.bg-green-500]="reminder.completed"
-            (click)="toggleReminder(reminder)"
-          >
-            @if (reminder.completed) {
-              <i class="pi pi-check text-white text-xs"></i>
-            }
-          </button>
-
-          <!-- Icon -->
-          <div class="w-10 h-10 rounded-xl flex items-center justify-center"
-               [class.bg-red-100]="reminder.status === 'overdue'"
-               [class.bg-amber-100]="reminder.status === 'upcoming'"
-               [class.bg-gray-100]="reminder.status === 'pending'">
-            <span class="text-lg">{{ reminder.icon }}</span>
-          </div>
-
-          <!-- Content -->
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2">
-              <h3 class="font-semibold text-gray-900" [class.line-through]="reminder.completed">
-                {{ reminder.title }}
-              </h3>
-              @if (reminder.status === 'overdue') {
-                <span class="px-2 py-0.5 text-xs bg-red-100 text-red-700 rounded-full font-medium">Vencido</span>
-              }
-              @if (reminder.status === 'upcoming') {
-                <span class="px-2 py-0.5 text-xs bg-amber-100 text-amber-700 rounded-full font-medium">Próximo</span>
-              }
+    @if (isLoadingResumen) {
+      @for (i of [1, 2, 3]; track i) {
+        <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm animate-pulse">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-gray-200 rounded-xl"></div>
+            <div>
+              <div class="h-4 bg-gray-200 rounded w-24 mb-2"></div>
+              <div class="h-6 bg-gray-200 rounded w-8"></div>
             </div>
-            <p class="text-sm text-gray-500">{{ reminder.description }}</p>
-          </div>
-
-          <!-- Amount & Date -->
-          <div class="text-right hidden sm:block">
-            <p class="font-bold text-gray-900">S/ {{ reminder.amount }}</p>
-            <p class="text-sm text-gray-500">{{ reminder.date }}</p>
-          </div>
-
-          <!-- Actions -->
-          <div class="flex gap-1">
-            <button class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-              <i class="pi pi-pencil text-sm"></i>
-            </button>
-            <button class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-              <i class="pi pi-trash text-sm"></i>
-            </button>
           </div>
         </div>
-
-        <!-- Mobile amount -->
-        <div class="mt-3 pt-3 border-t border-gray-100 flex justify-between sm:hidden">
-          <span class="text-sm text-gray-500">{{ reminder.date }}</span>
-          <span class="font-bold text-gray-900">S/ {{ reminder.amount }}</span>
+      }
+    } @else {
+      <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
+            <i class="pi pi-exclamation-triangle text-red-600"></i>
+          </div>
+          <div>
+            <p class="text-gray-500 text-sm">Vencidos</p>
+            <p class="text-xl font-bold text-red-600">{{ resumen.vencidos }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
+            <i class="pi pi-clock text-amber-600"></i>
+          </div>
+          <div>
+            <p class="text-gray-500 text-sm">Proximos 7 dias</p>
+            <p class="text-xl font-bold text-amber-600">{{ resumen.proximosSieteDias }}</p>
+          </div>
+        </div>
+      </div>
+      <div
+        class="bg-white rounded-2xl p-5 border shadow-sm cursor-pointer transition-all"
+        [class.border-green-300]="showCompletados"
+        [class.ring-2]="showCompletados"
+        [class.ring-green-200]="showCompletados"
+        [class.border-gray-100]="!showCompletados"
+        (click)="toggleCompletados()"
+      >
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+            <i class="pi pi-check-circle text-green-600"></i>
+          </div>
+          <div>
+            <p class="text-gray-500 text-sm">Completados este mes</p>
+            <p class="text-xl font-bold text-green-600">{{ resumen.completadosEsteMes }}</p>
+          </div>
         </div>
       </div>
     }
   </div>
+
+  <!-- Reminders List -->
+  <div class="space-y-3">
+    @if (isLoading) {
+      @for (i of [1, 2, 3]; track i) {
+        <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm animate-pulse">
+          <div class="flex items-center gap-4">
+            <div class="w-6 h-6 rounded-full bg-gray-200"></div>
+            <div class="w-10 h-10 rounded-xl bg-gray-200"></div>
+            <div class="flex-1">
+              <div class="h-5 bg-gray-200 rounded w-40 mb-2"></div>
+              <div class="h-4 bg-gray-200 rounded w-56"></div>
+            </div>
+            <div class="text-right hidden sm:block">
+              <div class="h-5 bg-gray-200 rounded w-20 mb-2"></div>
+              <div class="h-4 bg-gray-200 rounded w-24"></div>
+            </div>
+          </div>
+        </div>
+      }
+    } @else if (reminders.length === 0) {
+      <div class="bg-white rounded-2xl p-10 border border-gray-100 shadow-sm text-center">
+        <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-100">
+          <i class="pi pi-bell text-2xl text-gray-300"></i>
+        </div>
+        <p class="text-gray-500 font-medium">No tienes recordatorios</p>
+        <p class="text-gray-400 text-sm mt-1">Crea uno para no olvidar tus pagos</p>
+      </div>
+    } @else {
+      @for (reminder of reminders; track reminder.recordatorioId) {
+        <div class="bg-white rounded-2xl p-4 border shadow-sm transition-all hover:shadow-md"
+             [class.border-red-200]="reminder.estado === 'overdue'"
+             [class.border-amber-200]="reminder.estado === 'upcoming'"
+             [class.border-gray-100]="reminder.estado === 'pending' || reminder.estado === 'completed'">
+          <div class="flex items-center gap-4">
+            <!-- Checkbox -->
+            <button
+              class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors"
+              [class.border-gray-300]="!reminder.completado"
+              [class.border-green-500]="reminder.completado"
+              [class.bg-green-500]="reminder.completado"
+              (click)="toggleReminder(reminder)"
+            >
+              @if (reminder.completado) {
+                <i class="pi pi-check text-white text-xs"></i>
+              }
+            </button>
+
+            <!-- Icon -->
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center"
+                 [class.bg-red-100]="reminder.estado === 'overdue'"
+                 [class.bg-amber-100]="reminder.estado === 'upcoming'"
+                 [class.bg-gray-100]="reminder.estado === 'pending' || reminder.estado === 'completed'">
+              <span class="text-lg">{{ reminder.icono ?? '📋' }}</span>
+            </div>
+
+            <!-- Content -->
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2">
+                <h3 class="font-semibold text-gray-900" [class.line-through]="reminder.completado" [class.text-gray-400]="reminder.completado">
+                  {{ reminder.titulo }}
+                </h3>
+                @if (reminder.estado === 'overdue') {
+                  <span class="px-2 py-0.5 text-xs bg-red-100 text-red-700 rounded-full font-medium">Vencido</span>
+                }
+                @if (reminder.estado === 'upcoming') {
+                  <span class="px-2 py-0.5 text-xs bg-amber-100 text-amber-700 rounded-full font-medium">Proximo</span>
+                }
+              </div>
+              @if (reminder.descripcion) {
+                <p class="text-sm text-gray-500">{{ reminder.descripcion }}</p>
+              }
+            </div>
+
+            <!-- Amount & Date -->
+            <div class="text-right hidden sm:block">
+              <p class="font-bold text-gray-900">S/ {{ reminder.monto | number:'1.2-2' }}</p>
+              <p class="text-sm text-gray-500">{{ reminder.fechaVencimiento | date:'d MMM yyyy' }}</p>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex gap-1">
+              <button
+                class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                (click)="openEditDialog(reminder)"
+              >
+                <i class="pi pi-pencil text-sm"></i>
+              </button>
+              <button
+                class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                (click)="confirmDelete(reminder)"
+              >
+                <i class="pi pi-trash text-sm"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Mobile amount -->
+          <div class="mt-3 pt-3 border-t border-gray-100 flex justify-between sm:hidden">
+            <span class="text-sm text-gray-500">{{ reminder.fechaVencimiento | date:'d MMM yyyy' }}</span>
+            <span class="font-bold text-gray-900">S/ {{ reminder.monto | number:'1.2-2' }}</span>
+          </div>
+        </div>
+      }
+    }
+  </div>
 </div>
 
-<!-- New Reminder Dialog -->
+<!-- Create/Edit Dialog -->
 <p-dialog
-  header="Nuevo recordatorio"
+  [header]="isEditing ? 'Editar recordatorio' : 'Nuevo recordatorio'"
   [(visible)]="showDialog"
   [modal]="true"
   [style]="{ width: '450px' }"
@@ -133,16 +189,21 @@
 >
   <div class="space-y-4">
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-2">Título</label>
-      <input pInputText class="w-full" placeholder="Ej: Pago de luz" />
+      <label class="block text-sm font-medium text-gray-700 mb-2">Titulo</label>
+      <input pInputText class="w-full" placeholder="Ej: Pago de luz" [(ngModel)]="formTitulo" />
     </div>
     <div>
-      <label class="block text-sm font-medium text-gray-700 mb-2">Descripción</label>
-      <input pInputText class="w-full" placeholder="Ej: Recibo mensual de electricidad" />
+      <label class="block text-sm font-medium text-gray-700 mb-2">Descripcion</label>
+      <input pInputText class="w-full" placeholder="Ej: Recibo mensual de electricidad" [(ngModel)]="formDescripcion" />
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-2">Icono (emoji)</label>
+      <input pInputText class="w-full" placeholder="Ej: 💡" [(ngModel)]="formIcono" />
     </div>
     <div>
       <label class="block text-sm font-medium text-gray-700 mb-2">Monto</label>
       <p-inputNumber
+        [(ngModel)]="formMonto"
         mode="currency"
         currency="PEN"
         locale="es-PE"
@@ -152,12 +213,14 @@
     </div>
     <div>
       <label class="block text-sm font-medium text-gray-700 mb-2">Fecha de vencimiento</label>
-      <p-datepicker styleClass="w-full" dateFormat="dd/mm/yy" />
+      <p-datepicker [(ngModel)]="formFechaVencimiento" styleClass="w-full" dateFormat="dd/mm/yy" />
     </div>
     <div>
       <label class="block text-sm font-medium text-gray-700 mb-2">Repetir</label>
       <p-select
-        [options]="repeatOptions"
+        [(ngModel)]="formFrecuencia"
+        [options]="frecuenciaOptions"
+        optionLabel="label"
         placeholder="Seleccionar frecuencia"
         styleClass="w-full"
       />
@@ -165,6 +228,28 @@
   </div>
   <ng-template pTemplate="footer">
     <p-button label="Cancelar" severity="secondary" [text]="true" (onClick)="showDialog = false" />
-    <p-button label="Crear recordatorio" severity="success" (onClick)="showDialog = false" />
+    <p-button
+      [label]="isEditing ? 'Guardar cambios' : 'Crear recordatorio'"
+      severity="success"
+      (onClick)="saveReminder()"
+      [loading]="isSaving"
+      [disabled]="!formTitulo.trim() || formMonto === null || !formFechaVencimiento"
+    />
+  </ng-template>
+</p-dialog>
+
+<!-- Delete Confirmation Dialog -->
+<p-dialog
+  header="Eliminar recordatorio"
+  [(visible)]="showDeleteDialog"
+  [modal]="true"
+  [style]="{ width: '400px' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <p class="text-gray-600">Estas seguro de que deseas eliminar este recordatorio? Esta accion no se puede deshacer.</p>
+  <ng-template pTemplate="footer">
+    <p-button label="Cancelar" severity="secondary" [text]="true" (onClick)="showDeleteDialog = false" />
+    <p-button label="Eliminar" severity="danger" (onClick)="deleteReminder()" [loading]="isDeleting" />
   </ng-template>
 </p-dialog>

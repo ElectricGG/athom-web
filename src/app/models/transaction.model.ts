@@ -37,6 +37,15 @@ export interface TendenciaMensual {
   totalGastos: number;
 }
 
+export interface TendenciaDiaria {
+  etiqueta: string;
+  anio: number;
+  mes: number;
+  dia: number;
+  totalIngresos: number;
+  totalGastos: number;
+}
+
 export enum TransactionType {
   Gasto = 1,
   Ingreso = 2
