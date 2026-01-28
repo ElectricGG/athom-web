@@ -8,6 +8,8 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { DatePickerModule } from 'primeng/datepicker';
 import { SelectModule } from 'primeng/select';
 import { RecordatorioService } from '../../../services/recordatorio.service';
+import { RecordatoriosCalendarComponent } from './components/recordatorios-calendar/recordatorios-calendar.component';
+import { IconSelectorComponent } from '../../../shared/components/icon-selector/icon-selector.component';
 import {
   Recordatorio,
   ResumenRecordatorios,
@@ -32,7 +34,9 @@ interface FrecuenciaOption {
     InputTextModule,
     InputNumberModule,
     DatePickerModule,
-    SelectModule
+    SelectModule,
+    RecordatoriosCalendarComponent,
+    IconSelectorComponent
   ],
   templateUrl: './recordatorios.component.html'
 })
@@ -44,6 +48,7 @@ export class RecordatoriosComponent implements OnInit {
   isLoading = false;
   isLoadingResumen = false;
   showCompletados = false;
+  activeView: 'list' | 'calendar' = 'list';
 
   get reminders(): Recordatorio[] {
     return this.showCompletados
@@ -63,7 +68,7 @@ export class RecordatoriosComponent implements OnInit {
   formMonto: number | null = null;
   formFechaVencimiento: Date | null = null;
   formFrecuencia: FrecuenciaOption | null = null;
-  formIcono = '';
+  formIcono = '📋';
 
   frecuenciaOptions: FrecuenciaOption[] = [
     { label: 'No repetir', value: FrecuenciaRecordatorio.Ninguna },
@@ -108,8 +113,12 @@ export class RecordatoriosComponent implements OnInit {
     this.formMonto = reminder.monto;
     this.formFechaVencimiento = new Date(reminder.fechaVencimiento);
     this.formFrecuencia = this.frecuenciaOptions.find(o => o.value === reminder.frecuencia) ?? this.frecuenciaOptions[0];
-    this.formIcono = reminder.icono ?? '';
+    this.formIcono = reminder.icono ?? '📋';
     this.showDialog = true;
+  }
+
+  onIconSelected(emoji: string): void {
+    this.formIcono = emoji;
   }
 
   saveReminder(): void {

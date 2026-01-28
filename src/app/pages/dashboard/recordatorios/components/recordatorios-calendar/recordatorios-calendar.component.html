@@ -1,0 +1,206 @@
+<div class="flex flex-col lg:flex-row gap-4">
+  <!-- Calendar -->
+  <div class="flex-1 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <!-- Calendar Header -->
+    <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+      <div class="flex items-center gap-3">
+        <h3 class="text-lg font-bold text-gray-900">{{ monthLabel }}</h3>
+        @if (!isToday) {
+        <button (click)="goToToday()"
+          class="text-xs font-medium text-green-600 bg-green-50 hover:bg-green-100 px-2.5 py-1 rounded-lg transition-colors">
+          Hoy
+        </button>
+        }
+      </div>
+      <div class="flex items-center gap-1">
+        <button (click)="prevMonth()"
+          class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
+          <i class="pi pi-chevron-left text-sm"></i>
+        </button>
+        <button (click)="nextMonth()"
+          class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
+          <i class="pi pi-chevron-right text-sm"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Weekday Headers -->
+    <div class="grid grid-cols-7 border-b border-gray-100">
+      @for (day of weekDays; track day) {
+      <div class="py-2.5 text-center text-xs font-semibold text-gray-400 uppercase tracking-wider">
+        {{ day }}
+      </div>
+      }
+    </div>
+
+    <!-- Calendar Grid -->
+    <div class="p-1.5 gap-1 flex flex-col">
+      @for (week of weeks; track $index) {
+      <div class="grid grid-cols-7 gap-1">
+        @for (day of week.days; track $index) {
+        <button class="relative min-h-[60px] p-1.5 text-left transition-all rounded-xl border-2"
+          [class.bg-white]="day.currentMonth && !day.today && selectedDay !== day"
+          [class.bg-gray-50]="!day.currentMonth" [class.bg-green-50]="day.today && selectedDay !== day"
+          [class.bg-blue-50]="selectedDay === day" [class.border-blue-600]="selectedDay === day"
+          [class.border-gray-400]="selectedDay !== day && day.currentMonth"
+          [class.border-transparent]="!day.currentMonth"
+          [class.hover:border-gray-500]="day.currentMonth && selectedDay !== day"
+          [class.cursor-pointer]="day.currentMonth" [class.cursor-default]="!day.currentMonth"
+          [disabled]="!day.currentMonth" (click)="selectDay(day)">
+          <!-- Day Number -->
+          <span class="inline-flex items-center justify-center w-7 h-7 text-sm font-medium rounded-full"
+            [class.text-gray-900]="day.currentMonth && !day.today" [class.text-gray-300]="!day.currentMonth"
+            [class.bg-green-500]="day.today" [class.text-white]="day.today" [class.font-bold]="day.today">
+            {{ day.date }}
+          </span>
+
+          <!-- Reminder Indicators -->
+          @if (day.reminders.length > 0) {
+          <div class="mt-0.5 space-y-0.5">
+            @for (r of day.reminders | slice:0:2; track r.recordatorioId) {
+            <div class="text-[10px] leading-tight px-1 py-0.5 rounded-md truncate font-medium" [class]="r.completado
+                        ? 'bg-gray-100 text-gray-400 line-through'
+                        : r.estado === 'overdue'
+                          ? 'bg-red-100 text-red-700'
+                          : r.estado === 'upcoming'
+                            ? 'bg-amber-100 text-amber-700'
+                            : 'bg-blue-100 text-blue-700'">
+              {{ r.icono ?? '📋' }} {{ r.titulo }}
+            </div>
+            }
+            @if (day.reminders.length > 2) {
+            <div class="text-[10px] text-gray-400 font-medium px-1">
+              +{{ day.reminders.length - 2 }} mas
+            </div>
+            }
+          </div>
+          }
+        </button>
+        }
+      </div>
+      }
+    </div>
+
+    <!-- Legend -->
+    <div class="flex items-center gap-4 px-5 py-3 border-t border-gray-100 bg-gray-50/50">
+      <div class="flex items-center gap-1.5">
+        <span class="w-2.5 h-2.5 rounded-full bg-red-400"></span>
+        <span class="text-[11px] text-gray-500">Vencido</span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+        <span class="text-[11px] text-gray-500">Proximo</span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <span class="w-2.5 h-2.5 rounded-full bg-blue-400"></span>
+        <span class="text-[11px] text-gray-500">Pendiente</span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <span class="w-2.5 h-2.5 rounded-full bg-green-400"></span>
+        <span class="text-[11px] text-gray-500">Completado</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day Detail Panel -->
+  <div class="w-full lg:w-80 xl:w-96 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    @if (selectedDay) {
+    <!-- Panel Header -->
+    <div
+      class="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50">
+      <div>
+        <p class="text-sm text-gray-500">Recordatorios del</p>
+        <h4 class="text-lg font-bold text-gray-900">
+          {{ selectedDay.date }} de {{ monthNames[currentMonth] }}
+        </h4>
+      </div>
+    </div>
+
+    <!-- Panel Content -->
+    <div class="p-4 max-h-[480px] overflow-y-auto">
+      @if (selectedDay.reminders.length === 0) {
+      <div class="text-center py-10">
+        <div
+          class="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3 border border-gray-100">
+          <i class="pi pi-calendar text-xl text-gray-300"></i>
+        </div>
+        <p class="text-sm text-gray-400">Sin recordatorios este dia</p>
+      </div>
+      } @else {
+      <div class="space-y-3">
+        @for (r of selectedDay.reminders; track r.recordatorioId) {
+        <div class="rounded-xl border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+          <!-- Status bar -->
+          <div class="h-1" [class]="getStatusColor(r.estado)"></div>
+
+          <div class="p-3.5">
+            <!-- Title row -->
+            <div class="flex items-start gap-3">
+              @if (togglingId === r.recordatorioId) {
+              <div class="mt-0.5 w-5 h-5 flex items-center justify-center flex-shrink-0">
+                <i class="pi pi-spin pi-spinner text-gray-400" style="font-size: 12px;"></i>
+              </div>
+              } @else {
+              <button
+                class="mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors flex-shrink-0"
+                [class.border-gray-300]="!r.completado" [class.border-green-500]="r.completado"
+                [class.bg-green-500]="r.completado" [class.opacity-50]="r.completado"
+                [class.cursor-not-allowed]="r.completado" [disabled]="r.completado" (click)="onToggle(r)">
+                @if (r.completado) {
+                <i class="pi pi-check text-white" style="font-size: 9px;"></i>
+                }
+              </button>
+              }
+
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2">
+                  <span class="text-base">{{ r.icono ?? '📋' }}</span>
+                  <h5 class="font-semibold text-sm truncate" [class.text-gray-900]="!r.completado"
+                    [class.text-gray-400]="r.completado" [class.line-through]="r.completado">
+                    {{ r.titulo }}
+                  </h5>
+                </div>
+
+                @if (r.descripcion) {
+                <p class="text-xs text-gray-400 mt-0.5 truncate">{{ r.descripcion }}</p>
+                }
+
+                <div class="flex items-center gap-2 mt-2">
+                  <span class="text-sm font-bold text-gray-900">S/ {{ r.monto | number:'1.2-2' }}</span>
+                  <span class="px-1.5 py-0.5 text-[10px] font-semibold rounded-full"
+                    [class]="getStatusBadgeClass(r.estado)">
+                    {{ getStatusLabel(r.estado) }}
+                  </span>
+                </div>
+
+                @if (r.frecuenciaNombre && r.frecuenciaNombre !== 'No repetir') {
+                <div class="flex items-center gap-1 mt-1.5">
+                  <i class="pi pi-replay text-gray-300" style="font-size: 10px;"></i>
+                  <span class="text-[11px] text-gray-400">{{ r.frecuenciaNombre }}</span>
+                </div>
+                }
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center justify-end gap-1 mt-2 pt-2 border-t border-gray-50">
+              <button (click)="onEdit(r)"
+                class="text-xs text-gray-400 hover:text-blue-600 hover:bg-blue-50 px-2 py-1 rounded-md transition-colors flex items-center gap-1">
+                <i class="pi pi-pencil" style="font-size: 11px;"></i>
+                Editar
+              </button>
+              <button (click)="onDelete(r)"
+                class="text-xs text-gray-400 hover:text-red-600 hover:bg-red-50 px-2 py-1 rounded-md transition-colors flex items-center gap-1">
+                <i class="pi pi-trash" style="font-size: 11px;"></i>
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+      }
+    </div>
+    }
+  </div>
+</div>

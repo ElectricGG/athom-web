@@ -12,6 +12,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { MetaAhorroService } from '../../../services/meta-ahorro.service';
 import { MetaAhorro, EstadoMeta } from '../../../models/meta-ahorro.model';
+import { IconSelectorComponent } from '../../../shared/components/icon-selector/icon-selector.component';
 
 interface MetaEstadisticas {
   totalAhorrado: number;
@@ -32,7 +33,8 @@ interface MetaEstadisticas {
     DatePickerModule,
     TextareaModule,
     ToastModule,
-    ConfirmDialogModule
+    ConfirmDialogModule,
+    IconSelectorComponent
   ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './metas.component.html'
@@ -59,12 +61,11 @@ export class MetasComponent implements OnInit {
     fechaLimite: [null],
     prioridad: [1, [Validators.min(1), Validators.max(10)]],
     color: ['#22c55e'],
-    icono: ['']
+    icono: ['🎯']
   });
 
   // Opciones
   colors = ['#22c55e', '#3b82f6', '#f97316', '#8b5cf6', '#ec4899', '#eab308', '#14b8a6', '#ef4444'];
-  iconos = ['🎯', '🏠', '✈️', '🚗', '💻', '📚', '🛡️', '💰', '🎓', '💍', '🏥', '🎁'];
   today = new Date();
 
   // Estadísticas calculadas
@@ -120,7 +121,7 @@ export class MetasComponent implements OnInit {
       fechaLimite: null,
       prioridad: 1,
       color: '#22c55e',
-      icono: ''
+      icono: '🎯'
     });
     this.showDialog = true;
   }
@@ -135,7 +136,7 @@ export class MetasComponent implements OnInit {
       fechaLimite: meta.fechaLimite ? new Date(meta.fechaLimite) : null,
       prioridad: meta.prioridad,
       color: meta.color || '#22c55e',
-      icono: meta.icono || ''
+      icono: meta.icono || '🎯'
     });
     this.showDialog = true;
   }
@@ -281,9 +282,8 @@ export class MetasComponent implements OnInit {
     this.metaForm.patchValue({ color });
   }
 
-  seleccionarIcono(icono: string): void {
-    const currentIcono = this.metaForm.get('icono')?.value;
-    this.metaForm.patchValue({ icono: currentIcono === icono ? '' : icono });
+  onIconSelected(icono: string): void {
+    this.metaForm.patchValue({ icono });
   }
 
   formatearFecha(fecha: string | null): string {
