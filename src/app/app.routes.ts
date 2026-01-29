@@ -47,6 +47,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/dashboard/recordatorios/recordatorios.component').then(m => m.RecordatoriosComponent)
       },
       {
+        path: 'categorias',
+        loadComponent: () => import('./pages/dashboard/categorias/categorias.component').then(m => m.CategoriasComponent)
+      },
+      {
         path: 'asesoria-ia',
         loadComponent: () => import('./pages/dashboard/asesoria-ia/asesoria-ia.component').then(m => m.AsesoriaIaComponent)
       },

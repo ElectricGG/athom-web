@@ -1,26 +1,23 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-
-interface Message {
-  id: number;
-  type: 'user' | 'assistant';
-  content: string;
-  time: string;
-}
+import { ChatService } from '../../../services/chat.service';
+import { ChatMessage, ChatHistoryItem } from '../../../models/chat.model';
 
 @Component({
   selector: 'app-asesoria-ia',
   standalone: true,
-  imports: [FormsModule, ButtonModule, InputTextModule],
+  imports: [CommonModule, FormsModule, ButtonModule, InputTextModule],
   templateUrl: './asesoria-ia.component.html'
 })
-export class AsesoriaIaComponent {
+export class AsesoriaIaComponent implements OnInit {
   @ViewChild('chatContainer') chatContainer!: ElementRef;
 
   newMessage = '';
   isTyping = false;
+  isError = false;
 
   quickActions = [
     '¿Cómo van mis gastos?',
@@ -30,68 +27,123 @@ export class AsesoriaIaComponent {
     'Resumen financiero'
   ];
 
-  messages: Message[] = [
-    {
+  messages: ChatMessage[] = [];
+
+  constructor(private chatService: ChatService) {}
+
+  ngOnInit(): void {
+    // Welcome message
+    this.messages.push({
       id: 1,
-      type: 'user',
-      content: '¿Cómo van mis gastos este mes?',
-      time: 'Hace 1 min'
-    },
-    {
-      id: 2,
       type: 'assistant',
-      content: `Analizando tus gastos de enero 2026:
+      content: `¡Hola! 👋 Soy tu asistente financiero personal.
 
-📊 Resumen:
-• Total gastado: S/ 1,250.00
-• Presupuesto mensual: S/ 2,000.00
-• Disponible: S/ 750.00
+Puedo ayudarte con:
+• 📊 Analizar tus gastos e ingresos
+• 💰 Revisar tu presupuesto
+• 🎯 Ver el progreso de tus metas de ahorro
+• 📈 Mostrarte tendencias y estadísticas
+• 💡 Darte consejos personalizados
 
-📈 Distribución:
-• Alimentación: S/ 450 (36%)
-• Transporte: S/ 280 (22%)
-• Entretenimiento: S/ 200 (16%)
-• Servicios: S/ 180 (14%)
-• Otros: S/ 140 (12%)
-
-💡 Observación: Tus gastos en alimentación están un poco elevados comparado con el mes anterior (+15%). Te sugiero revisar si hay compras que puedas optimizar.`,
-      time: 'Hace 1 min'
-    }
-  ];
+¿En qué puedo ayudarte hoy?`,
+      time: this.formatTime(new Date())
+    });
+  }
 
   sendMessage(): void {
-    if (!this.newMessage.trim()) return;
+    if (!this.newMessage.trim() || this.isTyping) return;
 
-    const userMessage: Message = {
+    const userMessage: ChatMessage = {
       id: this.messages.length + 1,
       type: 'user',
       content: this.newMessage,
-      time: 'Ahora'
+      time: this.formatTime(new Date())
     };
 
     this.messages.push(userMessage);
+    const messageToSend = this.newMessage;
     this.newMessage = '';
     this.isTyping = true;
+    this.isError = false;
 
     setTimeout(() => this.scrollToBottom(), 100);
 
-    // Simular respuesta de IA
-    setTimeout(() => {
-      this.isTyping = false;
-      const assistantMessage: Message = {
-        id: this.messages.length + 1,
-        type: 'assistant',
-        content: this.getAIResponse(userMessage.content),
-        time: 'Ahora'
-      };
-      this.messages.push(assistantMessage);
-      setTimeout(() => this.scrollToBottom(), 100);
-    }, 1500);
+    // Build history from last messages (excluding the welcome message)
+    const history = this.buildHistory();
+
+    this.chatService.sendMessage({
+      message: messageToSend,
+      history: history
+    }).subscribe({
+      next: (response) => {
+        this.isTyping = false;
+        const assistantMessage: ChatMessage = {
+          id: this.messages.length + 1,
+          type: 'assistant',
+          content: response.message,
+          time: this.formatTime(new Date(response.timestamp)),
+          toolsUsed: response.toolsUsed
+        };
+        this.messages.push(assistantMessage);
+        setTimeout(() => this.scrollToBottom(), 100);
+      },
+      error: (error) => {
+        console.error('Error sending message:', error);
+        this.isTyping = false;
+        this.isError = true;
+
+        const errorMessage: ChatMessage = {
+          id: this.messages.length + 1,
+          type: 'assistant',
+          content: `Lo siento, ocurrió un error al procesar tu mensaje. Por favor, intenta de nuevo.
+
+Si el problema persiste, verifica tu conexión a internet o intenta más tarde.`,
+          time: this.formatTime(new Date())
+        };
+        this.messages.push(errorMessage);
+        setTimeout(() => this.scrollToBottom(), 100);
+      }
+    });
   }
 
   sendQuickAction(action: string): void {
     this.newMessage = action;
     this.sendMessage();
+  }
+
+  retryLastMessage(): void {
+    if (this.messages.length < 2) return;
+
+    // Find the last user message
+    const lastUserMessage = [...this.messages]
+      .reverse()
+      .find(m => m.type === 'user');
+
+    if (lastUserMessage) {
+      // Remove the error message
+      if (this.messages[this.messages.length - 1].type === 'assistant') {
+        this.messages.pop();
+      }
+      this.newMessage = lastUserMessage.content;
+      // Remove the last user message to avoid duplicates
+      const index = this.messages.lastIndexOf(lastUserMessage);
+      if (index > -1) {
+        this.messages.splice(index, 1);
+      }
+      this.sendMessage();
+    }
+  }
+
+  private buildHistory(): ChatHistoryItem[] {
+    // Get last 10 messages for context, excluding welcome message
+    return this.messages
+      .slice(1) // Skip welcome message
+      .slice(-10)
+      .map(m => ({
+        role: m.type === 'user' ? 'user' : 'assistant' as const,
+        content: m.content,
+        timestamp: new Date()
+      }));
   }
 
   private scrollToBottom(): void {
@@ -100,69 +152,37 @@ export class AsesoriaIaComponent {
     }
   }
 
-  private getAIResponse(message: string): string {
-    const responses: { [key: string]: string } = {
-      'dame consejos de ahorro': `¡Claro! Aquí tienes algunos consejos personalizados basados en tu historial:
-
-💰 Consejos de ahorro:
-
-1. Meal prep semanal
-   Podrías ahorrar ~S/ 150/mes preparando comidas en casa.
-
-2. Transporte compartido
-   Considera usar carpooling 2-3 veces por semana.
-
-3. Revisar suscripciones
-   Tienes 3 servicios de streaming. ¿Los usas todos?
-
-4. Regla 50/30/20
-   • 50% necesidades: S/ 2,750
-   • 30% deseos: S/ 1,650
-   • 20% ahorro: S/ 1,100
-
-¿Te gustaría que profundice en alguno de estos puntos?`,
-      'analiza mi mes': `📊 Análisis completo de Enero 2026:
-
-✅ Lo positivo:
-• Cumpliste el 85% de tu meta de ahorro
-• Redujiste gastos en entretenimiento un 10%
-• Tus ingresos aumentaron un 8.2%
-
-⚠️ Áreas de mejora:
-• Gastos en alimentación +15% vs mes anterior
-• 2 pagos de servicios vencidos
-
-📈 Proyección:
-Si mantienes este ritmo, a fin de año habrás ahorrado aproximadamente S/ 12,000.
-
-¿Quieres que te ayude a crear un plan para mejorar en las áreas pendientes?`,
-      '¿cuánto puedo gastar?': `Basándome en tu situación actual:
-
-💵 Disponible para gastar:
-• Hoy: S/ 50.00 (promedio diario)
-• Esta semana: S/ 350.00
-• Este mes: S/ 750.00
-
-🎯 Recomendación:
-Para cumplir tu meta de ahorro de S/ 1,000, te sugiero limitar los gastos no esenciales a S/ 500 durante las próximas 2 semanas.
-
-¿Te ayudo a categorizar qué gastos son prioritarios?`
+  formatToolName(tool: string): string {
+    const toolNames: Record<string, string> = {
+      'get_balance_summary': 'Balance',
+      'get_expense_distribution': 'Distribución de gastos',
+      'get_expense_summary': 'Resumen de gastos',
+      'get_income_summary': 'Resumen de ingresos',
+      'get_budget_status': 'Presupuesto',
+      'get_savings_goals': 'Metas de ahorro',
+      'get_recent_transactions': 'Transacciones',
+      'get_monthly_trends': 'Tendencias',
+      'get_upcoming_reminders': 'Recordatorios'
     };
+    return toolNames[tool] || tool;
+  }
 
-    const lowerMessage = message.toLowerCase();
-    for (const key in responses) {
-      if (lowerMessage.includes(key)) {
-        return responses[key];
-      }
-    }
+  private formatTime(date: Date): string {
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
 
-    return `Gracias por tu pregunta. Estoy analizando tu información financiera para darte la mejor respuesta.
+    if (diffMins < 1) return 'Ahora';
+    if (diffMins === 1) return 'Hace 1 min';
+    if (diffMins < 60) return `Hace ${diffMins} min`;
 
-Basándome en tus datos:
-• Balance actual: S/ 4,250.00
-• Ingresos del mes: S/ 5,500.00
-• Gastos del mes: S/ 1,250.00
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours === 1) return 'Hace 1 hora';
+    if (diffHours < 24) return `Hace ${diffHours} horas`;
 
-¿Hay algo específico que te gustaría saber sobre tus finanzas?`;
+    return date.toLocaleDateString('es-PE', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   }
 }
