@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
+import { MarkdownModule } from 'ngx-markdown';
 import { ChatService } from '../../../services/chat.service';
 import { ChatMessage, ChatHistoryItem } from '../../../models/chat.model';
 
 @Component({
   selector: 'app-asesoria-ia',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonModule, InputTextModule],
+  imports: [CommonModule, FormsModule, ButtonModule, InputTextModule, MarkdownModule],
   templateUrl: './asesoria-ia.component.html'
 })
 export class AsesoriaIaComponent implements OnInit {

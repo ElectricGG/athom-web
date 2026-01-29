@@ -12,6 +12,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { MetaAhorroService } from '../../../services/meta-ahorro.service';
 import { MetaAhorro, EstadoMeta } from '../../../models/meta-ahorro.model';
+import { GastoService } from '../../../services/gasto.service';
 import { IconSelectorComponent } from '../../../shared/components/icon-selector/icon-selector.component';
 
 interface MetaEstadisticas {
@@ -42,6 +43,7 @@ interface MetaEstadisticas {
 export class MetasComponent implements OnInit {
   private fb = inject(FormBuilder);
   private metaAhorroService = inject(MetaAhorroService);
+  private gastoService = inject(GastoService);
   private messageService = inject(MessageService);
   private confirmationService = inject(ConfirmationService);
 
@@ -53,6 +55,11 @@ export class MetasComponent implements OnInit {
   isEditing = false;
   selectedMetaId: number | null = null;
 
+  // Estado diálogo de ahorro
+  showAhorroDialog = false;
+  isSavingAhorro = false;
+  selectedMetaAhorro: MetaAhorro | null = null;
+
   // Formulario
   metaForm: FormGroup = this.fb.group({
     nombre: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
@@ -62,6 +69,12 @@ export class MetasComponent implements OnInit {
     prioridad: [1, [Validators.min(1), Validators.max(10)]],
     color: ['#22c55e'],
     icono: ['🎯']
+  });
+
+  // Formulario de ahorro
+  ahorroForm: FormGroup = this.fb.group({
+    monto: [null, [Validators.required, Validators.min(0.01)]],
+    notas: ['', [Validators.maxLength(200)]]
   });
 
   // Opciones
@@ -309,5 +322,54 @@ export class MetasComponent implements OnInit {
 
   esMetaCompletada(meta: MetaAhorro): boolean {
     return meta.estado === EstadoMeta.Completada;
+  }
+
+  abrirDialogoAhorro(meta: MetaAhorro): void {
+    this.selectedMetaAhorro = meta;
+    this.ahorroForm.reset({
+      monto: null,
+      notas: ''
+    });
+    this.showAhorroDialog = true;
+  }
+
+  guardarAhorro(): void {
+    if (this.ahorroForm.invalid || !this.selectedMetaAhorro) {
+      this.ahorroForm.markAllAsTouched();
+      return;
+    }
+
+    this.isSavingAhorro = true;
+    const formValue = this.ahorroForm.value;
+
+    const request = {
+      descripcion: `Ahorro para: ${this.selectedMetaAhorro.nombre}`,
+      monto: formValue.monto,
+      categoriaId: this.selectedMetaAhorro.categoriaId,
+      fechaGasto: new Date().toISOString(),
+      notas: formValue.notas || undefined
+    };
+
+    this.gastoService.crear(request).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Ahorro registrado',
+          detail: `Se agregó S/ ${formValue.monto.toFixed(2)} a "${this.selectedMetaAhorro?.nombre}"`
+        });
+        this.showAhorroDialog = false;
+        this.isSavingAhorro = false;
+        this.selectedMetaAhorro = null;
+        this.cargarMetas();
+      },
+      error: (err) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: err.error?.message || 'No se pudo registrar el ahorro'
+        });
+        this.isSavingAhorro = false;
+      }
+    });
   }
 }

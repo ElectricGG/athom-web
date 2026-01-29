@@ -409,6 +409,7 @@
           optionValue="value"
           placeholder="Seleccionar mes"
           styleClass="w-full"
+          appendTo="body"
         />
         @if (presupuestoForm.get('mes')?.touched && presupuestoForm.get('mes')?.invalid) {
           <small class="text-red-500 text-xs mt-1">Selecciona un mes</small>
@@ -421,6 +422,7 @@
           [options]="aniosOptions"
           placeholder="Seleccionar año"
           styleClass="w-full"
+          appendTo="body"
         />
         @if (presupuestoForm.get('anio')?.touched && presupuestoForm.get('anio')?.invalid) {
           <small class="text-red-500 text-xs mt-1">Selecciona un año</small>
@@ -468,6 +470,7 @@
           optionValue="categoriaId"
           placeholder="Seleccionar categoría"
           styleClass="w-full"
+          appendTo="body"
         >
           <ng-template pTemplate="item" let-cat>
             <div class="flex items-center gap-2">

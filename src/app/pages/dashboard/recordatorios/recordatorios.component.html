@@ -216,12 +216,12 @@
     </div>
     <div>
       <label class="block text-sm font-medium text-gray-700 mb-2">Fecha de vencimiento</label>
-      <p-datepicker [(ngModel)]="formFechaVencimiento" styleClass="w-full" dateFormat="dd/mm/yy" />
+      <p-datepicker [(ngModel)]="formFechaVencimiento" styleClass="w-full" dateFormat="dd/mm/yy" appendTo="body" />
     </div>
     <div>
       <label class="block text-sm font-medium text-gray-700 mb-2">Repetir</label>
       <p-select [(ngModel)]="formFrecuencia" [options]="frecuenciaOptions" optionLabel="label"
-        placeholder="Seleccionar frecuencia" styleClass="w-full" />
+        placeholder="Seleccionar frecuencia" styleClass="w-full" appendTo="body" />
     </div>
   </div>
   <ng-template pTemplate="footer">

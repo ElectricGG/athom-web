@@ -39,8 +39,8 @@
               <i class="pi pi-sparkles text-white"></i>
             </div>
             <div class="flex-1">
-              <div class="bg-gray-50 rounded-2xl rounded-tl-none p-4 max-w-[85%]">
-                <p class="text-gray-800 whitespace-pre-line">{{ message.content }}</p>
+              <div class="bg-gray-50 rounded-2xl rounded-tl-none p-4 max-w-[85%] prose prose-sm prose-gray max-w-none">
+                <markdown [data]="message.content"></markdown>
                 @if (message.toolsUsed && message.toolsUsed.length > 0) {
                   <div class="mt-3 pt-3 border-t border-gray-200">
                     <p class="text-xs text-gray-400 flex items-center gap-1">

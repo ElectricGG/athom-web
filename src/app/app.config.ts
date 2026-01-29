@@ -3,6 +3,7 @@ import { provideRouter, withViewTransitions } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { providePrimeNG } from 'primeng/config';
+import { provideMarkdown } from 'ngx-markdown';
 import Aura from '@primeng/themes/aura';
 import localeEs from '@angular/common/locales/es';
 import { registerLocaleData } from '@angular/common';
@@ -18,6 +19,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withViewTransitions()),
     provideAnimationsAsync(),
     provideHttpClient(withInterceptors([authInterceptor, authErrorInterceptor])),
+    provideMarkdown(),
     { provide: LOCALE_ID, useValue: 'es' },
     providePrimeNG({
       theme: {
