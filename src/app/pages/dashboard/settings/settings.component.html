@@ -1,3 +1,5 @@
+<p-toast />
+
 <div class="p-4 lg:p-6 space-y-6">
   <!-- Header -->
   <div>
@@ -10,40 +12,89 @@
     <div class="lg:col-span-2 space-y-6">
       <!-- Profile Section -->
       <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">Perfil</h2>
-        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
-          <div class="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center text-white text-2xl font-bold">
-            JP
-          </div>
-          <div>
-            <p-button label="Cambiar foto" severity="secondary" [outlined]="true" size="small" />
-          </div>
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold text-gray-900">Perfil</h2>
+          @if (isLoading) {
+            <i class="pi pi-spin pi-spinner text-green-500"></i>
+          }
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Nombre</label>
-            <input pInputText class="w-full" value="Juan Pérez" />
+
+        @if (isLoading) {
+          <div class="flex justify-center py-8">
+            <div class="text-center">
+              <i class="pi pi-spin pi-spinner text-3xl text-green-500 mb-3"></i>
+              <p class="text-gray-500">Cargando perfil...</p>
+            </div>
           </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-            <input pInputText class="w-full" value="juan@email.com" />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Teléfono (WhatsApp)</label>
-            <input pInputText class="w-full" value="+51 999 999 999" />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Moneda</label>
-            <p-select
-              [options]="currencies"
-              [(ngModel)]="selectedCurrency"
-              styleClass="w-full"
-            />
-          </div>
-        </div>
-        <div class="mt-4 flex justify-end">
-          <p-button label="Guardar cambios" severity="success" />
-        </div>
+        } @else {
+          <form [formGroup]="perfilForm" (ngSubmit)="guardarPerfil()">
+            <!-- Avatar -->
+            <div class="flex items-center gap-4 mb-6">
+              <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center text-white text-2xl font-bold">
+                {{ getUserInitial() }}
+              </div>
+              <div>
+                <p class="font-semibold text-gray-900">{{ perfil?.nombreUsuario }}</p>
+                <p class="text-sm text-gray-500">{{ perfil?.email }}</p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- Nombre -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Nombre</label>
+                <input
+                  pInputText
+                  formControlName="nombreUsuario"
+                  class="w-full"
+                  [class.ng-invalid]="perfilForm.get('nombreUsuario')?.invalid && perfilForm.get('nombreUsuario')?.touched"
+                />
+                @if (perfilForm.get('nombreUsuario')?.invalid && perfilForm.get('nombreUsuario')?.touched) {
+                  <small class="text-red-500 text-xs mt-1">
+                    @if (perfilForm.get('nombreUsuario')?.errors?.['required']) {
+                      El nombre es requerido
+                    } @else if (perfilForm.get('nombreUsuario')?.errors?.['minlength']) {
+                      Mínimo 2 caracteres
+                    }
+                  </small>
+                }
+              </div>
+
+              <!-- Email (solo lectura) -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                <input
+                  pInputText
+                  type="email"
+                  class="w-full bg-gray-50 cursor-not-allowed"
+                  [value]="perfil?.email || ''"
+                  [readonly]="true"
+                />
+              </div>
+
+              <!-- Teléfono (solo lectura) -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Teléfono (WhatsApp)</label>
+                <input
+                  pInputText
+                  class="w-full bg-gray-50 cursor-not-allowed"
+                  [value]="perfil?.numeroWhatsApp || ''"
+                  [readonly]="true"
+                />
+              </div>
+            </div>
+
+            <div class="mt-6 flex justify-end">
+              <p-button
+                type="submit"
+                label="Guardar cambios"
+                severity="success"
+                [loading]="isSaving"
+                [disabled]="perfilForm.invalid || isSaving"
+              />
+            </div>
+          </form>
+        }
       </div>
 
       <!-- Notifications -->
@@ -59,28 +110,6 @@
               <p-toggleswitch [(ngModel)]="notification.enabled" />
             </div>
           }
-        </div>
-      </div>
-
-      <!-- Security -->
-      <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">Seguridad</h2>
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Contraseña actual</label>
-            <p-password styleClass="w-full" inputStyleClass="w-full" [feedback]="false" />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Nueva contraseña</label>
-            <p-password styleClass="w-full" inputStyleClass="w-full" />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Confirmar contraseña</label>
-            <p-password styleClass="w-full" inputStyleClass="w-full" [feedback]="false" />
-          </div>
-          <div class="flex justify-end">
-            <p-button label="Cambiar contraseña" severity="secondary" [outlined]="true" />
-          </div>
         </div>
       </div>
     </div>
@@ -145,12 +174,6 @@
           <p-button
             label="Cancelar suscripción"
             severity="secondary"
-            [outlined]="true"
-            styleClass="w-full"
-          />
-          <p-button
-            label="Eliminar cuenta"
-            severity="danger"
             [outlined]="true"
             styleClass="w-full"
           />

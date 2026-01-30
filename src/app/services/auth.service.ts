@@ -87,6 +87,21 @@ export class AuthService {
     return userData?.refreshToken ?? null;
   }
 
+  updateUserName(nombreUsuario: string): void {
+    if (!this.isBrowser) return;
+
+    const currentData = this.getStoredUserData();
+    if (!currentData) return;
+
+    const updatedData = { ...currentData, nombreUsuario };
+    const storage = this.getStorage();
+
+    if (storage) {
+      storage.setItem('userData', JSON.stringify(updatedData));
+      this.currentUserDataSubject.next(updatedData);
+    }
+  }
+
   private isUsingLocalStorage(): boolean {
     if (!this.isBrowser) return false;
     return !!localStorage.getItem('accessToken');

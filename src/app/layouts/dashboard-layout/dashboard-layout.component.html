@@ -22,7 +22,7 @@
 </header>
 
 <!-- Desktop Sidebar -->
-<aside class="hidden lg:flex fixed top-0 left-0 bottom-0 w-64 bg-white border-r border-gray-200 flex-col z-30">
+<aside class="hidden lg:flex fixed top-0 left-0 bottom-0 w-64 bg-white border-r border-gray-200 flex-col z-50">
   <ng-container *ngTemplateOutlet="sidebarContent"></ng-container>
 </aside>
 
@@ -139,47 +139,68 @@
     </nav>
 
     <!-- User Section -->
-    <div class="border-t border-gray-100 p-4">
-      <!-- User Info -->
-      <div class="flex items-center gap-3 mb-4">
-        <div
-          class="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold">
-          {{ userInitial$ | async }}
+    <div class="border-t border-gray-100 p-4 relative">
+      <!-- Clickable User Info -->
+      <button
+        (click)="toggleUserMenu()"
+        class="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 transition-all duration-200 group">
+        <div class="relative">
+          <div
+            class="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold shadow-md group-hover:shadow-lg transition-shadow">
+            {{ userInitial$ | async }}
+          </div>
+          @if (userPlan === 'premium') {
+          <div class="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full flex items-center justify-center">
+            <i class="pi pi-star-fill text-white text-[8px]"></i>
+          </div>
+          }
         </div>
-        <div class="flex-1 min-w-0">
-          <p class="font-semibold text-gray-900 truncate">{{ userName$ | async }}</p>
+        <div class="flex-1 min-w-0 text-left">
+          <p class="font-semibold text-gray-900 truncate text-sm">{{ userName$ | async }}</p>
           <div class="flex items-center gap-1">
             @if (userPlan === 'premium') {
-            <span
-              class="px-2 py-0.5 text-xs bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-full font-semibold">
-              <i class="pi pi-star-fill text-[10px] mr-1"></i>Premium
+            <span class="text-xs text-amber-600 font-medium flex items-center gap-1">
+              <i class="pi pi-star-fill text-[10px]"></i>Premium
             </span>
             } @else {
-            <span class="px-2 py-0.5 text-xs bg-gray-100 text-gray-600 rounded-full font-medium">
-              Plan Gratis
-            </span>
+            <span class="text-xs text-gray-500">Plan Gratis</span>
             }
           </div>
         </div>
-      </div>
+        <i class="pi pi-chevron-up text-gray-400 text-xs transition-transform duration-200"
+           [class.rotate-180]="!userMenuVisible()"></i>
+      </button>
 
-      <!-- Actions -->
-      <div class="space-y-1">
-        <a routerLink="/dashboard/settings" routerLinkActive="bg-gray-100"
-          class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors"
-          (click)="closeSidebar()">
-          <i class="pi pi-cog text-lg"></i>
+      <!-- Dropdown Menu (appears above) -->
+      @if (userMenuVisible()) {
+      <div class="absolute bottom-full left-4 right-4 mb-2 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50">
+        <!-- Menu Items -->
+        <a routerLink="/dashboard/settings"
+           (click)="closeUserMenu(); closeSidebar()"
+           class="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition-colors">
+          <i class="pi pi-cog text-gray-400"></i>
           <span class="font-medium">Configuración</span>
         </a>
-        <button (click)="logout()"
-          class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 transition-colors">
-          <i class="pi pi-sign-out text-lg"></i>
-          <span class="font-medium">Cerrar sesión</span>
-        </button>
+
+        <!-- Logout -->
+        <div class="border-t border-gray-100 mt-2 pt-2">
+          <button
+            (click)="logout(); closeSidebar()"
+            class="w-full flex items-center gap-3 px-4 py-2.5 text-red-600 hover:bg-red-50 transition-colors">
+            <i class="pi pi-sign-out"></i>
+            <span class="font-medium">Cerrar sesión</span>
+          </button>
+        </div>
       </div>
+      }
     </div>
   </div>
 </ng-template>
+
+<!-- Overlay to close menu when clicking outside -->
+@if (userMenuVisible()) {
+<div class="fixed inset-0 z-40" (click)="closeUserMenu()"></div>
+}
 
 <!-- Main Content -->
 <main class="lg:ml-64 min-h-screen bg-gray-50">

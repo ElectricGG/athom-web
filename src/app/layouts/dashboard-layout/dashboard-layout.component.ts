@@ -22,15 +22,21 @@ import { map } from 'rxjs/operators';
   templateUrl: './dashboard-layout.component.html'
 })
 export class DashboardLayoutComponent {
-  private authService = inject(AuthService); // Inject AuthService
+  private authService = inject(AuthService);
 
   sidebarVisible = signal(false);
+  userMenuVisible = signal(false);
 
-  userPlan: 'free' | 'premium' = 'premium'; // Keep as mock for now
+  userPlan: 'free' | 'premium' = 'premium';
 
   userName$: Observable<string> = this.authService.currentUserData.pipe(
     map(user => user ? user.nombreUsuario : 'Invitado')
   );
+
+  userPhone$: Observable<string> = this.authService.currentUserData.pipe(
+    map(user => user ? user.numeroWhatsapp : '')
+  );
+
   userInitial$: Observable<string> = this.userName$.pipe(
     map(name => name ? name.charAt(0).toUpperCase() : '?')
   );
@@ -39,7 +45,16 @@ export class DashboardLayoutComponent {
     this.sidebarVisible.set(false);
   }
 
+  toggleUserMenu(): void {
+    this.userMenuVisible.update(v => !v);
+  }
+
+  closeUserMenu(): void {
+    this.userMenuVisible.set(false);
+  }
+
   logout(): void {
-    this.authService.logout(); // Call the service's logout method
+    this.closeUserMenu();
+    this.authService.logout();
   }
 }
