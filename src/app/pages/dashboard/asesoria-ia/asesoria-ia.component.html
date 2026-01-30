@@ -1,3 +1,5 @@
+<p-confirmDialog />
+
 <div class="p-4 lg:p-6 h-[calc(100vh-4rem)] lg:h-screen flex flex-col">
   <!-- Header -->
   <div class="flex items-center justify-between mb-4">
@@ -5,7 +7,15 @@
       <h1 class="text-2xl lg:text-3xl font-bold text-gray-900">Asesoría IA</h1>
       <p class="text-gray-500 mt-1">Tu asistente financiero inteligente</p>
     </div>
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-3">
+      <button
+        (click)="confirmClearChat()"
+        [disabled]="isTyping || isLoadingHistory || messages.length <= 1"
+        class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        title="Borrar historial"
+      >
+        <i class="pi pi-trash"></i>
+      </button>
       <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
         <i class="pi pi-circle-fill text-[8px] mr-1.5 animate-pulse"></i>
         En línea
@@ -17,6 +27,16 @@
   <div class="flex-1 bg-white rounded-2xl border border-gray-100 shadow-sm flex flex-col overflow-hidden">
     <!-- Chat Messages -->
     <div class="flex-1 overflow-y-auto p-4 space-y-4" #chatContainer>
+      <!-- Loading History -->
+      @if (isLoadingHistory) {
+        <div class="flex justify-center items-center h-full">
+          <div class="text-center">
+            <i class="pi pi-spin pi-spinner text-3xl text-green-500 mb-3"></i>
+            <p class="text-gray-500">Cargando historial...</p>
+          </div>
+        </div>
+      }
+
       <!-- Dynamic Messages -->
       @for (message of messages; track message.id) {
         @if (message.type === 'user') {

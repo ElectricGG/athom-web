@@ -117,9 +117,7 @@ export class RecordatoriosComponent implements OnInit {
     this.showDialog = true;
   }
 
-  onIconSelected(emoji: string): void {
-    this.formIcono = emoji;
-  }
+
 
   saveReminder(): void {
     if (!this.formTitulo.trim() || this.formMonto === null || !this.formFechaVencimiento) return;

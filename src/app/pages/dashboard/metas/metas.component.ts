@@ -295,9 +295,7 @@ export class MetasComponent implements OnInit {
     this.metaForm.patchValue({ color });
   }
 
-  onIconSelected(icono: string): void {
-    this.metaForm.patchValue({ icono });
-  }
+
 
   formatearFecha(fecha: string | null): string {
     if (!fecha) return 'Sin fecha límite';

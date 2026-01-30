@@ -187,9 +187,7 @@ export class CategoriasComponent implements OnInit {
         this.form.patchValue({ color });
     }
 
-    onIconSelected(icono: string): void {
-        this.form.patchValue({ icono });
-    }
+
 
     getBadgeSeverity(tipo: string): 'success' | 'danger' | 'info' | 'warn' | 'secondary' | 'contrast' | undefined {
         if (tipo === 'Ingreso') return 'success';

@@ -4,13 +4,16 @@ import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { MarkdownModule } from 'ngx-markdown';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService } from 'primeng/api';
 import { ChatService } from '../../../services/chat.service';
 import { ChatMessage, ChatHistoryItem } from '../../../models/chat.model';
 
 @Component({
   selector: 'app-asesoria-ia',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonModule, InputTextModule, MarkdownModule],
+  imports: [CommonModule, FormsModule, ButtonModule, InputTextModule, MarkdownModule, ConfirmDialogModule],
+  providers: [ConfirmationService],
   templateUrl: './asesoria-ia.component.html'
 })
 export class AsesoriaIaComponent implements OnInit {
@@ -19,6 +22,7 @@ export class AsesoriaIaComponent implements OnInit {
   newMessage = '';
   isTyping = false;
   isError = false;
+  isLoadingHistory = true;
 
   quickActions = [
     '¿Cómo van mis gastos?',
@@ -30,14 +34,10 @@ export class AsesoriaIaComponent implements OnInit {
 
   messages: ChatMessage[] = [];
 
-  constructor(private chatService: ChatService) {}
-
-  ngOnInit(): void {
-    // Welcome message
-    this.messages.push({
-      id: 1,
-      type: 'assistant',
-      content: `¡Hola! 👋 Soy tu asistente financiero personal.
+  private readonly welcomeMessage: ChatMessage = {
+    id: 0,
+    type: 'assistant',
+    content: `¡Hola! 👋 Soy tu asistente financiero personal.
 
 Puedo ayudarte con:
 • 📊 Analizar tus gastos e ingresos
@@ -47,7 +47,43 @@ Puedo ayudarte con:
 • 💡 Darte consejos personalizados
 
 ¿En qué puedo ayudarte hoy?`,
-      time: this.formatTime(new Date())
+    time: 'Ahora'
+  };
+
+  constructor(
+    private chatService: ChatService,
+    private confirmationService: ConfirmationService
+  ) {}
+
+  ngOnInit(): void {
+    this.loadHistory();
+  }
+
+  private loadHistory(): void {
+    this.isLoadingHistory = true;
+    this.chatService.getHistory(50).subscribe({
+      next: (history) => {
+        if (history.length > 0) {
+          // Convert history items to ChatMessage format
+          this.messages = history.map((item, index) => ({
+            id: index + 1,
+            type: item.role === 'user' ? 'user' : 'assistant' as const,
+            content: item.content,
+            time: this.formatTime(new Date(item.timestamp))
+          }));
+        } else {
+          // No history, show welcome message
+          this.messages = [{ ...this.welcomeMessage, time: this.formatTime(new Date()) }];
+        }
+        this.isLoadingHistory = false;
+        setTimeout(() => this.scrollToBottom(), 100);
+      },
+      error: (error) => {
+        console.error('Error loading history:', error);
+        // On error, show welcome message
+        this.messages = [{ ...this.welcomeMessage, time: this.formatTime(new Date()) }];
+        this.isLoadingHistory = false;
+      }
     });
   }
 
@@ -135,10 +171,34 @@ Si el problema persiste, verifica tu conexión a internet o intenta más tarde.`
     }
   }
 
+  confirmClearChat(): void {
+    this.confirmationService.confirm({
+      message: '¿Estás seguro de que deseas borrar todo el historial del chat?',
+      header: 'Confirmar',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sí, borrar',
+      rejectLabel: 'Cancelar',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => this.clearChat()
+    });
+  }
+
+  clearChat(): void {
+    this.chatService.clearHistory().subscribe({
+      next: () => {
+        this.messages = [{ ...this.welcomeMessage, time: this.formatTime(new Date()) }];
+        setTimeout(() => this.scrollToBottom(), 100);
+      },
+      error: (error) => {
+        console.error('Error clearing chat:', error);
+      }
+    });
+  }
+
   private buildHistory(): ChatHistoryItem[] {
-    // Get last 10 messages for context, excluding welcome message
+    // Get last 10 messages for context, excluding welcome message (id: 0)
     return this.messages
-      .slice(1) // Skip welcome message
+      .filter(m => m.id !== 0)
       .slice(-10)
       .map(m => ({
         role: m.type === 'user' ? 'user' : 'assistant' as const,

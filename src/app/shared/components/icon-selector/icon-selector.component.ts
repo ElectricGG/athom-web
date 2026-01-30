@@ -1,19 +1,43 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, forwardRef, Input, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { Popover, PopoverModule } from 'primeng/popover';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/forms';
+import { InputTextModule } from 'primeng/inputtext';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 
 @Component({
     selector: 'app-icon-selector',
     standalone: true,
-    imports: [CommonModule, ButtonModule, PopoverModule],
-    templateUrl: './icon-selector.component.html'
+    imports: [
+        CommonModule,
+        ButtonModule,
+        PopoverModule,
+        FormsModule,
+        InputTextModule,
+        IconFieldModule,
+        InputIconModule
+    ],
+    templateUrl: './icon-selector.component.html',
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => IconSelectorComponent),
+            multi: true
+        }
+    ]
 })
-export class IconSelectorComponent {
-    @Input() currentIcon: string = '📋';
-    @Output() iconSelected = new EventEmitter<string>();
+export class IconSelectorComponent implements ControlValueAccessor {
+    @Input() placeholder: string = 'Selecciona un icono';
 
     @ViewChild('iconPanel') iconPanel!: Popover;
+
+    value: string = '';
+    isDisabled: boolean = false;
+
+    onChange = (value: string) => { };
+    onTouched = () => { };
 
     // Emoji Categories - Reusable constant
     readonly emojiCategories = [
@@ -43,13 +67,40 @@ export class IconSelectorComponent {
         }
     ];
 
+    // ControlValueAccessor methods
+    writeValue(value: string): void {
+        this.value = value || '';
+    }
+
+    registerOnChange(fn: any): void {
+        this.onChange = fn;
+    }
+
+    registerOnTouched(fn: any): void {
+        this.onTouched = fn;
+    }
+
+    setDisabledState(isDisabled: boolean): void {
+        this.isDisabled = isDisabled;
+    }
+
     toggle(event: Event): void {
+        if (this.isDisabled) return;
+        event.stopPropagation(); // Prevent bubbling issues
         this.iconPanel.toggle(event);
     }
 
+    onInput(event: Event): void {
+        const target = event.target as HTMLInputElement;
+        this.value = target.value;
+        this.onChange(this.value);
+        this.onTouched();
+    }
+
     selectIcon(emoji: string): void {
-        this.currentIcon = emoji;
-        this.iconSelected.emit(emoji);
+        this.value = emoji;
+        this.onChange(emoji);
+        this.onTouched();
         this.iconPanel.hide();
     }
 }

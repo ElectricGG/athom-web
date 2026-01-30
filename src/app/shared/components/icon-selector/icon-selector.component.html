@@ -1,11 +1,10 @@
-<div class="flex items-center gap-3">
-    <button pButton type="button" (click)="toggle($event)"
-        class="w-12 h-12 !p-0 flex items-center justify-center !rounded-xl !bg-gray-50 !border !border-gray-200 hover:!bg-gray-100 hover:!border-gray-300 transition-all">
-        <span class="text-2xl">{{ currentIcon }}</span>
-    </button>
-    <span class="text-sm text-gray-500">
-        <ng-content select="[label]"></ng-content>
-    </span>
+<div>
+    <p-iconfield>
+        <p-inputicon styleClass="pi pi-chevron-down cursor-pointer hover:text-blue-500 transition-colors"
+            (click)="toggle($event)" />
+        <input pInputText [value]="value" [placeholder]="placeholder" (input)="onInput($event)" class="w-full"
+            [disabled]="isDisabled" />
+    </p-iconfield>
 </div>
 
 <p-popover #iconPanel [style]="{ width: '320px', padding: '0' }">
@@ -19,8 +18,8 @@
                 @for (emoji of category.emojis; track emoji) {
                 <button
                     class="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors text-xl"
-                    [class.bg-blue-50]="currentIcon === emoji" [class.border-blue-200]="currentIcon === emoji"
-                    [class.border]="currentIcon === emoji" (click)="selectIcon(emoji)">
+                    [class.bg-blue-50]="value === emoji" [class.border-blue-200]="value === emoji"
+                    [class.border]="value === emoji" (click)="selectIcon(emoji)">
                     {{ emoji }}
                 </button>
                 }

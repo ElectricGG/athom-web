@@ -95,9 +95,7 @@
         <!-- Icono -->
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Icono</label>
-            <app-icon-selector [currentIcon]="form.get('icono')?.value" (iconSelected)="onIconSelected($event)">
-                <span label class="text-sm text-gray-500">Selecciona un icono</span>
-            </app-icon-selector>
+            <app-icon-selector formControlName="icono" placeholder="Selecciona un icono" />
         </div>
 
         <!-- Color -->
