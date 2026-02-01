@@ -99,18 +99,37 @@
 
       <!-- Notifications -->
       <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">Notificaciones</h2>
-        <div class="space-y-4">
-          @for (notification of notifications; track notification.key) {
-            <div class="flex items-center justify-between py-2">
-              <div>
-                <p class="font-medium text-gray-900">{{ notification.label }}</p>
-                <p class="text-sm text-gray-500">{{ notification.description }}</p>
-              </div>
-              <p-toggleswitch [(ngModel)]="notification.enabled" />
-            </div>
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold text-gray-900">Notificaciones</h2>
+          @if (isLoadingNotifications || isSavingNotifications) {
+            <i class="pi pi-spin pi-spinner text-green-500"></i>
           }
         </div>
+
+        @if (isLoadingNotifications) {
+          <div class="flex justify-center py-8">
+            <div class="text-center">
+              <i class="pi pi-spin pi-spinner text-3xl text-green-500 mb-3"></i>
+              <p class="text-gray-500">Cargando preferencias...</p>
+            </div>
+          </div>
+        } @else {
+          <div class="space-y-4">
+            @for (notification of notifications; track notification.key) {
+              <div class="flex items-center justify-between py-2">
+                <div>
+                  <p class="font-medium text-gray-900">{{ notification.label }}</p>
+                  <p class="text-sm text-gray-500">{{ notification.description }}</p>
+                </div>
+                <p-toggleswitch
+                  [(ngModel)]="notification.enabled"
+                  (onChange)="onNotificationChange()"
+                  [disabled]="isSavingNotifications"
+                />
+              </div>
+            }
+          </div>
+        }
       </div>
     </div>
 
@@ -149,14 +168,6 @@
       <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
         <h3 class="font-semibold text-gray-900 mb-4">Acciones rápidas</h3>
         <div class="space-y-2">
-          <button class="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 rounded-xl transition-colors">
-            <i class="pi pi-download text-gray-400"></i>
-            <span class="text-gray-700">Exportar datos</span>
-          </button>
-          <button class="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 rounded-xl transition-colors">
-            <i class="pi pi-question-circle text-gray-400"></i>
-            <span class="text-gray-700">Centro de ayuda</span>
-          </button>
           <button class="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 rounded-xl transition-colors">
             <i class="pi pi-envelope text-gray-400"></i>
             <span class="text-gray-700">Contactar soporte</span>

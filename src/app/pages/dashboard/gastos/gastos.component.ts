@@ -71,7 +71,7 @@ export class GastosComponent implements OnInit {
 
   // Opciones de filtro
   mesesOptions: MesOption[] = [];
-  today = new Date();
+  today = new Date(); // Se ajustará en el constructor o ngOnInit
 
   // Formulario
   gastoForm: FormGroup = this.fb.group({
@@ -103,6 +103,9 @@ export class GastosComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Ajustar today al final del día para permitir seleccionar cualquier hora de hoy
+    this.today.setHours(23, 59, 59, 999);
+
     this.inicializarMeses();
     this.cargarDatos();
   }
@@ -170,12 +173,22 @@ export class GastosComponent implements OnInit {
   abrirDialogoEditar(gasto: Gasto): void {
     this.isEditing = true;
     this.selectedGastoId = gasto.gastoRealId;
+    // Asegurar que la fecha sea un objeto Date válido
+    let fecha = new Date();
+    if (gasto.fechaGasto) {
+      // Intentar parsear la fecha directamente
+      const parsedDate = new Date(gasto.fechaGasto);
+      if (!isNaN(parsedDate.getTime())) {
+        fecha = parsedDate;
+      }
+    }
+
     this.gastoForm.patchValue({
       descripcion: gasto.descripcion,
       monto: gasto.monto,
       categoriaId: gasto.categoriaId,
       categoriaNombre: '',
-      fechaGasto: new Date(gasto.fechaGasto),
+      fechaGasto: fecha,
       notas: gasto.notas || ''
     });
     this.showDialog = true;
