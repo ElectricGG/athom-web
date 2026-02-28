@@ -8,13 +8,15 @@ import {
   ActualizarRecordatorioRequest
 } from '../models/recordatorio.model';
 
+import { environment } from '../../environments/environment';
+
 @Injectable({
   providedIn: 'root'
 })
 export class RecordatorioService {
-  private readonly baseUrl = 'http://localhost:5041/api/Recordatorios';
+  private readonly baseUrl = `${environment.apiUrl}/Recordatorios`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getAll(completado?: boolean): Observable<Recordatorio[]> {
     const params: Record<string, string> = {};

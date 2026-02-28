@@ -12,12 +12,14 @@ import {
   CategoriaDisponible
 } from '../models/presupuesto.model';
 
+import { environment } from '../../environments/environment';
+
 @Injectable({
   providedIn: 'root'
 })
 export class PresupuestoService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:5041/api/Presupuestos';
+  private readonly apiUrl = `${environment.apiUrl}/Presupuestos`;
 
   // =====================
   // PRESUPUESTOS MENSUALES

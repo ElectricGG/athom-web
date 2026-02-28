@@ -3,13 +3,15 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Transaction, ExpenseDistribution, BalanceSummary, TendenciaMensual, TendenciaDiaria } from '../models/transaction.model';
 
+import { environment } from '../../environments/environment';
+
 @Injectable({
   providedIn: 'root'
 })
 export class TransactionService {
-  private readonly baseUrl = 'http://localhost:5041/api/Transacciones';
+  private readonly baseUrl = `${environment.apiUrl}/Transacciones`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getRecentTransactions(cantidad: number = 10): Observable<Transaction[]> {
     return this.http.get<Transaction[]>(`${this.baseUrl}/recientes`, {

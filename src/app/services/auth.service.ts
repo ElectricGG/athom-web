@@ -13,11 +13,13 @@ interface AuthResponse {
   accessTokenExpiration: string;
 }
 
+import { environment } from '../../environments/environment';
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly baseUrl = 'http://localhost:5041/api/Auth';
+  private readonly baseUrl = `${environment.apiUrl}/Auth`;
   private readonly isBrowser: boolean;
 
   private currentUserDataSubject: BehaviorSubject<AuthResponse | null>;

@@ -1,6 +1,6 @@
 import { Component, signal, inject } from '@angular/core';
 import { CommonModule, AsyncPipe } from '@angular/common'; // Import AsyncPipe
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { RouterLink, RouterLinkActive, RouterOutlet, Router } from '@angular/router';
 import { DrawerModule } from 'primeng/drawer';
 import { ButtonModule } from 'primeng/button';
 import { AuthService } from '../../services/auth.service'; // Import AuthService
@@ -23,6 +23,7 @@ import { map } from 'rxjs/operators';
 })
 export class DashboardLayoutComponent {
   private authService = inject(AuthService);
+  private router = inject(Router);
 
   sidebarVisible = signal(false);
   userMenuVisible = signal(false);
@@ -56,5 +57,6 @@ export class DashboardLayoutComponent {
   logout(): void {
     this.closeUserMenu();
     this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

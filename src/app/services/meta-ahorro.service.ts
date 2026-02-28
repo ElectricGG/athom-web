@@ -9,13 +9,15 @@ import {
   EstadoMeta
 } from '../models/meta-ahorro.model';
 
+import { environment } from '../../environments/environment';
+
 @Injectable({
   providedIn: 'root'
 })
 export class MetaAhorroService {
-  private readonly baseUrl = 'http://localhost:5041/api/MetasAhorro';
+  private readonly baseUrl = `${environment.apiUrl}/MetasAhorro`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getAll(estado?: EstadoMeta): Observable<MetaAhorro[]> {
     const params: Record<string, string> = {};

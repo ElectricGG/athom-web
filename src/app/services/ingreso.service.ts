@@ -10,12 +10,14 @@ import {
   CategoriaIngreso
 } from '../models/ingreso.model';
 
+import { environment } from '../../environments/environment';
+
 @Injectable({
   providedIn: 'root'
 })
 export class IngresoService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:5041/api/Ingresos';
+  private readonly apiUrl = `${environment.apiUrl}/Ingresos`;
 
   /**
    * Obtiene los ingresos del usuario para un mes y año específico.

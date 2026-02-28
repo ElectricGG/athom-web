@@ -10,12 +10,14 @@ import {
   CategoriaGasto
 } from '../models/gasto.model';
 
+import { environment } from '../../environments/environment';
+
 @Injectable({
   providedIn: 'root'
 })
 export class GastoService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:5041/api/Gastos';
+  private readonly apiUrl = `${environment.apiUrl}/Gastos`;
 
   /**
    * Obtiene los gastos del usuario para un mes y año específico.

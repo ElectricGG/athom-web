@@ -1,4 +1,5 @@
 <p-toast />
+<p-confirmDialog />
 
 <div class="p-4 lg:p-6 space-y-6">
   <!-- Header -->
@@ -11,42 +12,42 @@
     <!-- Main Settings -->
     <div class="lg:col-span-2 space-y-6">
       <!-- Profile Section -->
-      <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold text-gray-900">Perfil</h2>
+      <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-base font-semibold text-gray-900">Perfil</h2>
           @if (isLoading) {
             <i class="pi pi-spin pi-spinner text-green-500"></i>
           }
         </div>
 
         @if (isLoading) {
-          <div class="flex justify-center py-8">
+          <div class="flex justify-center py-6">
             <div class="text-center">
-              <i class="pi pi-spin pi-spinner text-3xl text-green-500 mb-3"></i>
-              <p class="text-gray-500">Cargando perfil...</p>
+              <i class="pi pi-spin pi-spinner text-2xl text-green-500 mb-2"></i>
+              <p class="text-gray-500 text-sm">Cargando perfil...</p>
             </div>
           </div>
         } @else {
           <form [formGroup]="perfilForm" (ngSubmit)="guardarPerfil()">
             <!-- Avatar -->
-            <div class="flex items-center gap-4 mb-6">
-              <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center text-white text-2xl font-bold">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center text-white text-xl font-bold">
                 {{ getUserInitial() }}
               </div>
               <div>
-                <p class="font-semibold text-gray-900">{{ perfil?.nombreUsuario }}</p>
-                <p class="text-sm text-gray-500">{{ perfil?.email }}</p>
+                <p class="font-semibold text-gray-900 text-sm">{{ perfil?.nombreUsuario }}</p>
+                <p class="text-xs text-gray-500">{{ perfil?.email }}</p>
               </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <!-- Nombre -->
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Nombre</label>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Nombre</label>
                 <input
                   pInputText
                   formControlName="nombreUsuario"
-                  class="w-full"
+                  class="w-full text-sm p-2"
                   [class.ng-invalid]="perfilForm.get('nombreUsuario')?.invalid && perfilForm.get('nombreUsuario')?.touched"
                 />
                 @if (perfilForm.get('nombreUsuario')?.invalid && perfilForm.get('nombreUsuario')?.touched) {
@@ -62,11 +63,11 @@
 
               <!-- Email (solo lectura) -->
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Email</label>
                 <input
                   pInputText
                   type="email"
-                  class="w-full bg-gray-50 cursor-not-allowed"
+                  class="w-full text-sm p-2 bg-gray-50 cursor-not-allowed"
                   [value]="perfil?.email || ''"
                   [readonly]="true"
                 />
@@ -74,26 +75,136 @@
 
               <!-- Teléfono (solo lectura) -->
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Teléfono (WhatsApp)</label>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Teléfono (WhatsApp)</label>
                 <input
                   pInputText
-                  class="w-full bg-gray-50 cursor-not-allowed"
+                  class="w-full text-sm p-2 bg-gray-50 cursor-not-allowed"
                   [value]="perfil?.numeroWhatsApp || ''"
                   [readonly]="true"
                 />
               </div>
             </div>
 
-            <div class="mt-6 flex justify-end">
+            <div class="mt-4 flex justify-end">
               <p-button
                 type="submit"
                 label="Guardar cambios"
                 severity="success"
+                size="small"
                 [loading]="isSaving"
                 [disabled]="perfilForm.invalid || isSaving"
               />
             </div>
           </form>
+        }
+      </div>
+
+      <!-- Email Integration -->
+      <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-base font-semibold text-gray-900">Integración de Email</h2>
+          @if (isLoadingEmailIntegration) {
+            <i class="pi pi-spin pi-spinner text-green-500"></i>
+          }
+        </div>
+
+        @if (isLoadingEmailIntegration) {
+          <div class="flex justify-center py-4">
+            <p class="text-gray-500 text-sm">Cargando...</p>
+          </div>
+        } @else {
+          <p class="text-xs text-gray-500 mb-3">Detectamos consumos en tu correo y te notificamos por WhatsApp.</p>
+          <div class="space-y-3">
+            <!-- Microsoft Outlook -->
+            <div class="flex items-center justify-between p-3 rounded-xl border border-gray-100 bg-gray-50/50">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-9 h-9 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <i class="pi pi-microsoft text-blue-600"></i>
+                </div>
+                <div class="min-w-0">
+                  <p class="text-sm font-medium text-gray-900">Outlook</p>
+                  @if (outlookAccount) {
+                    <p class="text-xs text-gray-500 truncate">{{ outlookAccount.email }}</p>
+                  } @else {
+                    <p class="text-xs text-gray-400">No vinculado</p>
+                  }
+                </div>
+              </div>
+              <div class="flex items-center gap-2 flex-shrink-0">
+                @if (outlookAccount) {
+                  <p-tag
+                    [value]="outlookAccount.subscriptionActiva ? 'Activo' : 'Inactivo'"
+                    [severity]="outlookAccount.subscriptionActiva ? 'success' : 'warn'"
+                    styleClass="text-xs"
+                  />
+                  <p-button
+                    label="Desvincular"
+                    icon="pi pi-link-slash"
+                    severity="danger"
+                    [outlined]="true"
+                    size="small"
+                    [loading]="isDisconnectingOutlook"
+                    (onClick)="disconnectProvider(1)"
+                  />
+                } @else {
+                  <p-button
+                    label="Vincular"
+                    icon="pi pi-microsoft"
+                    severity="info"
+                    size="small"
+                    [outlined]="true"
+                    [loading]="isConnectingOutlook"
+                    (onClick)="connectOutlook()"
+                  />
+                }
+              </div>
+            </div>
+
+            <!-- Gmail -->
+            <div class="flex items-center justify-between p-3 rounded-xl border border-gray-100 bg-gray-50/50">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-9 h-9 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <i class="pi pi-google text-red-500"></i>
+                </div>
+                <div class="min-w-0">
+                  <p class="text-sm font-medium text-gray-900">Gmail</p>
+                  @if (gmailAccount) {
+                    <p class="text-xs text-gray-500 truncate">{{ gmailAccount.email }}</p>
+                  } @else {
+                    <p class="text-xs text-gray-400">No vinculado</p>
+                  }
+                </div>
+              </div>
+              <div class="flex items-center gap-2 flex-shrink-0">
+                @if (gmailAccount) {
+                  <p-tag
+                    [value]="gmailAccount.subscriptionActiva ? 'Activo' : 'Inactivo'"
+                    [severity]="gmailAccount.subscriptionActiva ? 'success' : 'warn'"
+                    styleClass="text-xs"
+                  />
+                  <p-button
+                    label="Desvincular"
+                    icon="pi pi-link-slash"
+                    severity="danger"
+                    [outlined]="true"
+                    size="small"
+                    [loading]="isDisconnectingGmail"
+                    (onClick)="disconnectProvider(2)"
+                  />
+                } @else {
+                  <p-button
+                    label="Vincular"
+                    icon="pi pi-google"
+                    severity="danger"
+                    size="small"
+                    [outlined]="true"
+                    [loading]="isConnectingGmail"
+                    (onClick)="connectGmail()"
+                  />
+                }
+              </div>
+            </div>
+          </div>
         }
       </div>
 

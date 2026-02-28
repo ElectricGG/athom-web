@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { environment } from '../../../environments/environment';
 import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -33,9 +34,9 @@ export class RegisterComponent {
   private router = inject(Router);
   private http = inject(HttpClient);
 
-  private readonly sendCodeUrl = 'http://localhost:5041/api/auth/whatsapp/send-code';
-  private readonly verifyCodeUrl = 'http://localhost:5041/api/auth/whatsapp/verify-code';
-  private readonly createUserUrl = 'http://localhost:5041/api/Usuarios';
+  private readonly sendCodeUrl = `${environment.apiUrl}/auth/whatsapp/send-code`;
+  private readonly verifyCodeUrl = `${environment.apiUrl}/auth/whatsapp/verify-code`;
+  private readonly createUserUrl = `${environment.apiUrl}/Usuarios`;
 
   registerForm: FormGroup = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2)]],

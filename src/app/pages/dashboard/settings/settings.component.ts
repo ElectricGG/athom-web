@@ -6,12 +6,16 @@ import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+import { TagModule } from 'primeng/tag';
+import { MessageService, ConfirmationService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { PerfilService } from '../../../services/perfil.service';
 import { AuthService } from '../../../services/auth.service';
 import { PreferenciaNotificacionService } from '../../../services/preferencia-notificacion.service';
+import { EmailIntegrationService } from '../../../services/email-integration.service';
 import { Perfil } from '../../../models/perfil.model';
 import { PreferenciaNotificacion } from '../../../models/preferencia-notificacion.model';
+import { EmailVinculadoInfo, ProveedorEmail, getProveedorNombre } from '../../../models/email-integration.model';
 
 interface NotificationItem {
   key: string;
@@ -32,9 +36,11 @@ interface NotificationItem {
     InputTextModule,
     SelectModule,
     ToggleSwitchModule,
-    ToastModule
+    ToastModule,
+    TagModule,
+    ConfirmDialogModule
   ],
-  providers: [MessageService],
+  providers: [MessageService, ConfirmationService],
   templateUrl: './settings.component.html'
 })
 export class SettingsComponent implements OnInit {
@@ -42,7 +48,9 @@ export class SettingsComponent implements OnInit {
   private readonly perfilService = inject(PerfilService);
   private readonly authService = inject(AuthService);
   private readonly preferenciaService = inject(PreferenciaNotificacionService);
+  private readonly emailIntegrationService = inject(EmailIntegrationService);
   private readonly messageService = inject(MessageService);
+  private readonly confirmationService = inject(ConfirmationService);
 
   perfilForm: FormGroup = this.fb.group({
     nombreUsuario: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]]
@@ -54,40 +62,42 @@ export class SettingsComponent implements OnInit {
   isSavingNotifications = false;
   perfil: Perfil | null = null;
 
+  // Email Integration
+  isLoadingEmailIntegration = true;
+  isConnectingOutlook = false;
+  isConnectingGmail = false;
+  isDisconnectingOutlook = false;
+  isDisconnectingGmail = false;
+  outlookAccount: EmailVinculadoInfo | null = null;
+  gmailAccount: EmailVinculadoInfo | null = null;
+
   notifications: NotificationItem[] = [
     {
       key: 'whatsapp',
-      label: 'Notificaciones WhatsApp',
-      description: 'Recibe alertas y recordatorios por WhatsApp',
-      field: 'notificacionesWhatsApp',
-      enabled: true
-    },
-    {
-      key: 'email',
-      label: 'Notificaciones por email',
-      description: 'Recibe resúmenes semanales por correo',
-      field: 'notificacionesEmail',
-      enabled: true
-    },
-    {
-      key: 'budget',
-      label: 'Alertas de presupuesto',
-      description: 'Te avisamos cuando alcances el 80% del límite',
-      field: 'alertasPresupuesto',
+      label: 'Alerta de consumos detectado en correo',
+      description: 'Recibe alertas de consumos detectados en tu correo a través de WhatsApp',
+      field: 'alertasConsumo',
       enabled: true
     },
     {
       key: 'reminders',
       label: 'Recordatorios de pago',
-      description: 'No olvides tus pagos importantes',
+      description: 'Recibe recordatorios de pagos por whatsapp',
       field: 'recordatoriosPago',
       enabled: true
     },
     {
-      key: 'tips',
-      label: 'Consejos financieros',
-      description: 'Recibe tips personalizados de ahorro',
-      field: 'consejosFinancieros',
+      key: 'newsletter',
+      label: 'Boletín semanal',
+      description: 'Recibe un correo semanal con consejos prácticos para mejorar tus finanzas.',
+      field: 'boletinSemanal',
+      enabled: true
+    },
+    {
+      key: 'offers',
+      label: 'Ofertas y descuentos',
+      description: 'Entérate de promociones exclusivas y descuentos de nuestros aliados por whatsapp y correo.',
+      field: 'ofertasDescuentos',
       enabled: true
     }
   ];
@@ -95,6 +105,7 @@ export class SettingsComponent implements OnInit {
   ngOnInit(): void {
     this.loadPerfil();
     this.loadNotificationPreferences();
+    this.loadEmailIntegrationStatus();
   }
 
   private loadPerfil(): void {
@@ -181,11 +192,10 @@ export class SettingsComponent implements OnInit {
     this.isSavingNotifications = true;
 
     const request = {
-      notificacionesWhatsApp: this.getNotificationValue('notificacionesWhatsApp'),
-      notificacionesEmail: this.getNotificationValue('notificacionesEmail'),
-      alertasPresupuesto: this.getNotificationValue('alertasPresupuesto'),
+      alertasConsumo: this.getNotificationValue('alertasConsumo'),
       recordatoriosPago: this.getNotificationValue('recordatoriosPago'),
-      consejosFinancieros: this.getNotificationValue('consejosFinancieros')
+      boletinSemanal: this.getNotificationValue('boletinSemanal'),
+      ofertasDescuentos: this.getNotificationValue('ofertasDescuentos')
     };
 
     this.preferenciaService.updatePreferencias(request).subscribe({
@@ -213,5 +223,135 @@ export class SettingsComponent implements OnInit {
 
   getUserInitial(): string {
     return this.perfil?.nombreUsuario?.charAt(0).toUpperCase() || '?';
+  }
+
+  // ==================== Email Integration ====================
+
+  private loadEmailIntegrationStatus(): void {
+    this.isLoadingEmailIntegration = true;
+    this.emailIntegrationService.getStatus().subscribe({
+      next: (response) => {
+        const cuentas = response.cuentas ?? [];
+        this.outlookAccount = cuentas.find(c => c.proveedor === ProveedorEmail.Outlook) ?? null;
+        this.gmailAccount = cuentas.find(c => c.proveedor === ProveedorEmail.Gmail) ?? null;
+        this.isLoadingEmailIntegration = false;
+      },
+      error: (error) => {
+        console.error('Error loading email integration status:', error);
+        this.outlookAccount = null;
+        this.gmailAccount = null;
+        this.isLoadingEmailIntegration = false;
+      }
+    });
+  }
+
+  connectOutlook(): void {
+    this.isConnectingOutlook = true;
+    this.emailIntegrationService.connect().subscribe({
+      next: (response) => {
+        window.location.href = response.authorizationUrl;
+      },
+      error: (error) => {
+        console.error('Error connecting Outlook:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: error.error?.message || 'No se pudo iniciar la vinculación con Outlook'
+        });
+        this.isConnectingOutlook = false;
+      }
+    });
+  }
+
+  connectGmail(): void {
+    this.isConnectingGmail = true;
+    this.emailIntegrationService.connectGmail().subscribe({
+      next: (response) => {
+        window.location.href = response.authorizationUrl;
+      },
+      error: (error) => {
+        console.error('Error connecting Gmail:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: error.error?.message || 'No se pudo iniciar la vinculación con Gmail'
+        });
+        this.isConnectingGmail = false;
+      }
+    });
+  }
+
+  disconnectProvider(proveedor: ProveedorEmail): void {
+    const providerName = proveedor === ProveedorEmail.Gmail ? 'Gmail' : 'Microsoft Outlook';
+
+    this.confirmationService.confirm({
+      message: `¿Estás seguro de que deseas desvincular tu cuenta de ${providerName}? Ya no recibirás notificaciones de consumos detectados de esta cuenta.`,
+      header: 'Confirmar desvinculación',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sí, desvincular',
+      rejectLabel: 'Cancelar',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => this.performDisconnect(proveedor)
+    });
+  }
+
+  private performDisconnect(proveedor: ProveedorEmail): void {
+    const isGmail = proveedor === ProveedorEmail.Gmail;
+
+    if (isGmail) {
+      this.isDisconnectingGmail = true;
+    } else {
+      this.isDisconnectingOutlook = true;
+    }
+
+    this.emailIntegrationService.disconnect(proveedor).subscribe({
+      next: () => {
+        if (isGmail) {
+          this.gmailAccount = null;
+          this.isDisconnectingGmail = false;
+        } else {
+          this.outlookAccount = null;
+          this.isDisconnectingOutlook = false;
+        }
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Desvinculado',
+          detail: `Tu cuenta de ${isGmail ? 'Gmail' : 'Outlook'} ha sido desvinculada exitosamente`,
+          life: 5000
+        });
+        setTimeout(() => {
+          this.messageService.add({
+            severity: 'info',
+            summary: 'Tip',
+            detail: isGmail
+              ? 'Para revocar permisos completamente, visita myaccount.google.com/permissions'
+              : 'Para revocar permisos completamente, visita account.live.com/consent/Manage',
+            life: 8000
+          });
+        }, 1000);
+      },
+      error: (error) => {
+        console.error('Error disconnecting:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: error.error?.message || 'No se pudo desvincular la cuenta de correo'
+        });
+        if (isGmail) {
+          this.isDisconnectingGmail = false;
+        } else {
+          this.isDisconnectingOutlook = false;
+        }
+      }
+    });
+  }
+
+  formatDate(dateString: string | null): string {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleDateString('es-PE', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    });
   }
 }

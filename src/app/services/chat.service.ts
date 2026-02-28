@@ -3,13 +3,15 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ChatRequest, ChatResponse, ChatHistoryItem } from '../models/chat.model';
 
+import { environment } from '../../environments/environment';
+
 @Injectable({
   providedIn: 'root'
 })
 export class ChatService {
-  private readonly baseUrl = 'http://localhost:5041/api/Chat';
+  private readonly baseUrl = `${environment.apiUrl}/Chat`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getHistory(count: number = 50): Observable<ChatHistoryItem[]> {
     return this.http.get<ChatHistoryItem[]>(`${this.baseUrl}/history`, {
