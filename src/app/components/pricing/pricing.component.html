@@ -9,6 +9,23 @@
       </p>
     </div>
 
+    <div class="flex justify-center mb-10 w-full">
+      <div class="bg-gray-100 p-1 rounded-full inline-flex">
+        <button (click)="togglePlan(false)"
+          [ngClass]="!isAnnual ? 'bg-white shadow text-gray-900' : 'text-gray-500 hover:text-gray-700'"
+          class="px-6 py-2 rounded-full text-sm font-medium transition-all duration-200">
+          Mensual
+        </button>
+        <button (click)="togglePlan(true)"
+          [ngClass]="isAnnual ? 'bg-white shadow text-gray-900' : 'text-gray-500 hover:text-gray-700'"
+          class="px-6 py-2 rounded-full text-sm font-medium transition-all duration-200 flex items-center gap-2">
+          Anual
+          <span class="bg-green-100 text-green-700 text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold">Ahorra
+            24%</span>
+        </button>
+      </div>
+    </div>
+
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto">
       <!-- Plan Gratis -->
       <div class="bg-white rounded-2xl border-2 border-gray-200 p-6 md:p-8 shadow-sm hover:shadow-md transition-shadow">
@@ -18,52 +35,54 @@
             <span class="text-4xl font-bold text-gray-900">S/ 0</span>
             <span class="text-gray-500">/mes</span>
           </div>
-          <p class="text-sm text-gray-500 mt-2">Hasta 5 mensajes por día</p>
+          <p class="text-sm text-gray-500 mt-2">Hasta 15 mensajes por día</p>
         </div>
 
-        <ul class="space-y-4 mb-8">
+        <ul class="space-y-4 mb-8 text-left">
           @for (feature of freeFeatures; track feature) {
-            <li class="flex items-start gap-3">
-              <i class="pi pi-check text-green-500 text-lg mt-0.5"></i>
-              <span class="text-gray-700">{{ feature }}</span>
-            </li>
+          <li class="flex items-start gap-3">
+            <i class="pi pi-check text-green-500 text-lg mt-0.5"></i>
+            <span class="text-gray-700">{{ feature }}</span>
+          </li>
           }
         </ul>
 
         <a routerLink="/register" class="block">
-          <p-button
-            label="Empezar gratis"
-            severity="secondary"
-            [outlined]="true"
-            styleClass="w-full py-3 text-base font-semibold"
-          />
+          <p-button label="Empezar gratis" severity="secondary" [outlined]="true"
+            styleClass="w-full py-3 text-base font-semibold" />
         </a>
       </div>
 
       <!-- Plan Premium -->
-      <div class="relative bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl border-2 border-green-500 p-6 md:p-8 shadow-lg">
+      <div
+        class="relative bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl border-2 border-green-500 p-6 md:p-8 shadow-lg">
         <!-- Badge -->
         <div class="absolute -top-4 left-1/2 -translate-x-1/2">
-          <span class="bg-green-500 text-white px-4 py-1 rounded-full text-sm font-semibold shadow-lg">
+          <span
+            class="bg-green-500 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow-lg flex items-center gap-2 whitespace-nowrap">
+            <i class="pi pi-star-fill text-yellow-300"></i>
             Más popular
           </span>
         </div>
 
-        <div class="text-center mb-6 mt-2">
+        <div class="text-center mb-6 mt-4">
           <h3 class="text-xl font-bold text-gray-900 mb-2">Plan Premium</h3>
-          <div class="flex items-baseline justify-center gap-1">
-            <span class="text-4xl font-bold text-green-600">S/ 19.90</span>
-            <span class="text-gray-500">/mes</span>
+          <div class="flex items-baseline justify-center gap-1 transition-all duration-300">
+            <span class="text-4xl font-bold text-green-600">S/ {{ isAnnual ? '89.90' : '9.90' }}</span>
+            <span class="text-gray-500">{{ isAnnual ? '/año' : '/mes' }}</span>
           </div>
-          <p class="text-sm text-green-600 mt-2 font-medium">Sin límite de mensajes</p>
+          <p class="text-sm text-green-600 mt-2 font-medium h-5">
+            <span *ngIf="isAnnual">S/ 7.49 al mes, facturado anualmente</span>
+            <span *ngIf="!isAnnual">Cancela cuando quieras</span>
+          </p>
         </div>
 
-        <ul class="space-y-4 mb-6">
+        <ul class="space-y-4 mb-6 text-left">
           @for (feature of premiumFeatures; track feature) {
-            <li class="flex items-start gap-3">
-              <i class="pi pi-check-circle text-green-600 text-lg mt-0.5"></i>
-              <span class="text-gray-700">{{ feature }}</span>
-            </li>
+          <li class="flex items-start gap-3">
+            <i class="pi pi-check-circle text-green-600 text-lg mt-0.5 shadow-sm rounded-full"></i>
+            <span class="text-gray-800">{{ feature }}</span>
+          </li>
           }
         </ul>
 
@@ -74,32 +93,19 @@
           </p>
           <ul class="space-y-2">
             <li class="flex items-start gap-2 text-sm text-gray-600">
-              <i class="pi pi-tag text-green-500 mt-0.5"></i>
-              <span>Cupones de descuento y ofertas</span>
-            </li>
-            <li class="flex items-start gap-2 text-sm text-gray-600">
-              <i class="pi pi-building text-green-500 mt-0.5"></i>
-              <span>Ofertas de establecimientos aliados</span>
+              <i class="pi pi-sparkles text-green-500 mt-0.5"></i>
+              <span>Alertas de ahorro hiper-personalizadas basadas en tus gustos</span>
             </li>
           </ul>
         </div>
 
         <div class="space-y-3">
           <a routerLink="/register" class="block">
-            <p-button
-              label="Pasar a Premium"
-              icon="pi pi-star"
-              severity="success"
-              styleClass="w-full py-3 text-base font-semibold shadow-lg shadow-green-500/30"
-            />
+            <p-button label="Pasar a Premium" icon="pi pi-star" severity="success"
+              styleClass="w-full py-3 text-base font-semibold shadow-lg shadow-green-500/30" />
           </a>
-          <p-button
-            label="Ver establecimientos aliados"
-            icon="pi pi-external-link"
-            severity="success"
-            [outlined]="true"
-            styleClass="w-full py-2 text-sm"
-          />
+          <p-button label="Ver establecimientos aliados" icon="pi pi-external-link" severity="success" [outlined]="true"
+            styleClass="w-full py-2 text-sm" />
         </div>
       </div>
     </div>

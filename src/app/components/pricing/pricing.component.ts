@@ -1,28 +1,36 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-pricing',
   standalone: true,
-  imports: [RouterLink, ButtonModule],
+  imports: [RouterLink, ButtonModule, CommonModule],
   templateUrl: './pricing.component.html'
 })
 export class PricingComponent {
+  isAnnual = false;
+
   freeFeatures = [
-    'Registro de gastos e ingresos',
-    'Categorías limitadas',
-    'Inteligencia básica de clasificación',
-    'Envío de audio o imagen para registros',
-    'Reportes básicos'
+    'Uso diario estándar de Mia',
+    'Memoria de corto plazo',
+    'Registro de gastos en texto (manual)',
+    'Reportes con resumen básico visual',
+    'Ofertas y descuentos estándar',
+    'Soporte estándar'
   ];
 
   premiumFeatures = [
-    'Todo lo del plan gratis',
-    'Mensajes ilimitados',
-    'Inteligencia avanzada en reportes',
-    'Categorías personalizadas ilimitadas',
+    'Uso extendido ilimitado de Mia*',
+    'Memoria extendida e inteligente',
+    'Registro de gastos con foto de boletas (IA Vision)',
+    'Registro de gastos por voz (audio a texto)',
     'Reportes avanzados y exportables',
-    'Alertas de presupuesto personalizadas'
+    'Soporte prioritario'
   ];
+
+  togglePlan(annual: boolean): void {
+    this.isAnnual = annual;
+  }
 }

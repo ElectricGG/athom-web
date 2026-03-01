@@ -17,7 +17,7 @@ export class ReportsComponent {
     },
     {
       message: 'Reporte semanal',
-      response: '📅 Semana del 6-12 Ene\n\nGastos: S/ 485.00\nIngresos: S/ 300.00\n\n📉 -12% vs semana anterior'
+      response: '📅 Semana del 6-12 Ene\n\nGastos: S/ 485.00\nIngresos: S/ 300.00'
     }
   ];
 }
