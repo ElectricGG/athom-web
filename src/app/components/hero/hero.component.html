@@ -129,7 +129,7 @@
           [ngClass]="activeIndex === 1 ? 'opacity-100 scale-100 z-20' : 'opacity-0 scale-95 pointer-events-none'">
 
           <!-- We scale the entire web mockup to be much larger on desktop sizes -->
-          <div class="relative w-full max-w-xl lg:max-w-2xl xl:max-w-3xl xl:translate-x-12">
+          <div class="relative w-full max-w-lg lg:max-w-xl xl:max-w-2xl xl:translate-x-12">
             <div class="rounded-2xl shadow-2xl overflow-hidden border border-gray-200 z-10 relative bg-white">
               <!-- Faux Browser Header -->
               <div class="bg-gray-100 px-4 py-3 flex items-center gap-2 border-b border-gray-200">
@@ -141,8 +141,11 @@
                   auth.athom.app/dashboard
                 </div>
               </div>
-              <img src="assets/images/ImagenDashboard.PNG" alt="Dashboard Web Preview"
-                class="w-full h-[280px] md:h-[400px] lg:h-[480px] object-cover object-top">
+              <!-- Mostrar imagen completa pero con el parent más pequeño -->
+              <div class="block w-full leading-none">
+                <img src="assets/images/ImagenDashboard.PNG" alt="Dashboard Web Preview"
+                  class="w-full h-auto block m-0 p-0 border-0 align-bottom">
+              </div>
             </div>
 
             <!-- Web Decorative elements -->
