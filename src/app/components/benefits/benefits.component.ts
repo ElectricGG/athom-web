@@ -43,9 +43,9 @@ export class BenefitsComponent {
       iconColor: 'text-yellow-600'
     },
     {
-      icon: 'pi pi-cloud',
-      title: 'Siempre disponible',
-      description: 'Accede a tu información desde cualquier dispositivo con WhatsApp.',
+      icon: 'pi pi-desktop',
+      title: 'WhatsApp + Dashboard Web',
+      description: 'Registra rápido desde WhatsApp en la calle. Analiza profundo en tu PC cuando quieras.',
       bgColor: 'bg-cyan-100',
       iconColor: 'text-cyan-600'
     }

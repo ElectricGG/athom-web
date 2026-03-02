@@ -1,122 +1,156 @@
-<section class="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 px-4 py-7">
-  <div class="max-w-6xl mx-auto">
-    <div class="flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
-      <!-- Content -->
-      <div class="flex-1 text-center lg:text-left" data-aos="fade-right" data-aos-duration="1000">
-        <div
-          class="inline-flex items-center gap-2 bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium mb-6">
-          <i class="pi pi-whatsapp text-lg"></i>
-          <span>100% desde WhatsApp</span>
-        </div>
+<section
+  class="relative min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 px-4 pt-0 pb-12 overflow-x-hidden flex items-center">
+  <div class="max-w-6xl mx-auto w-full">
+    <!-- Carousel Dots/Tabs -->
+    <div class="flex justify-center mb-6 lg:mb-8 gap-3 relative z-30" data-aos="fade-down" data-aos-duration="800">
+      <button *ngFor="let slide of slides; let i = index" (click)="setSlide(i)"
+        class="group relative h-2 overflow-hidden rounded-full transition-all duration-300 flex items-center shadow-sm"
+        [ngClass]="i === activeIndex ? 'w-20 bg-green-500' : 'w-10 bg-green-200 hover:bg-green-300'">
+      </button>
+    </div>
 
-        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
-          Controla tus finanzas
-          <span class="text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-emerald-600">
-            desde WhatsApp
-          </span>
-        </h1>
+    <!-- Active Slide Content Container -->
+    <div class="flex flex-col lg:flex-row items-center gap-8 lg:gap-10 min-h-[500px]">
 
-        <p class="text-lg md:text-xl text-gray-600 mb-8 max-w-2xl mx-auto lg:mx-0">
-          El asistente financiero más simple del mundo. Registra gastos, ingresos y presupuestos con solo enviar un
-          mensaje.
-        </p>
+      <!-- Content (Left) -->
+      <div class="flex-1 text-center lg:text-left relative z-20 grid">
+        <!-- We use Grid overlapping so the container height naturally stretches to fit the tallest slide -->
+        <div *ngFor="let slide of slides; let i = index"
+          class="col-start-1 row-start-1 transition-all duration-700 w-full"
+          [ngClass]="i === activeIndex ? 'opacity-100 translate-y-0 z-10' : 'opacity-0 translate-y-4 pointer-events-none'">
 
-        <!-- Value bullets -->
-        <ul class="space-y-4 mb-10 text-left max-w-md mx-auto lg:mx-0">
-          <li class="flex items-center gap-3">
-            <span class="flex-shrink-0 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-              <i class="pi pi-check text-white text-sm"></i>
+          <div class="inline-flex items-center gap-2 bg-green-100 px-3 py-1.5 rounded-full text-sm font-medium mb-4"
+            [ngClass]="i === 0 ? 'text-green-800' : 'text-indigo-800 bg-indigo-100'">
+            <i [class]="slide.badgeIcon + ' text-base'"></i>
+            <span>{{ slide.badgeText }}</span>
+          </div>
+
+          <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mb-4">
+            {{ slide.title1 }}
+            <span class="text-transparent bg-clip-text block mt-1"
+              [ngClass]="i === 0 ? 'bg-gradient-to-r from-green-500 to-emerald-600' : 'bg-gradient-to-r from-indigo-500 to-blue-600'">
+              {{ slide.title2 }}
             </span>
-            <span class="text-gray-700 font-medium">Sin descargar ninguna app adicional</span>
-          </li>
-          <li class="flex items-center gap-3">
-            <span class="flex-shrink-0 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-              <i class="pi pi-check text-white text-sm"></i>
-            </span>
-            <span class="text-gray-700 font-medium">Texto, audio o imágenes: tú eliges</span>
-          </li>
-          <li class="flex items-center gap-3">
-            <span class="flex-shrink-0 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-              <i class="pi pi-check text-white text-sm"></i>
-            </span>
-            <span class="text-gray-700 font-medium">Reportes automáticos cuando los necesites</span>
-          </li>
-        </ul>
+          </h1>
 
-        <!-- CTAs -->
-        <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-          <a routerLink="/register">
-            <p-button label="Crear cuenta gratis" icon="pi pi-user-plus" severity="success" size="large"
-              styleClass="w-full sm:w-auto px-8 py-4 text-lg font-semibold shadow-lg shadow-green-500/30 hover:shadow-green-500/50 transition-shadow" />
-          </a>
-          <a routerLink="/login">
-            <p-button label="Iniciar sesión" icon="pi pi-sign-in" severity="secondary" [outlined]="true" size="large"
-              styleClass="w-full sm:w-auto px-8 py-4 text-lg font-semibold" />
-          </a>
+          <p class="text-lg text-gray-600 mb-6 max-w-2xl mx-auto lg:mx-0">
+            {{ slide.description }}
+          </p>
+
+          <!-- Value bullets -->
+          <ul class="space-y-3 mb-8 text-left max-w-lg mx-auto lg:mx-0">
+            <li *ngFor="let bullet of slide.bullets" class="flex items-center gap-3">
+              <span class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-white text-xs"
+                [ngClass]="i === 0 ? 'bg-green-500' : 'bg-indigo-500'">
+                <i class="pi pi-check text-white text-xs"></i>
+              </span>
+              <span class="text-gray-700 font-medium text-sm md:text-base">{{ bullet }}</span>
+            </li>
+          </ul>
+
+          <!-- CTAs -->
+          <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            <a routerLink="/register">
+              <p-button label="Crear cuenta gratis" icon="pi pi-user-plus" size="large"
+                [styleClass]="'w-full sm:w-auto px-6 py-3 md:px-8 md:py-4 text-base md:text-lg font-semibold shadow-lg transition-shadow border-0 text-white ' + (i === 0 ? 'bg-green-500 hover:bg-green-600 shadow-green-500/30' : 'bg-indigo-500 hover:bg-indigo-600 shadow-indigo-500/30')" />
+            </a>
+            <a routerLink="/login">
+              <p-button label="Iniciar sesión" icon="pi pi-sign-in" severity="secondary" [outlined]="true" size="large"
+                styleClass="w-full sm:w-auto px-6 py-3 md:px-8 md:py-4 text-base md:text-lg font-semibold" />
+            </a>
+          </div>
         </div>
       </div>
 
-      <!-- Phone mockup -->
-      <div class="flex-1 flex justify-center lg:justify-end" data-aos="fade-left" data-aos-duration="1000"
-        data-aos-delay="200">
-        <div class="relative">
-          <div class="w-72 md:w-80 bg-gray-900 rounded-[3rem] p-3 shadow-2xl">
-            <div class="bg-white rounded-[2.5rem] overflow-hidden">
-              <!-- WhatsApp header -->
-              <div class="bg-[#075E54] px-4 py-3 flex items-center gap-3">
-                <div class="w-10 h-10 bg-green-200 rounded-full flex items-center justify-center">
-                  <i class="pi pi-wallet text-green-700"></i>
-                </div>
-                <div>
-                  <p class="text-white font-semibold text-sm">Athom</p>
-                  <p class="text-green-200 text-xs">En línea</p>
-                </div>
-              </div>
+      <!-- Mockups Container (Right) -->
+      <div class="flex-1 flex justify-center lg:justify-end relative mt-16 md:mt-20 lg:mt-0 w-full grid min-h-[500px]">
 
-              <!-- Chat messages -->
-              <div class="bg-[#ECE5DD] p-4 h-96 space-y-3">
-                <!-- User message -->
-                <div class="flex justify-end">
-                  <div class="bg-[#DCF8C6] rounded-lg rounded-tr-none px-3 py-2 max-w-[80%] shadow">
-                    <p class="text-sm text-gray-800">Gasté 35 soles en almuerzo</p>
-                    <p class="text-[10px] text-gray-500 text-right mt-1">10:30</p>
+        <!-- Slide 0: WhatsApp Phone Mockup -->
+        <div
+          class="col-start-1 row-start-1 transition-all duration-700 transform w-full flex justify-center lg:justify-end"
+          [ngClass]="activeIndex === 0 ? 'opacity-100 scale-100 z-20' : 'opacity-0 scale-95 pointer-events-none'">
+
+          <div class="relative z-10 md:translate-x-10">
+            <div class="w-72 md:w-80 lg:w-[340px] bg-gray-900 rounded-[3rem] p-3 shadow-2xl">
+              <div class="bg-white rounded-[2.5rem] overflow-hidden">
+                <!-- WhatsApp header -->
+                <div class="bg-[#075E54] px-5 py-3.5 flex items-center gap-3">
+                  <div class="w-10 h-10 bg-green-200 rounded-full flex items-center justify-center">
+                    <i class="pi pi-wallet text-green-700 text-lg"></i>
+                  </div>
+                  <div>
+                    <p class="text-white font-semibold text-base">Athom</p>
+                    <p class="text-green-200 text-xs">En línea</p>
                   </div>
                 </div>
 
-                <!-- Bot response -->
-                <div class="flex justify-start">
-                  <div class="bg-white rounded-lg rounded-tl-none px-3 py-2 max-w-[80%] shadow">
-                    <p class="text-sm text-gray-800">Registrado: S/ 35.00 en Comida</p>
-                    <p class="text-[10px] text-gray-500 text-right mt-1">10:30</p>
+                <!-- Chat messages -->
+                <div
+                  class="bg-[#ECE5DD] px-5 pt-6 pb-6 h-[400px] lg:h-[440px] space-y-4 overflow-hidden flex flex-col justify-end">
+                  <div class="flex justify-end">
+                    <div class="bg-[#DCF8C6] rounded-xl rounded-tr-none px-4 py-2.5 max-w-[80%] shadow">
+                      <p class="text-sm md:text-base text-gray-800">Gasté 35 soles en almuerzo</p>
+                      <p class="text-[10px] md:text-xs text-gray-500 text-right mt-1">10:30</p>
+                    </div>
                   </div>
-                </div>
-
-                <!-- User message -->
-                <div class="flex justify-end">
-                  <div class="bg-[#DCF8C6] rounded-lg rounded-tr-none px-3 py-2 max-w-[80%] shadow">
-                    <p class="text-sm text-gray-800">Resumen del mes</p>
-                    <p class="text-[10px] text-gray-500 text-right mt-1">10:31</p>
+                  <div class="flex justify-start">
+                    <div class="bg-white rounded-xl rounded-tl-none px-4 py-2.5 max-w-[80%] shadow">
+                      <p class="text-sm md:text-base text-gray-800">Registrado: S/ 35.00 en Comida</p>
+                      <p class="text-[10px] md:text-xs text-gray-500 text-right mt-1">10:30</p>
+                    </div>
                   </div>
-                </div>
-
-                <!-- Bot response -->
-                <div class="flex justify-start">
-                  <div class="bg-white rounded-lg rounded-tl-none px-3 py-2 max-w-[85%] shadow">
-                    <p class="text-sm text-gray-800 font-medium">Resumen Enero 2026</p>
-                    <p class="text-xs text-gray-600 mt-1">Ingresos: S/ 3,500</p>
-                    <p class="text-xs text-gray-600">Gastos: S/ 2,180</p>
-                    <p class="text-xs text-green-600 font-medium">Balance: +S/ 1,320</p>
-                    <p class="text-[10px] text-gray-500 text-right mt-1">10:31</p>
+                  <div class="flex justify-end">
+                    <div class="bg-[#DCF8C6] rounded-xl rounded-tr-none px-4 py-2.5 max-w-[80%] shadow">
+                      <p class="text-sm md:text-base text-gray-800">Resumen del mes</p>
+                      <p class="text-[10px] md:text-xs text-gray-500 text-right mt-1">10:31</p>
+                    </div>
+                  </div>
+                  <div class="flex justify-start">
+                    <div class="bg-white rounded-xl rounded-tl-none px-4 py-3 max-w-[85%] shadow">
+                      <p class="text-sm md:text-base text-gray-800 font-semibold mb-1">Resumen Enero 2026</p>
+                      <p class="text-xs md:text-sm text-gray-600 mt-1">Ingresos: S/ 3,500</p>
+                      <p class="text-xs md:text-sm text-gray-600">Gastos: S/ 2,180</p>
+                      <p class="text-xs md:text-sm text-green-600 font-semibold mt-1">Balance: +S/ 1,320</p>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- Decorative elements -->
-          <div class="absolute -top-4 -right-4 w-20 h-20 bg-green-400 rounded-full opacity-20 blur-xl"></div>
-          <div class="absolute -bottom-8 -left-8 w-32 h-32 bg-emerald-400 rounded-full opacity-20 blur-xl"></div>
+            <!-- WhatsApp Decorative elements -->
+            <div class="absolute -top-4 -right-4 w-20 h-20 bg-green-400 rounded-full opacity-20 blur-xl"></div>
+            <div class="absolute -bottom-8 -left-8 w-32 h-32 bg-emerald-400 rounded-full opacity-20 blur-xl"></div>
+          </div>
         </div>
+
+        <!-- Slide 1: Web Dashboard Mockup -->
+        <div
+          class="col-start-1 row-start-1 transition-all duration-700 transform w-full flex justify-center lg:justify-end lg:pr-10"
+          [ngClass]="activeIndex === 1 ? 'opacity-100 scale-100 z-20' : 'opacity-0 scale-95 pointer-events-none'">
+
+          <!-- We scale the entire web mockup to be much larger on desktop sizes -->
+          <div class="relative w-full max-w-xl lg:max-w-2xl xl:max-w-3xl xl:translate-x-12">
+            <div class="rounded-2xl shadow-2xl overflow-hidden border border-gray-200 z-10 relative bg-white">
+              <!-- Faux Browser Header -->
+              <div class="bg-gray-100 px-4 py-3 flex items-center gap-2 border-b border-gray-200">
+                <div class="w-3 h-3 rounded-full bg-red-400 border border-red-500"></div>
+                <div class="w-3 h-3 rounded-full bg-yellow-400 border border-yellow-500"></div>
+                <div class="w-3 h-3 rounded-full bg-green-400 border border-green-500"></div>
+                <div
+                  class="ml-4 bg-white flex-1 max-w-sm rounded text-[11px] md:text-sm px-3 py-1 text-center text-gray-400 shadow-sm border border-gray-100">
+                  auth.athom.app/dashboard
+                </div>
+              </div>
+              <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop"
+                alt="Dashboard Web Preview" class="w-full h-[280px] md:h-[400px] lg:h-[480px] object-cover object-top">
+            </div>
+
+            <!-- Web Decorative elements -->
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-indigo-400 rounded-full opacity-20 blur-2xl"></div>
+            <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-400 rounded-full opacity-20 blur-2xl"></div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>

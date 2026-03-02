@@ -13,6 +13,7 @@ import { FaqComponent } from '../../components/faq/faq.component';
 import { CtaFinalComponent } from '../../components/cta-final/cta-final.component';
 import { FooterComponent } from '../../components/footer/footer.component';
 import { HeaderComponent } from '../../components/header/header.component';
+import { DashboardPreview } from '../../components/dashboard-preview/dashboard-preview';
 
 @Component({
   selector: 'app-landing',
@@ -31,8 +32,9 @@ import { HeaderComponent } from '../../components/header/header.component';
     BenefitsComponent,
     FaqComponent,
     CtaFinalComponent,
-    FooterComponent
+    FooterComponent,
+    DashboardPreview
   ],
   templateUrl: './landing.component.html'
 })
-export class LandingComponent {}
+export class LandingComponent { }
