@@ -1,7 +1,10 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DatePipe, DecimalPipe, AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { AuthService } from '../../../services/auth.service';
 import { Transaction, TransactionType, ExpenseDistribution, BalanceSummary } from '../../../models/transaction.model';
 import { ResumenMetaAhorro } from '../../../models/meta-ahorro.model';
 import { TransactionService } from '../../../services/transaction.service';
@@ -17,14 +20,17 @@ interface PeriodOption {
 @Component({
   selector: 'app-dashboard-home',
   standalone: true,
-  imports: [RouterLink, DatePipe, DecimalPipe, FormsModule, ExpenseDonutChartComponent, IncomeExpenseTrendComponent],
+  imports: [RouterLink, DatePipe, DecimalPipe, FormsModule, ExpenseDonutChartComponent, IncomeExpenseTrendComponent, AsyncPipe],
   templateUrl: './home.component.html'
 })
 export class DashboardHomeComponent implements OnInit {
   private transactionService = inject(TransactionService);
   private metaAhorroService = inject(MetaAhorroService);
+  private authService = inject(AuthService);
 
-  userName = 'Juan';
+  userName$: Observable<string> = this.authService.currentUserData.pipe(
+    map(user => user ? user.nombreUsuario : 'Invitado')
+  );
   recentTransactions: Transaction[] = [];
   expenseDistribution: ExpenseDistribution[] = [];
   balanceSummary: BalanceSummary | null = null;
