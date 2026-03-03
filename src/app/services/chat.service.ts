@@ -26,4 +26,19 @@ export class ChatService {
   clearHistory(): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/history`);
   }
+
+  downloadExport(exportUrl: string, fileName: string): void {
+    const fullUrl = `${environment.apiUrl}${exportUrl.replace('/api/', '/')}`;
+    this.http.get(fullUrl, { responseType: 'blob' }).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        a.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => console.error('Error downloading export:', err)
+    });
+  }
 }

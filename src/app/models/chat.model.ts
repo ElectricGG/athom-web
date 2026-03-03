@@ -12,6 +12,8 @@ export interface ChatHistoryItem {
 export interface ChatResponse {
   message: string;
   toolsUsed?: string[];
+  documentUrl?: string;
+  documentFileName?: string;
   timestamp: Date;
 }
 
@@ -21,4 +23,6 @@ export interface ChatMessage {
   content: string;
   time: string;
   toolsUsed?: string[];
+  documentUrl?: string;
+  documentFileName?: string;
 }

@@ -119,7 +119,9 @@ Puedo ayudarte con:
           type: 'assistant',
           content: response.message,
           time: this.formatTime(new Date(response.timestamp)),
-          toolsUsed: response.toolsUsed
+          toolsUsed: response.toolsUsed,
+          documentUrl: response.documentUrl,
+          documentFileName: response.documentFileName
         };
         this.messages.push(assistantMessage);
         setTimeout(() => this.scrollToBottom(), 100);
@@ -210,6 +212,12 @@ Si el problema persiste, verifica tu conexión a internet o intenta más tarde.`
   private scrollToBottom(): void {
     if (this.chatContainer) {
       this.chatContainer.nativeElement.scrollTop = this.chatContainer.nativeElement.scrollHeight;
+    }
+  }
+
+  downloadDocument(message: ChatMessage): void {
+    if (message.documentUrl && message.documentFileName) {
+      this.chatService.downloadExport(message.documentUrl, message.documentFileName);
     }
   }
 
