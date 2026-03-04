@@ -208,6 +208,118 @@
         }
       </div>
 
+      <!-- Miembros Familiares (solo Premium) -->
+      @if (isPremium) {
+        <div class="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h2 class="text-base font-semibold text-gray-900">Miembros Familiares</h2>
+              <p class="text-xs text-gray-500 mt-0.5">WhatsApp adicionales que operan sobre tus datos financieros</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-gray-500">{{ miembrosFamiliares.length }}/{{ maxMiembros }}</span>
+              @if (isLoadingMiembros) {
+                <i class="pi pi-spin pi-spinner text-green-500"></i>
+              }
+            </div>
+          </div>
+
+          @if (isLoadingMiembros) {
+            <div class="flex justify-center py-4">
+              <p class="text-gray-500 text-sm">Cargando...</p>
+            </div>
+          } @else {
+            <!-- Lista de miembros -->
+            @if (miembrosFamiliares.length > 0) {
+              <div class="space-y-2 mb-3">
+                @for (miembro of miembrosFamiliares; track miembro.miembroFamiliarId) {
+                  <div class="flex items-center justify-between p-3 rounded-xl border border-gray-100 bg-gray-50/50">
+                    <div class="flex items-center gap-3 min-w-0">
+                      <div class="w-9 h-9 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <i class="pi pi-user text-green-600"></i>
+                      </div>
+                      <div class="min-w-0">
+                        <p class="text-sm font-medium text-gray-900">{{ miembro.nombre }}</p>
+                        <p class="text-xs text-gray-500">{{ miembro.numeroWhatsApp }}</p>
+                      </div>
+                    </div>
+                    <p-button
+                      icon="pi pi-trash"
+                      severity="danger"
+                      [outlined]="true"
+                      size="small"
+                      [rounded]="true"
+                      (onClick)="eliminarMiembro(miembro)"
+                    />
+                  </div>
+                }
+              </div>
+            } @else if (!showAddMiembroForm) {
+              <p class="text-sm text-gray-400 text-center py-3">No tienes miembros familiares agregados</p>
+            }
+
+            <!-- Formulario agregar -->
+            @if (showAddMiembroForm) {
+              <div class="p-3 rounded-xl border border-green-200 bg-green-50/50 space-y-2">
+                <div>
+                  <label class="block text-xs font-medium text-gray-700 mb-1">Nombre</label>
+                  <input
+                    pInputText
+                    [(ngModel)]="nuevoMiembroNombre"
+                    class="w-full text-sm p-2"
+                    placeholder="Ej: María"
+                    maxlength="100"
+                  />
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-gray-700 mb-1">Número WhatsApp</label>
+                  <input
+                    pInputText
+                    [(ngModel)]="nuevoMiembroNumero"
+                    class="w-full text-sm p-2"
+                    placeholder="Ej: 51987654321"
+                    maxlength="20"
+                  />
+                </div>
+                <div class="flex justify-end gap-2 pt-1">
+                  <p-button
+                    label="Cancelar"
+                    severity="secondary"
+                    [outlined]="true"
+                    size="small"
+                    (onClick)="toggleAddMiembroForm()"
+                    [disabled]="isAddingMiembro"
+                  />
+                  <p-button
+                    label="Agregar"
+                    severity="success"
+                    size="small"
+                    icon="pi pi-check"
+                    [loading]="isAddingMiembro"
+                    [disabled]="!nuevoMiembroNombre.trim() || !nuevoMiembroNumero.trim() || isAddingMiembro"
+                    (onClick)="agregarMiembro()"
+                  />
+                </div>
+              </div>
+            }
+
+            <!-- Botón agregar -->
+            @if (!showAddMiembroForm && miembrosFamiliares.length < maxMiembros) {
+              <div class="mt-2">
+                <p-button
+                  label="Agregar miembro"
+                  icon="pi pi-plus"
+                  severity="success"
+                  [outlined]="true"
+                  size="small"
+                  (onClick)="toggleAddMiembroForm()"
+                />
+              </div>
+            }
+          }
+        </div>
+      }
+
       <!-- Notifications -->
       <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
         <div class="flex items-center justify-between mb-4">

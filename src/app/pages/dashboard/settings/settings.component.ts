@@ -13,9 +13,11 @@ import { PerfilService } from '../../../services/perfil.service';
 import { AuthService } from '../../../services/auth.service';
 import { PreferenciaNotificacionService } from '../../../services/preferencia-notificacion.service';
 import { EmailIntegrationService } from '../../../services/email-integration.service';
+import { MiembroFamiliarService } from '../../../services/miembro-familiar.service';
 import { Perfil } from '../../../models/perfil.model';
 import { PreferenciaNotificacion } from '../../../models/preferencia-notificacion.model';
 import { EmailVinculadoInfo, ProveedorEmail, getProveedorNombre } from '../../../models/email-integration.model';
+import { MiembroFamiliar } from '../../../models/miembro-familiar.model';
 
 interface NotificationItem {
   key: string;
@@ -49,6 +51,7 @@ export class SettingsComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly preferenciaService = inject(PreferenciaNotificacionService);
   private readonly emailIntegrationService = inject(EmailIntegrationService);
+  private readonly miembroFamiliarService = inject(MiembroFamiliarService);
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
 
@@ -70,6 +73,15 @@ export class SettingsComponent implements OnInit {
   isDisconnectingGmail = false;
   outlookAccount: EmailVinculadoInfo | null = null;
   gmailAccount: EmailVinculadoInfo | null = null;
+
+  // Miembros Familiares
+  miembrosFamiliares: MiembroFamiliar[] = [];
+  isLoadingMiembros = false;
+  isAddingMiembro = false;
+  showAddMiembroForm = false;
+  nuevoMiembroNombre = '';
+  nuevoMiembroNumero = '';
+  readonly maxMiembros = 3;
 
   notifications: NotificationItem[] = [
     {
@@ -106,6 +118,7 @@ export class SettingsComponent implements OnInit {
     this.loadPerfil();
     this.loadNotificationPreferences();
     this.loadEmailIntegrationStatus();
+    this.loadMiembrosFamiliares();
   }
 
   private loadPerfil(): void {
@@ -362,5 +375,92 @@ export class SettingsComponent implements OnInit {
   formatCurrency(amount: number | null): string {
     if (amount === null || amount === undefined) return 'S/ 0.00';
     return `S/ ${amount.toFixed(2)}`;
+  }
+
+  // ==================== Miembros Familiares ====================
+
+  private loadMiembrosFamiliares(): void {
+    this.isLoadingMiembros = true;
+    this.miembroFamiliarService.getMiembros().subscribe({
+      next: (miembros) => {
+        this.miembrosFamiliares = miembros;
+        this.isLoadingMiembros = false;
+      },
+      error: () => {
+        this.miembrosFamiliares = [];
+        this.isLoadingMiembros = false;
+      }
+    });
+  }
+
+  toggleAddMiembroForm(): void {
+    this.showAddMiembroForm = !this.showAddMiembroForm;
+    if (!this.showAddMiembroForm) {
+      this.nuevoMiembroNombre = '';
+      this.nuevoMiembroNumero = '';
+    }
+  }
+
+  agregarMiembro(): void {
+    if (!this.nuevoMiembroNombre.trim() || !this.nuevoMiembroNumero.trim()) return;
+
+    this.isAddingMiembro = true;
+    this.miembroFamiliarService.crear({
+      nombre: this.nuevoMiembroNombre.trim(),
+      numeroWhatsApp: this.nuevoMiembroNumero.trim()
+    }).subscribe({
+      next: (miembro) => {
+        this.miembrosFamiliares = [...this.miembrosFamiliares, miembro];
+        this.showAddMiembroForm = false;
+        this.nuevoMiembroNombre = '';
+        this.nuevoMiembroNumero = '';
+        this.isAddingMiembro = false;
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Agregado',
+          detail: 'Miembro familiar agregado correctamente'
+        });
+      },
+      error: (error) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: error.error?.message || 'No se pudo agregar el miembro familiar'
+        });
+        this.isAddingMiembro = false;
+      }
+    });
+  }
+
+  eliminarMiembro(miembro: MiembroFamiliar): void {
+    this.confirmationService.confirm({
+      message: `¿Estás seguro de que deseas eliminar a ${miembro.nombre}? Ya no podrá acceder a tu información financiera por WhatsApp.`,
+      header: 'Confirmar eliminación',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sí, eliminar',
+      rejectLabel: 'Cancelar',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => {
+        this.miembroFamiliarService.eliminar(miembro.miembroFamiliarId).subscribe({
+          next: () => {
+            this.miembrosFamiliares = this.miembrosFamiliares.filter(
+              m => m.miembroFamiliarId !== miembro.miembroFamiliarId
+            );
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Eliminado',
+              detail: 'Miembro familiar eliminado correctamente'
+            });
+          },
+          error: (error) => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: error.error?.message || 'No se pudo eliminar el miembro familiar'
+            });
+          }
+        });
+      }
+    });
   }
 }
