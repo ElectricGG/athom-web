@@ -346,6 +346,10 @@ export class SettingsComponent implements OnInit {
     });
   }
 
+  get isPremium(): boolean {
+    return this.perfil?.planNombre?.toLowerCase() === 'premium';
+  }
+
   formatDate(dateString: string | null): string {
     if (!dateString) return 'N/A';
     return new Date(dateString).toLocaleDateString('es-PE', {
@@ -353,5 +357,10 @@ export class SettingsComponent implements OnInit {
       month: 'short',
       year: 'numeric'
     });
+  }
+
+  formatCurrency(amount: number | null): string {
+    if (amount === null || amount === undefined) return 'S/ 0.00';
+    return `S/ ${amount.toFixed(2)}`;
   }
 }

@@ -3,7 +3,8 @@ import { CommonModule, AsyncPipe } from '@angular/common'; // Import AsyncPipe
 import { RouterLink, RouterLinkActive, RouterOutlet, Router } from '@angular/router';
 import { DrawerModule } from 'primeng/drawer';
 import { ButtonModule } from 'primeng/button';
-import { AuthService } from '../../services/auth.service'; // Import AuthService
+import { AuthService } from '../../services/auth.service';
+import { PerfilService } from '../../services/perfil.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -23,12 +24,24 @@ import { map } from 'rxjs/operators';
 })
 export class DashboardLayoutComponent {
   private authService = inject(AuthService);
+  private perfilService = inject(PerfilService);
   private router = inject(Router);
 
   sidebarVisible = signal(false);
   userMenuVisible = signal(false);
 
-  userPlan: 'free' | 'premium' = 'premium';
+  userPlan: 'free' | 'premium' = 'free';
+
+  constructor() {
+    this.perfilService.getPerfil().subscribe({
+      next: (perfil) => {
+        this.userPlan = perfil.planNombre?.toLowerCase() === 'premium' ? 'premium' : 'free';
+      },
+      error: () => {
+        this.userPlan = 'free';
+      }
+    });
+  }
 
   userName$: Observable<string> = this.authService.currentUserData.pipe(
     map(user => user ? user.nombreUsuario : 'Invitado')

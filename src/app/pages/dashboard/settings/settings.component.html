@@ -247,33 +247,51 @@
     <!-- Sidebar -->
     <div class="space-y-6">
       <!-- Current Plan -->
-      <div class="bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl p-6 text-white">
-        <div class="flex items-center gap-2 mb-4">
-          <i class="pi pi-star-fill text-yellow-300"></i>
-          <span class="font-semibold">Plan Premium</span>
-        </div>
-        <p class="text-green-100 text-sm mb-4">
-          Disfruta de todas las funciones premium sin límites.
-        </p>
-        <div class="space-y-2 text-sm">
-          <div class="flex items-center gap-2">
-            <i class="pi pi-check"></i>
-            <span>Mensajes ilimitados</span>
+      @if (isPremium) {
+        <div class="bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl p-6 text-white">
+          <div class="flex items-center gap-2 mb-4">
+            <i class="pi pi-star-fill text-yellow-300"></i>
+            <span class="font-semibold">Plan Premium</span>
           </div>
-          <div class="flex items-center gap-2">
-            <i class="pi pi-check"></i>
-            <span>Asesoría IA avanzada</span>
+          <div class="mt-2 space-y-3 text-sm">
+            @if (perfil?.fechaProximoCobro) {
+              <div class="flex items-center justify-between">
+                <span class="text-green-100">Próximo cobro</span>
+                <span class="font-semibold">{{ formatDate(perfil!.fechaProximoCobro) }}</span>
+              </div>
+            }
+            <div class="flex items-center justify-between">
+              <span class="text-green-100">Monto del plan</span>
+              <span class="font-semibold text-lg">{{ formatCurrency(perfil?.precioMensual ?? null) }}/mes</span>
+            </div>
           </div>
-          <div class="flex items-center gap-2">
-            <i class="pi pi-check"></i>
-            <span>Reportes exportables</span>
+          <div class="mt-4 pt-4 border-t border-white/20">
+            <button
+              class="w-full text-sm text-green-200 hover:text-white transition-colors"
+            >
+              Cancelar suscripción
+            </button>
           </div>
         </div>
-        <div class="mt-4 pt-4 border-t border-white/20">
-          <p class="text-sm text-green-100">Próximo cobro: 15 Feb 2026</p>
-          <p class="text-lg font-bold">S/ 19.90/mes</p>
+      } @else {
+        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+          <div class="flex items-center gap-2 mb-3">
+            <i class="pi pi-box text-gray-400"></i>
+            <span class="font-semibold text-gray-900">Plan Gratuito</span>
+          </div>
+          <p class="text-sm text-gray-500 mb-4">
+            Estás usando el plan gratuito con funciones limitadas.
+          </p>
+          <div class="mt-4">
+            <p-button
+              label="Mejorar a Premium"
+              icon="pi pi-star"
+              severity="success"
+              styleClass="w-full"
+            />
+          </div>
         </div>
-      </div>
+      }
 
       <!-- Quick Actions -->
       <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
@@ -286,21 +304,6 @@
         </div>
       </div>
 
-      <!-- Danger Zone -->
-      <div class="bg-white rounded-2xl p-6 border border-red-100 shadow-sm">
-        <h3 class="font-semibold text-red-600 mb-4">Zona de peligro</h3>
-        <p class="text-sm text-gray-500 mb-4">
-          Estas acciones son irreversibles. Procede con cuidado.
-        </p>
-        <div class="space-y-2">
-          <p-button
-            label="Cancelar suscripción"
-            severity="secondary"
-            [outlined]="true"
-            styleClass="w-full"
-          />
-        </div>
-      </div>
     </div>
   </div>
 </div>
