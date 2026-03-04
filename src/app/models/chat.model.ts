@@ -14,8 +14,6 @@ export interface ChatResponse {
   toolsUsed?: string[];
   documentUrl?: string;
   documentFileName?: string;
-  chartUrl?: string;
-  chartFileName?: string;
   timestamp: Date;
 }
 
@@ -27,7 +25,4 @@ export interface ChatMessage {
   toolsUsed?: string[];
   documentUrl?: string;
   documentFileName?: string;
-  chartUrl?: string;
-  chartFileName?: string;
-  chartImageSrc?: string;
 }

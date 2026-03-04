@@ -121,21 +121,9 @@ Puedo ayudarte con:
           time: this.formatTime(new Date(response.timestamp)),
           toolsUsed: response.toolsUsed,
           documentUrl: response.documentUrl,
-          documentFileName: response.documentFileName,
-          chartUrl: response.chartUrl,
-          chartFileName: response.chartFileName
+          documentFileName: response.documentFileName
         };
         this.messages.push(assistantMessage);
-
-        // Load chart image via HttpClient (needs JWT auth interceptor)
-        if (response.chartUrl) {
-          this.chatService.getChartBlobUrl(response.chartUrl).subscribe({
-            next: (blobUrl) => {
-              assistantMessage.chartImageSrc = blobUrl;
-            },
-            error: (err) => console.error('Error loading chart image:', err)
-          });
-        }
         setTimeout(() => this.scrollToBottom(), 100);
       },
       error: (error) => {
@@ -230,12 +218,6 @@ Si el problema persiste, verifica tu conexión a internet o intenta más tarde.`
   downloadDocument(message: ChatMessage): void {
     if (message.documentUrl && message.documentFileName) {
       this.chatService.downloadExport(message.documentUrl, message.documentFileName);
-    }
-  }
-
-  downloadChart(message: ChatMessage): void {
-    if (message.chartUrl && message.chartFileName) {
-      this.chatService.downloadChart(message.chartUrl, message.chartFileName);
     }
   }
 
