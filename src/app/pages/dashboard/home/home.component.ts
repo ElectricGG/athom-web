@@ -40,6 +40,7 @@ export class DashboardHomeComponent implements OnInit {
   isLoadingBalance = false;
   isLoadingSavingGoals = false;
   selectedPeriod = 1;
+  mesActual = new Date().toLocaleDateString('es-PE', { month: 'long', year: 'numeric' });
 
   periodOptions: PeriodOption[] = [
     { label: 'Este mes', value: 1 },
