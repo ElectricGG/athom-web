@@ -1,21 +1,30 @@
 <div class="p-4 lg:p-6 space-y-6">
   <!-- Header -->
-  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-    <div>
-      <h1 class="text-2xl font-bold text-gray-900">Tendencia por Categoría</h1>
-      <p class="text-sm text-gray-500 mt-1">Evolución mensual de gastos por categoría (últimos 6 meses)</p>
-    </div>
-    <div class="flex flex-wrap items-center gap-3">
+  <div>
+    <h1 class="text-2xl font-bold text-gray-900">Tendencia por Categoría</h1>
+    <p class="text-sm text-gray-500 mt-1">Evolución mensual de gastos por categoría (últimos 6 meses)</p>
+  </div>
+
+  <!-- Filtros -->
+  <div class="date-sm bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex flex-wrap items-end gap-4">
+    <div class="flex flex-col gap-1">
+      <label class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Desde</label>
       <p-datepicker [(ngModel)]="fechaDesde" dateFormat="dd/mm/yy" placeholder="Desde"
-        [showIcon]="true" styleClass="w-36" (onSelect)="cargarDatos()" />
-      <p-datepicker [(ngModel)]="fechaHasta" dateFormat="dd/mm/yy" placeholder="Hasta"
-        [showIcon]="true" styleClass="w-36" (onSelect)="cargarDatos()" />
-      <p-multiselect [(ngModel)]="categoriasSeleccionadas" [options]="categorias"
-        optionLabel="nombreCategoria" placeholder="Categorías" [maxSelectedLabels]="2"
-        selectedItemsLabel="{0} categorías" styleClass="w-48" (onChange)="cargarDatos()" />
-      <p-button icon="pi pi-file-excel" label="Excel" severity="success" [outlined]="true"
-        (onClick)="exportarExcel()" size="small" />
+        [showIcon]="true" appendTo="body" (onSelect)="cargarDatos()" />
     </div>
+    <div class="flex flex-col gap-1">
+      <label class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Hasta</label>
+      <p-datepicker [(ngModel)]="fechaHasta" dateFormat="dd/mm/yy" placeholder="Hasta"
+        [showIcon]="true" appendTo="body" (onSelect)="cargarDatos()" />
+    </div>
+    <div class="flex flex-col gap-1">
+      <label class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Categorías</label>
+      <p-multiselect [(ngModel)]="categoriasSeleccionadas" [options]="categorias"
+        optionLabel="nombreCategoria" placeholder="Todas" [maxSelectedLabels]="2"
+        selectedItemsLabel="{0} categorías" (onChange)="cargarDatos()" />
+    </div>
+    <p-button icon="pi pi-file-excel" label="Excel" severity="success" [outlined]="true"
+      (onClick)="exportarExcel()" size="small" />
   </div>
 
   @if (loading()) {

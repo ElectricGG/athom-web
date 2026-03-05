@@ -15,7 +15,18 @@ import { TendenciaCategoriaMensual } from '../../../../models/reporte.model';
   selector: 'app-tendencia-categoria',
   standalone: true,
   imports: [CommonModule, FormsModule, ChartModule, DatePickerModule, MultiSelectModule, ButtonModule, SkeletonModule],
-  templateUrl: './tendencia-categoria.component.html'
+  templateUrl: './tendencia-categoria.component.html',
+  styles: [`
+    ::ng-deep .date-sm .p-datepicker .p-datepicker-input {
+      padding: 0.4rem 0.65rem;
+      font-size: 0.8125rem;
+      height: 2.25rem;
+    }
+    ::ng-deep .date-sm .p-datepicker .p-datepicker-dropdown {
+      height: 2.25rem;
+      width: 2.25rem;
+    }
+  `]
 })
 export class TendenciaCategoriaComponent implements OnInit {
   private reporteService = inject(ReporteService);

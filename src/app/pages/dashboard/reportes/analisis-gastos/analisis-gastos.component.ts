@@ -17,7 +17,18 @@ import { forkJoin } from 'rxjs';
   selector: 'app-analisis-gastos',
   standalone: true,
   imports: [CommonModule, FormsModule, ChartModule, DatePickerModule, MultiSelectModule, ButtonModule, SkeletonModule],
-  templateUrl: './analisis-gastos.component.html'
+  templateUrl: './analisis-gastos.component.html',
+  styles: [`
+    ::ng-deep .date-sm .p-datepicker .p-datepicker-input {
+      padding: 0.4rem 0.65rem;
+      font-size: 0.8125rem;
+      height: 2.25rem;
+    }
+    ::ng-deep .date-sm .p-datepicker .p-datepicker-dropdown {
+      height: 2.25rem;
+      width: 2.25rem;
+    }
+  `]
 })
 export class AnalisisGastosComponent implements OnInit {
   private reporteService = inject(ReporteService);
@@ -73,11 +84,15 @@ export class AnalisisGastosComponent implements OnInit {
   }
 
   private buildDonutChart(data: ExpenseDistribution[]): void {
+    data.forEach((d, i) => {
+      if (!d.color) d.color = this.defaultColors[i % this.defaultColors.length];
+    });
+
     this.donutData = {
       labels: data.map(d => d.nombre),
       datasets: [{
         data: data.map(d => d.monto),
-        backgroundColor: data.map((d, i) => d.color || this.defaultColors[i % this.defaultColors.length]),
+        backgroundColor: data.map(d => d.color),
         hoverOffset: 8,
         borderWidth: 2,
         borderColor: '#ffffff'
@@ -89,7 +104,7 @@ export class AnalisisGastosComponent implements OnInit {
       maintainAspectRatio: false,
       cutout: '60%',
       plugins: {
-        legend: { position: 'right', labels: { usePointStyle: true, padding: 16, font: { size: 12 } } },
+        legend: { display: false },
         tooltip: {
           callbacks: {
             label: (ctx: any) => {
