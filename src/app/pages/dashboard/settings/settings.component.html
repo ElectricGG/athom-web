@@ -343,11 +343,16 @@
                 <div>
                   <p class="font-medium text-gray-900">{{ notification.label }}</p>
                   <p class="text-sm text-gray-500">{{ notification.description }}</p>
+                  @if (!isPremium && isLockedNotification(notification.key)) {
+                    <p class="text-xs text-amber-600 mt-0.5">
+                      <i class="pi pi-lock text-[10px] mr-1"></i>Solo desactivable en plan Premium
+                    </p>
+                  }
                 </div>
                 <p-toggleswitch
                   [(ngModel)]="notification.enabled"
                   (onChange)="onNotificationChange()"
-                  [disabled]="isSavingNotifications"
+                  [disabled]="isSavingNotifications || (!isPremium && isLockedNotification(notification.key))"
                 />
               </div>
             }

@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
 import { publicGuard } from './guards/public.guard';
+import { premiumGuard } from './guards/premium.guard';
 
 export const routes: Routes = [
   {
@@ -60,19 +61,23 @@ export const routes: Routes = [
       },
       {
         path: 'reportes/resumen',
-        loadComponent: () => import('./pages/dashboard/reportes/resumen-financiero/resumen-financiero.component').then(m => m.ResumenFinancieroComponent)
+        loadComponent: () => import('./pages/dashboard/reportes/resumen-financiero/resumen-financiero.component').then(m => m.ResumenFinancieroComponent),
+        canActivate: [premiumGuard]
       },
       {
         path: 'reportes/gastos',
-        loadComponent: () => import('./pages/dashboard/reportes/analisis-gastos/analisis-gastos.component').then(m => m.AnalisisGastosComponent)
+        loadComponent: () => import('./pages/dashboard/reportes/analisis-gastos/analisis-gastos.component').then(m => m.AnalisisGastosComponent),
+        canActivate: [premiumGuard]
       },
       {
         path: 'reportes/presupuesto',
-        loadComponent: () => import('./pages/dashboard/reportes/presupuesto-vs-real/presupuesto-vs-real.component').then(m => m.PresupuestoVsRealComponent)
+        loadComponent: () => import('./pages/dashboard/reportes/presupuesto-vs-real/presupuesto-vs-real.component').then(m => m.PresupuestoVsRealComponent),
+        canActivate: [premiumGuard]
       },
       {
         path: 'reportes/tendencia',
-        loadComponent: () => import('./pages/dashboard/reportes/tendencia-categoria/tendencia-categoria.component').then(m => m.TendenciaCategoriaComponent)
+        loadComponent: () => import('./pages/dashboard/reportes/tendencia-categoria/tendencia-categoria.component').then(m => m.TendenciaCategoriaComponent),
+        canActivate: [premiumGuard]
       }
     ]
   },

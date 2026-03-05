@@ -149,7 +149,9 @@ export class SettingsComponent implements OnInit {
       next: (preferencias) => {
         this.notifications = this.notifications.map(n => ({
           ...n,
-          enabled: preferencias[n.field] as boolean
+          enabled: (!this.isPremium && this.isLockedNotification(n.key))
+            ? true
+            : preferencias[n.field] as boolean
         }));
         this.isLoadingNotifications = false;
       },
@@ -361,6 +363,10 @@ export class SettingsComponent implements OnInit {
 
   get isPremium(): boolean {
     return this.perfil?.planNombre?.toLowerCase() === 'premium';
+  }
+
+  isLockedNotification(key: string): boolean {
+    return key === 'newsletter' || key === 'offers';
   }
 
   formatDate(dateString: string | null): string {

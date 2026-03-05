@@ -55,13 +55,10 @@ export class AuthService {
     if (!this.isBrowser) return;
 
     const refreshToken = this.getRefreshToken();
+    this.clearSession();
 
     if (refreshToken) {
-      this.http.post(`${this.baseUrl}/logout`, { refreshToken }).pipe(
-        finalize(() => this.clearSession())
-      ).subscribe();
-    } else {
-      this.clearSession();
+      this.http.post(`${this.baseUrl}/logout`, { refreshToken }).subscribe();
     }
   }
 

@@ -8,7 +8,6 @@ import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { AuthService } from '../../services/auth.service';
-import { InputMaskModule } from 'primeng/inputmask'; // Added for phone input
 
 @Component({
   selector: 'app-login',
@@ -19,8 +18,7 @@ import { InputMaskModule } from 'primeng/inputmask'; // Added for phone input
     InputTextModule,
     PasswordModule,
     ButtonModule,
-    CheckboxModule,
-    InputMaskModule // Added for phone input
+    CheckboxModule
   ],
   templateUrl: './login.component.html'
 })
@@ -33,7 +31,7 @@ export class LoginComponent {
   errorMessage: string | null = null;
 
   loginForm: FormGroup = this.fb.group({
-    phone: ['', [Validators.required]], // Changed from 'email' to 'phone'
+    phone: ['+51 ', [Validators.required]],
     password: ['', [Validators.required]],
     rememberMe: [false]
   });

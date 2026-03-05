@@ -25,12 +25,12 @@
           </label>
           <span class="p-input-icon-left w-full">
             <i class="pi pi-whatsapp"></i>
-            <p-inputMask
+            <input
+              pInputText
               id="phone"
               formControlName="phone"
-              mask="+51 999 999 999"
               placeholder="+51 999 999 999"
-              styleClass="w-full py-3 pl-10"
+              class="w-full py-3 pl-10"
             />
           </span>
           @if (loginForm.get('phone')?.invalid && loginForm.get('phone')?.touched) {
