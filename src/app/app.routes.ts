@@ -57,6 +57,22 @@ export const routes: Routes = [
       {
         path: 'settings',
         loadComponent: () => import('./pages/dashboard/settings/settings.component').then(m => m.SettingsComponent)
+      },
+      {
+        path: 'reportes/resumen',
+        loadComponent: () => import('./pages/dashboard/reportes/resumen-financiero/resumen-financiero.component').then(m => m.ResumenFinancieroComponent)
+      },
+      {
+        path: 'reportes/gastos',
+        loadComponent: () => import('./pages/dashboard/reportes/analisis-gastos/analisis-gastos.component').then(m => m.AnalisisGastosComponent)
+      },
+      {
+        path: 'reportes/presupuesto',
+        loadComponent: () => import('./pages/dashboard/reportes/presupuesto-vs-real/presupuesto-vs-real.component').then(m => m.PresupuestoVsRealComponent)
+      },
+      {
+        path: 'reportes/tendencia',
+        loadComponent: () => import('./pages/dashboard/reportes/tendencia-categoria/tendencia-categoria.component').then(m => m.TendenciaCategoriaComponent)
       }
     ]
   },

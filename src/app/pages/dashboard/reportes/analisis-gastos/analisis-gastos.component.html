@@ -1,0 +1,92 @@
+<div class="p-4 lg:p-6 space-y-6">
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Análisis de Gastos</h1>
+      <p class="text-sm text-gray-500 mt-1">Distribución y tendencia de gastos por categoría</p>
+    </div>
+    <div class="flex flex-wrap items-center gap-3">
+      <p-datepicker [(ngModel)]="fechaDesde" dateFormat="dd/mm/yy" placeholder="Desde"
+        [showIcon]="true" styleClass="w-36" (onSelect)="cargarDatos()" />
+      <p-datepicker [(ngModel)]="fechaHasta" dateFormat="dd/mm/yy" placeholder="Hasta"
+        [showIcon]="true" styleClass="w-36" (onSelect)="cargarDatos()" />
+      <p-multiselect [(ngModel)]="categoriasSeleccionadas" [options]="categorias"
+        optionLabel="nombreCategoria" placeholder="Categorías" [maxSelectedLabels]="2"
+        selectedItemsLabel="{0} categorías" styleClass="w-48" (onChange)="cargarDatos()" />
+      <p-button icon="pi pi-file-excel" label="Excel" severity="success" [outlined]="true"
+        (onClick)="exportarExcel()" size="small" />
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <p-skeleton height="300px" />
+      </div>
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <p-skeleton height="300px" />
+      </div>
+    </div>
+  } @else {
+    <!-- Total card -->
+    <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 inline-block">
+      <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Gastos del Periodo</p>
+      <p class="text-2xl font-bold mt-1 text-red-600">{{ formatCurrency(totalGastos()) }}</p>
+    </div>
+
+    <!-- Charts -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Donut -->
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Distribución por Categoría</h2>
+        @if (distribucion.length > 0) {
+          <div class="h-[300px]">
+            <p-chart type="doughnut" [data]="donutData" [options]="donutOptions" height="300px" />
+          </div>
+        } @else {
+          <div class="h-[300px] flex items-center justify-center text-gray-400">
+            <p>No hay datos para el periodo seleccionado</p>
+          </div>
+        }
+      </div>
+
+      <!-- Area chart -->
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Gasto Diario Acumulado</h2>
+        <div class="h-[300px]">
+          <p-chart type="line" [data]="areaData" [options]="areaOptions" height="300px" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Category breakdown table -->
+    @if (distribucion.length > 0) {
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Detalle por Categoría</h2>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-gray-200">
+                <th class="text-left py-3 px-4 font-semibold text-gray-600">Categoría</th>
+                <th class="text-right py-3 px-4 font-semibold text-gray-600">Monto</th>
+                <th class="text-right py-3 px-4 font-semibold text-gray-600">%</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of distribucion; track item.nombre) {
+                <tr class="border-b border-gray-50 hover:bg-gray-50">
+                  <td class="py-3 px-4 flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full inline-block" [style.background-color]="item.color || '#6b7280'"></span>
+                    {{ item.nombre }}
+                  </td>
+                  <td class="py-3 px-4 text-right font-medium">{{ formatCurrency(item.monto) }}</td>
+                  <td class="py-3 px-4 text-right text-gray-500">{{ item.porcentaje }}%</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+  }
+</div>

@@ -29,6 +29,7 @@ export class DashboardLayoutComponent {
 
   sidebarVisible = signal(false);
   userMenuVisible = signal(false);
+  reportesMenuOpen = signal(this.router.url.includes('/reportes'));
 
   userPlan: 'free' | 'premium' = 'free';
 
@@ -65,6 +66,10 @@ export class DashboardLayoutComponent {
 
   closeUserMenu(): void {
     this.userMenuVisible.set(false);
+  }
+
+  toggleReportesMenu(): void {
+    this.reportesMenuOpen.update(v => !v);
   }
 
   logout(): void {

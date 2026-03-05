@@ -164,6 +164,64 @@
           </li>
         </ul>
       </div>
+
+      <!-- Reportes -->
+      <div>
+        <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 px-3">Reportes</p>
+        <ul class="space-y-1">
+          <li>
+            <button (click)="toggleReportesMenu()"
+              class="w-full group relative flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-gray-500 text-sm font-medium hover:text-green-700 hover:bg-green-100 transition-all duration-300 border border-transparent overflow-hidden">
+              <i class="pi pi-chart-bar text-base transition-transform duration-300 group-hover:scale-110 group-hover:text-green-600"></i>
+              <span>Reportes</span>
+              <i class="pi pi-chevron-down ml-auto text-xs transition-transform duration-300"
+                [class.rotate-180]="reportesMenuOpen()"></i>
+              <span
+                class="ml-1 px-2 py-0.5 text-[8px] bg-gradient-to-r from-violet-100 to-purple-100 text-purple-700 rounded-full font-bold shadow-sm border border-purple-200/50">PRO</span>
+            </button>
+            @if (reportesMenuOpen()) {
+            <ul class="ml-6 mt-1 space-y-1">
+              <li>
+                <a routerLink="/dashboard/reportes/resumen"
+                  routerLinkActive="!bg-gradient-to-r from-green-50 to-emerald-50 !text-green-700 shadow-sm"
+                  class="group flex items-center gap-2 px-3 py-1.5 rounded-xl text-gray-500 text-xs font-medium hover:text-green-700 hover:bg-green-100 transition-all duration-300"
+                  (click)="closeSidebar()">
+                  <i class="pi pi-chart-line text-xs"></i>
+                  <span>Resumen Financiero</span>
+                </a>
+              </li>
+              <li>
+                <a routerLink="/dashboard/reportes/gastos"
+                  routerLinkActive="!bg-gradient-to-r from-green-50 to-emerald-50 !text-green-700 shadow-sm"
+                  class="group flex items-center gap-2 px-3 py-1.5 rounded-xl text-gray-500 text-xs font-medium hover:text-green-700 hover:bg-green-100 transition-all duration-300"
+                  (click)="closeSidebar()">
+                  <i class="pi pi-chart-pie text-xs"></i>
+                  <span>Análisis de Gastos</span>
+                </a>
+              </li>
+              <li>
+                <a routerLink="/dashboard/reportes/presupuesto"
+                  routerLinkActive="!bg-gradient-to-r from-green-50 to-emerald-50 !text-green-700 shadow-sm"
+                  class="group flex items-center gap-2 px-3 py-1.5 rounded-xl text-gray-500 text-xs font-medium hover:text-green-700 hover:bg-green-100 transition-all duration-300"
+                  (click)="closeSidebar()">
+                  <i class="pi pi-sliders-h text-xs"></i>
+                  <span>Presupuesto vs Real</span>
+                </a>
+              </li>
+              <li>
+                <a routerLink="/dashboard/reportes/tendencia"
+                  routerLinkActive="!bg-gradient-to-r from-green-50 to-emerald-50 !text-green-700 shadow-sm"
+                  class="group flex items-center gap-2 px-3 py-1.5 rounded-xl text-gray-500 text-xs font-medium hover:text-green-700 hover:bg-green-100 transition-all duration-300"
+                  (click)="closeSidebar()">
+                  <i class="pi pi-chart-scatter text-xs"></i>
+                  <span>Tendencia por Categoría</span>
+                </a>
+              </li>
+            </ul>
+            }
+          </li>
+        </ul>
+      </div>
     </nav>
 
     <!-- User Section -->

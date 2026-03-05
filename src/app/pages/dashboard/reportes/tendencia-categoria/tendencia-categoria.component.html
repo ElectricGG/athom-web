@@ -1,0 +1,88 @@
+<div class="p-4 lg:p-6 space-y-6">
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Tendencia por Categoría</h1>
+      <p class="text-sm text-gray-500 mt-1">Evolución mensual de gastos por categoría (últimos 6 meses)</p>
+    </div>
+    <div class="flex flex-wrap items-center gap-3">
+      <p-datepicker [(ngModel)]="fechaDesde" dateFormat="dd/mm/yy" placeholder="Desde"
+        [showIcon]="true" styleClass="w-36" (onSelect)="cargarDatos()" />
+      <p-datepicker [(ngModel)]="fechaHasta" dateFormat="dd/mm/yy" placeholder="Hasta"
+        [showIcon]="true" styleClass="w-36" (onSelect)="cargarDatos()" />
+      <p-multiselect [(ngModel)]="categoriasSeleccionadas" [options]="categorias"
+        optionLabel="nombreCategoria" placeholder="Categorías" [maxSelectedLabels]="2"
+        selectedItemsLabel="{0} categorías" styleClass="w-48" (onChange)="cargarDatos()" />
+      <p-button icon="pi pi-file-excel" label="Excel" severity="success" [outlined]="true"
+        (onClick)="exportarExcel()" size="small" />
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+      <p-skeleton height="350px" />
+    </div>
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+      <p-skeleton height="200px" />
+    </div>
+  } @else if (tendencia.length === 0) {
+    <div class="bg-white rounded-2xl p-12 shadow-sm border border-gray-100 text-center">
+      <i class="pi pi-chart-scatter text-4xl text-gray-300 mb-4"></i>
+      <p class="text-gray-500">No hay datos de gastos para el periodo seleccionado</p>
+    </div>
+  } @else {
+    <!-- Stacked bar chart -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Evolución Mensual por Categoría</h2>
+      <div class="h-[350px]">
+        <p-chart type="bar" [data]="chartData" [options]="chartOptions" height="350px" />
+      </div>
+    </div>
+
+    <!-- Summary table -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Resumen por Categoría</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-gray-200">
+              <th class="text-left py-3 px-4 font-semibold text-gray-600">Categoría</th>
+              @if (tendencia.length > 0) {
+                @for (mes of tendencia[0].meses; track mes.mes) {
+                  <th class="text-right py-3 px-4 font-semibold text-gray-600">{{ mes.etiqueta }} {{ mes.anio }}</th>
+                }
+              }
+              <th class="text-right py-3 px-4 font-semibold text-gray-600">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (cat of tendencia; track cat.categoriaId) {
+              <tr class="border-b border-gray-50 hover:bg-gray-50">
+                <td class="py-3 px-4 flex items-center gap-2">
+                  <span class="w-3 h-3 rounded-full inline-block" [style.background-color]="cat.color || '#6b7280'"></span>
+                  {{ cat.nombreCategoria }}
+                </td>
+                @for (mes of cat.meses; track mes.mes) {
+                  <td class="py-3 px-4 text-right">{{ formatCurrency(mes.monto) }}</td>
+                }
+                <td class="py-3 px-4 text-right font-bold">{{ formatCurrency(getTotal(cat)) }}</td>
+              </tr>
+            }
+            <!-- Total row -->
+            <tr class="border-t-2 border-gray-200 bg-gray-50 font-bold">
+              <td class="py-3 px-4">Total</td>
+              @if (tendencia.length > 0) {
+                @for (mes of tendencia[0].meses; track mes.mes; let i = $index) {
+                  <td class="py-3 px-4 text-right">
+                    {{ formatCurrency(getTotalMes(i)) }}
+                  </td>
+                }
+              }
+              <td class="py-3 px-4 text-right">{{ formatCurrency(getTotalGeneral()) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</div>
