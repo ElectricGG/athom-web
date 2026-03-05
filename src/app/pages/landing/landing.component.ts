@@ -1,11 +1,7 @@
 import { Component } from '@angular/core';
 import { HeroComponent } from '../../components/hero/hero.component';
 import { HowItWorksComponent } from '../../components/how-it-works/how-it-works.component';
-import { ExpensesComponent } from '../../components/expenses/expenses.component';
-import { IncomeComponent } from '../../components/income/income.component';
-import { BudgetsComponent } from '../../components/budgets/budgets.component';
-import { CategoriesComponent } from '../../components/categories/categories.component';
-import { ReportsComponent } from '../../components/reports/reports.component';
+import { FeaturesCarouselComponent } from '../../components/features-carousel/features-carousel.component';
 import { VideoDemoComponent } from '../../components/video-demo/video-demo.component';
 import { PricingComponent } from '../../components/pricing/pricing.component';
 import { BenefitsComponent } from '../../components/benefits/benefits.component';
@@ -22,11 +18,7 @@ import { DashboardPreview } from '../../components/dashboard-preview/dashboard-p
     HeaderComponent,
     HeroComponent,
     HowItWorksComponent,
-    ExpensesComponent,
-    IncomeComponent,
-    BudgetsComponent,
-    CategoriesComponent,
-    ReportsComponent,
+    FeaturesCarouselComponent,
     VideoDemoComponent,
     PricingComponent,
     BenefitsComponent,
