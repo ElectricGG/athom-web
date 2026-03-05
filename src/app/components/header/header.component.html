@@ -11,13 +11,13 @@
 
       <!-- Desktop nav -->
       <nav class="hidden md:flex items-center gap-8">
-        <a href="#como-funciona" class="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors">
+        <a (click)="scrollTo('como-funciona')" class="cursor-pointer text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors">
           Cómo funciona
         </a>
-        <a href="#planes" class="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors">
+        <a (click)="scrollTo('planes')" class="cursor-pointer text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors">
           Planes
         </a>
-        <a href="#faq" class="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors">
+        <a (click)="scrollTo('faq')" class="cursor-pointer text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors">
           FAQ
         </a>
       </nav>
@@ -60,23 +60,20 @@
   >
     <nav class="flex flex-col gap-2">
       <a
-        href="#como-funciona"
-        class="px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors"
-        (click)="mobileMenuOpen.set(false)"
+        (click)="scrollTo('como-funciona')"
+        class="cursor-pointer px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors"
       >
         Cómo funciona
       </a>
       <a
-        href="#planes"
-        class="px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors"
-        (click)="mobileMenuOpen.set(false)"
+        (click)="scrollTo('planes')"
+        class="cursor-pointer px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors"
       >
         Planes
       </a>
       <a
-        href="#faq"
-        class="px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors"
-        (click)="mobileMenuOpen.set(false)"
+        (click)="scrollTo('faq')"
+        class="cursor-pointer px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors"
       >
         FAQ
       </a>

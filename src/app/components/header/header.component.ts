@@ -11,4 +11,9 @@ import { DrawerModule } from 'primeng/drawer';
 })
 export class HeaderComponent {
   mobileMenuOpen = signal(false);
+
+  scrollTo(id: string): void {
+    this.mobileMenuOpen.set(false);
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  }
 }
