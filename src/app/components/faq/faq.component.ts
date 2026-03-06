@@ -14,8 +14,8 @@ export class FaqComponent {
       answer: 'No, Mia funciona completamente desde WhatsApp. Solo necesitas tener WhatsApp instalado en tu celular, que probablemente ya tienes. No hay ninguna app adicional que descargar.'
     },
     {
-      question: '¿Qué diferencia hay entre el plan gratis y premium?',
-      answer: 'El plan gratis te permite hasta 5 mensajes diarios con funciones básicas de registro y reportes. El plan premium ofrece mensajes ilimitados, inteligencia avanzada, categorías personalizadas sin límite, reportes exportables y acceso exclusivo a ofertas de establecimientos aliados.'
+      question: '¿Qué diferencia hay entre los planes?',
+      answer: 'Tenemos 3 planes: El plan Gratis incluye registro de gastos por texto, reportes básicos y 20 mensajes diarios. El plan Premium (S/ 9.90/mes) agrega registro por foto y audio, reportes exportables, memoria inteligente, búsqueda de precios y miembros familiares. El plan Max (S/ 24.90/mes) incluye todo lo de Premium más un agente de compras con IA que recuerda tus compras, predice cuándo necesitas recomprar y te avisa cuando encuentra mejores precios.'
     },
     {
       question: '¿Funciona con audios e imágenes?',
@@ -27,7 +27,7 @@ export class FaqComponent {
     },
     {
       question: '¿Tiene costo?',
-      answer: 'Ofrecemos un plan gratuito con funciones básicas. El plan premium tiene un costo de S/ 19.90 al mes y puedes cancelar en cualquier momento sin compromiso.'
+      answer: 'Ofrecemos un plan gratuito con funciones básicas. El plan Premium cuesta S/ 9.90/mes y el plan Max S/ 24.90/mes. También hay precios anuales con descuento. Puedes cancelar en cualquier momento sin compromiso.'
     },
     {
       question: '¿Puedo exportar mis datos?',
