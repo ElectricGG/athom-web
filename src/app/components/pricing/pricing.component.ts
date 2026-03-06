@@ -37,9 +37,8 @@ export class PricingComponent {
     'Historial y seguimiento de precios',
     'Alertas automáticas de mejores precios',
     'Predicción de próximas compras',
-    '100 mensajes diarios con Mia',
-    'Memoria avanzada (100 recuerdos)',
-    '50 búsquedas de productos al mes'
+    '2x más mensajes diarios que Premium',
+    '3x más búsquedas de productos que Premium'
   ];
 
   togglePlan(annual: boolean): void {
