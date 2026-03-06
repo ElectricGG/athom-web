@@ -11,7 +11,7 @@ export class FaqComponent {
   faqItems = [
     {
       question: '¿Necesito instalar algo?',
-      answer: 'No, Athom funciona completamente desde WhatsApp. Solo necesitas tener WhatsApp instalado en tu celular, que probablemente ya tienes. No hay ninguna app adicional que descargar.'
+      answer: 'No, Mia funciona completamente desde WhatsApp. Solo necesitas tener WhatsApp instalado en tu celular, que probablemente ya tienes. No hay ninguna app adicional que descargar.'
     },
     {
       question: '¿Qué diferencia hay entre el plan gratis y premium?',

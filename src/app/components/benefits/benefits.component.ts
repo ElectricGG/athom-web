@@ -94,7 +94,7 @@ export class BenefitsComponent {
     {
       icon: 'pi pi-tag',
       title: 'Ofertas y descuentos',
-      description: 'Accede a ofertas exclusivas y descuentos en comercios aliados por ser usuario de Athom.',
+      description: 'Accede a ofertas exclusivas y descuentos en comercios aliados por ser usuario de Mia.',
       bgColor: 'bg-rose-100',
       iconColor: 'text-rose-600'
     }
