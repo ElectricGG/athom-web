@@ -164,6 +164,30 @@ export class FeaturesCarouselComponent implements OnInit, OnDestroy {
       bgGradient: 'from-cyan-50 to-teal-50',
       tabActiveBg: 'bg-cyan-100',
       tabActiveText: 'text-cyan-700'
+    },
+    {
+      id: 'agente-compras',
+      icon: 'pi pi-shopping-cart',
+      label: 'Agente de Compras',
+      badgeBg: 'bg-amber-100',
+      badgeText: 'text-amber-700',
+      title: 'Tu agente de compras inteligente',
+      description: 'Mia recuerda cada compra, predice cuándo necesitarás recomprar y te avisa cuando encuentra mejores precios. Exclusivo del Plan Max.',
+      bullets: [
+        { icon: 'pi pi-history', iconColor: 'text-amber-500', text: 'Historial detallado de compras por producto' },
+        { icon: 'pi pi-chart-line', iconColor: 'text-amber-500', text: 'Predicción inteligente de próximas compras' },
+        { icon: 'pi pi-bell', iconColor: 'text-amber-500', text: 'Alertas automáticas cuando bajan los precios' },
+        { icon: 'pi pi-bolt', iconColor: 'text-amber-500', text: 'Rastreo continuo de precios en internet' }
+      ],
+      chatTitle: 'Agente de compras en acción',
+      chatExamples: [
+        { message: 'Compré pañales Huggies XXG en Plaza Vea por 79 soles', response: '✅ Gasto registrado: S/ 79.00 en Supermercado\n\n🛒 Compra guardada: Pañales Huggies XXG\n📍 Plaza Vea — S/ 79.00\n📊 Tu precio anterior: S/ 89.90\n✅ ¡Pagaste 12% menos que la última vez!' },
+        { message: '¿Cuándo necesito comprar pañales?', response: '📅 Predicción de compra:\n\n🧷 Pañales Huggies XXG\n⏰ Próxima compra estimada: en ~5 días\n💰 Precio promedio: S/ 82.50\n📉 Mejor precio encontrado: S/ 69.90 en Tottus' }
+      ],
+      extraChat: '🔔 ¡Alerta! Encontré pañales Huggies XXG en Tottus a S/ 69.90 (-12% vs tu último precio). Estimamos que necesitarás comprar en ~5 días.',
+      bgGradient: 'from-amber-50 to-orange-50',
+      tabActiveBg: 'bg-amber-100',
+      tabActiveText: 'text-amber-700'
     }
   ];
 
