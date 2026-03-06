@@ -56,6 +56,13 @@ export class ReporteService {
     this.descargar(`${this.baseUrl}/exportar/resumen`, params, 'ResumenFinanciero.xlsx');
   }
 
+  exportarIngresosRango(fechaDesde: string, fechaHasta: string): void {
+    const params = new HttpParams()
+      .set('fechaDesde', fechaDesde)
+      .set('fechaHasta', fechaHasta);
+    this.descargar(`${this.baseUrl}/exportar/ingresos-rango`, params, 'Ingresos.xlsx');
+  }
+
   exportarGastosRango(fechaDesde: string, fechaHasta: string, categoriaIds?: number[]): void {
     let params = new HttpParams()
       .set('fechaDesde', fechaDesde)

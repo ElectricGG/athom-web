@@ -13,6 +13,8 @@ import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { IngresoService } from '../../../services/ingreso.service';
+import { ReporteService } from '../../../services/reporte.service';
+import { TooltipModule } from 'primeng/tooltip';
 import {
   Ingreso,
   CategoriaIngreso,
@@ -41,7 +43,8 @@ interface MesOption {
     ToastModule,
     ConfirmDialogModule,
     IconFieldModule,
-    InputIconModule
+    InputIconModule,
+    TooltipModule
   ],
   providers: [MessageService, ConfirmationService],
   templateUrl: './ingresos.component.html'
@@ -51,6 +54,7 @@ export class IngresosComponent implements OnInit {
   private readonly ingresoService = inject(IngresoService);
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
+  private readonly reporteService = inject(ReporteService);
 
   // Estado
   ingresos: Ingreso[] = [];
@@ -61,6 +65,9 @@ export class IngresosComponent implements OnInit {
   showDialog = false;
   isEditing = false;
   selectedIngresoId: number | null = null;
+  showExportDialog = false;
+  exportFechaDesde: Date = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+  exportFechaHasta: Date = new Date();
 
   // Filtros
   searchTerm = '';
@@ -286,5 +293,18 @@ export class IngresosComponent implements OnInit {
   limpiarFiltros(): void {
     this.searchTerm = '';
     this.selectedCategoriaId = null;
+  }
+
+  abrirExportDialog(): void {
+    this.exportFechaDesde = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    this.exportFechaHasta = new Date();
+    this.showExportDialog = true;
+  }
+
+  exportarExcel(): void {
+    const desde = this.exportFechaDesde.toISOString().split('T')[0];
+    const hasta = this.exportFechaHasta.toISOString().split('T')[0];
+    this.reporteService.exportarIngresosRango(desde, hasta);
+    this.showExportDialog = false;
   }
 }
