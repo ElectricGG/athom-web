@@ -38,7 +38,10 @@ export class PresupuestoVsRealComponent implements OnInit {
       next: (data) => {
         this.presupuestos = data;
         if (data.length > 0) {
-          this.presupuestoSeleccionado = data[0];
+          const now = new Date();
+          this.presupuestoSeleccionado = data.find(p =>
+            p.mes === now.getMonth() + 1 && p.anio === now.getFullYear()
+          ) || data[0];
           this.cargarDetalle();
         } else {
           this.loading.set(false);

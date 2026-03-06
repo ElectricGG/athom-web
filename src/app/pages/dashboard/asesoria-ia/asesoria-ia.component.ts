@@ -221,25 +221,6 @@ Si el problema persiste, verifica tu conexión a internet o intenta más tarde.`
     }
   }
 
-  getVisibleTools(message: ChatMessage): string[] {
-    if (!message.toolsUsed) return [];
-    return message.toolsUsed.filter(t => !t.startsWith('Chart.') && !t.startsWith('Export.'));
-  }
-
-  formatToolName(tool: string): string {
-    const toolNames: Record<string, string> = {
-      'get_balance_summary': 'Balance',
-      'get_expense_distribution': 'Distribución de gastos',
-      'get_expense_summary': 'Resumen de gastos',
-      'get_income_summary': 'Resumen de ingresos',
-      'get_budget_status': 'Presupuesto',
-      'get_savings_goals': 'Metas de ahorro',
-      'get_recent_transactions': 'Transacciones',
-      'get_monthly_trends': 'Tendencias',
-      'get_upcoming_reminders': 'Recordatorios'
-    };
-    return toolNames[tool] || tool;
-  }
 
   private formatTime(date: Date): string {
     const now = new Date();
