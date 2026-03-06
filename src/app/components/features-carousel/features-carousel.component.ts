@@ -141,6 +141,29 @@ export class FeaturesCarouselComponent implements OnInit, OnDestroy {
       bgGradient: 'from-slate-50 to-gray-100',
       tabActiveBg: 'bg-slate-200',
       tabActiveText: 'text-slate-700'
+    },
+    {
+      id: 'productos',
+      icon: 'pi pi-search',
+      label: 'Precios',
+      badgeBg: 'bg-cyan-100',
+      badgeText: 'text-cyan-700',
+      title: 'Busca y compara precios al instante',
+      description: 'Pregunta por cualquier producto y obtén precios actualizados de internet. Compara y ahorra sin salir del chat.',
+      bullets: [
+        { icon: 'pi pi-search', iconColor: 'text-cyan-500', text: 'Búsqueda de precios en tiempo real' },
+        { icon: 'pi pi-arrows-h', iconColor: 'text-cyan-500', text: 'Compara con lo que pagaste antes' },
+        { icon: 'pi pi-link', iconColor: 'text-cyan-500', text: 'Links directos para comprar' }
+      ],
+      chatTitle: 'Ejemplos de búsqueda',
+      chatExamples: [
+        { message: '¿Dónde compro pañales Huggies más baratos?', response: '🔍 Encontré 5 resultados:\n\n🏷️ Plaza Vea: S/ 62.90\n🏷️ Tottus: S/ 65.50\n🏷️ Wong: S/ 68.00' },
+        { message: '¿Cuánto cuesta un aire acondicionado?', response: '🔍 Resultados para aire acondicionado:\n\n🏷️ Falabella: S/ 1,299.00\n🏷️ Promart: S/ 1,149.00' }
+      ],
+      extraChat: '💡 Te quedan 12 búsquedas este mes',
+      bgGradient: 'from-cyan-50 to-teal-50',
+      tabActiveBg: 'bg-cyan-100',
+      tabActiveText: 'text-cyan-700'
     }
   ];
 

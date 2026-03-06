@@ -71,6 +71,13 @@ export class BenefitsComponent {
       iconColor: 'text-orange-600'
     },
     {
+      icon: 'pi pi-search',
+      title: 'Comparador de precios',
+      description: 'Busca productos y compara precios desde el chat. Encuentra la mejor oferta sin salir de WhatsApp.',
+      bgColor: 'bg-cyan-100',
+      iconColor: 'text-cyan-600'
+    },
+    {
       icon: 'pi pi-clock',
       title: 'Recordatorios personalizados',
       description: 'Programa recordatorios para pagos de servicios, deudas o cualquier compromiso financiero.',

@@ -22,11 +22,12 @@ export class PricingComponent {
   ];
 
   premiumFeatures = [
-    'Uso extendido ilimitado de Mia*',
+    'Uso extendido de Mia',
     'Memoria extendida e inteligente',
     'Registro de gastos con foto de boletas (IA Vision)',
     'Registro de gastos por voz (audio a texto)',
     'Reportes avanzados y exportables',
+    'Búsqueda y comparación de precios',
     'Soporte prioritario'
   ];
 
