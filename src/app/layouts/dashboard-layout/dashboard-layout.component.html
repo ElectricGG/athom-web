@@ -175,7 +175,7 @@
             </button>
             @if (reportesMenuOpen()) {
             <ul class="ml-6 mt-1 space-y-1">
-              @if (userPlan === 'premium') {
+              @if (userPlan === 'premium' || userPlan === 'max') {
               <li>
                 <a routerLink="/dashboard/reportes/resumen"
                   routerLinkActive="!bg-gradient-to-r from-green-50 to-emerald-50 !text-green-700 shadow-sm"
@@ -235,7 +235,12 @@
             class="w-10 h-10 bg-gradient-to-br from-gray-800 to-gray-900 rounded-[12px] flex items-center justify-center text-white font-bold shadow-md transform transition-transform duration-300 group-hover:scale-105">
             {{ userInitial$ | async }}
           </div>
-          @if (userPlan === 'premium') {
+          @if (userPlan === 'max') {
+          <div
+            class="absolute -top-1.5 -right-1.5 w-4.5 h-4.5 bg-gradient-to-tr from-amber-500 to-orange-500 rounded-full flex items-center justify-center shadow-sm border-2 border-white">
+            <i class="pi pi-bolt text-white text-[8px]"></i>
+          </div>
+          } @else if (userPlan === 'premium') {
           <div
             class="absolute -top-1.5 -right-1.5 w-4.5 h-4.5 bg-gradient-to-tr from-amber-400 to-yellow-500 rounded-full flex items-center justify-center shadow-sm border-2 border-white">
             <i class="pi pi-star-fill text-white text-[8px]"></i>
@@ -246,7 +251,11 @@
           <p class="font-bold text-gray-900 truncate text-sm transition-colors group-hover:text-green-700">{{ userName$
             | async }}</p>
           <div class="flex items-center gap-1 mt-0.5">
-            @if (userPlan === 'premium') {
+            @if (userPlan === 'max') {
+            <span class="text-[10px] text-amber-600 font-bold uppercase tracking-wider flex items-center gap-1">
+              Max
+            </span>
+            } @else if (userPlan === 'premium') {
             <span class="text-[10px] text-amber-600 font-bold uppercase tracking-wider flex items-center gap-1">
               Premium
             </span>

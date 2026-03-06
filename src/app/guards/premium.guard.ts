@@ -10,7 +10,8 @@ export const premiumGuard: CanActivateFn = () => {
 
   return perfilService.getPerfil().pipe(
     map(perfil => {
-      if (perfil.planNombre?.toLowerCase() === 'premium') {
+      const plan = perfil.planNombre?.toLowerCase();
+      if (plan === 'premium' || plan === 'max') {
         return true;
       }
       router.navigate(['/dashboard']);

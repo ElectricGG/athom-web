@@ -362,7 +362,12 @@ export class SettingsComponent implements OnInit {
   }
 
   get isPremium(): boolean {
-    return this.perfil?.planNombre?.toLowerCase() === 'premium';
+    const plan = this.perfil?.planNombre?.toLowerCase();
+    return plan === 'premium' || plan === 'max';
+  }
+
+  get isMax(): boolean {
+    return this.perfil?.planNombre?.toLowerCase() === 'max';
   }
 
   isLockedNotification(key: string): boolean {

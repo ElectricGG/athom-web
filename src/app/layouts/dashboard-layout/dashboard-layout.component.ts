@@ -31,12 +31,13 @@ export class DashboardLayoutComponent {
   userMenuVisible = signal(false);
   reportesMenuOpen = signal(this.router.url.includes('/reportes'));
 
-  userPlan: 'free' | 'premium' = 'free';
+  userPlan: 'free' | 'premium' | 'max' = 'free';
 
   constructor() {
     this.perfilService.getPerfil().subscribe({
       next: (perfil) => {
-        this.userPlan = perfil.planNombre?.toLowerCase() === 'premium' ? 'premium' : 'free';
+        const plan = perfil.planNombre?.toLowerCase();
+        this.userPlan = plan === 'max' ? 'max' : plan === 'premium' ? 'premium' : 'free';
       },
       error: () => {
         this.userPlan = 'free';
