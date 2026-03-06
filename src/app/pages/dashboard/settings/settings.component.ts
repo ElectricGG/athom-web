@@ -81,7 +81,12 @@ export class SettingsComponent implements OnInit {
   showAddMiembroForm = false;
   nuevoMiembroNombre = '';
   nuevoMiembroNumero = '';
-  readonly maxMiembros = 3;
+
+  get maxMiembros(): number {
+    if (this.isMax) return 5;
+    if (this.isPremium) return 2;
+    return 0;
+  }
 
   notifications: NotificationItem[] = [
     {
