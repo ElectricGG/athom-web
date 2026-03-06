@@ -31,7 +31,7 @@ export class FaqComponent {
     },
     {
       question: '¿Puedo exportar mis datos?',
-      answer: 'Sí, los usuarios premium pueden exportar sus datos en formato Excel o PDF. Solo escribe "exportar datos" en el chat y recibirás un archivo con todo tu historial financiero.'
+      answer: 'Sí, los usuarios premium pueden exportar sus datos en formato Excel. Solo escribe "exportar datos" en el chat y recibirás un archivo con todo tu historial financiero.'
     }
   ];
 }
