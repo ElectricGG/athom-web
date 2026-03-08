@@ -33,7 +33,7 @@ export class PricingComponent {
 
   maxFeatures = [
     'Todo lo de Premium incluido',
-    'x3 el uso de Premium (mensajes, fotos, audios y más)',
+    'Uso máximo de Mia (mensajes, fotos, audios y más)',
     'Agente de compras inteligente con IA',
     'Historial y seguimiento de precios',
     'Alertas automáticas de mejores precios',
