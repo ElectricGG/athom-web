@@ -13,7 +13,7 @@ export class PricingComponent {
   isAnnual = false;
 
   freeFeatures = [
-    'Uso diario estándar de Mia',
+    'Uso semanal estándar de Mia',
     'Memoria de corto plazo',
     'Registro de gastos en texto (manual)',
     'Reportes con resumen básico visual',
