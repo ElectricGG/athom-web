@@ -58,7 +58,7 @@
               <div class="bg-[#ECE5DD] p-4 space-y-4">
                 <div *ngFor="let example of feature.chatExamples" class="space-y-2">
                   <!-- User message -->
-                  <div class="flex justify-end">
+                  <div *ngIf="example.message" class="flex justify-end">
                     <div class="bg-[#DCF8C6] rounded-lg rounded-tr-none px-4 py-2 max-w-[85%] shadow">
                       <p class="text-sm text-gray-800">{{ example.message }}</p>
                     </div>
@@ -71,10 +71,16 @@
                   </div>
                 </div>
 
-                <!-- Extra alert for budgets -->
+                <!-- Extra chat (alert or bot message) -->
                 <div *ngIf="feature.extraChat" class="flex justify-start">
-                  <div class="bg-yellow-50 border-l-4 border-yellow-400 rounded-lg rounded-tl-none px-4 py-2 max-w-[90%] shadow">
-                    <p class="text-sm text-yellow-800 whitespace-pre-line">{{ feature.extraChat }}</p>
+                  <div [ngClass]="feature.extraChatStyle === 'bot'
+                    ? 'bg-white rounded-lg rounded-tl-none'
+                    : 'bg-yellow-50 border-l-4 border-yellow-400 rounded-lg rounded-tl-none'"
+                    class="px-4 py-2 max-w-[90%] shadow">
+                    <p class="text-sm whitespace-pre-line"
+                      [ngClass]="feature.extraChatStyle === 'bot' ? 'text-gray-800' : 'text-yellow-800'">
+                      {{ feature.extraChat }}
+                    </p>
                   </div>
                 </div>
               </div>
