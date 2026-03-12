@@ -27,7 +27,7 @@ export class PricingComponent {
     'Registro de gastos con foto de boletas (IA Vision)',
     'Registro de gastos por voz (audio a texto)',
     'Reportes avanzados y exportables',
-    'Búsqueda y comparación de precios',
+    'Búsqueda y comparación de precios (individual y por lista)',
     'Soporte prioritario'
   ];
 
@@ -35,8 +35,7 @@ export class PricingComponent {
     'Todo lo de Premium incluido',
     'Uso máximo de Mia (mensajes, fotos, audios y más)',
     'Agente de compras inteligente con IA',
-    'Historial y seguimiento de precios',
-    'Alertas automáticas de mejores precios',
+    'Historial y seguimiento de compras',
     'Predicción de próximas compras'
   ];
 

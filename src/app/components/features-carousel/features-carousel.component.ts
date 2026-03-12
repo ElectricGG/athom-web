@@ -149,16 +149,16 @@ export class FeaturesCarouselComponent implements OnInit, OnDestroy {
       badgeBg: 'bg-cyan-100',
       badgeText: 'text-cyan-700',
       title: 'Busca y compara precios al instante',
-      description: 'Pregunta por cualquier producto y obtén precios actualizados de internet. Compara y ahorra sin salir del chat.',
+      description: 'Pregunta por cualquier producto o envía tu lista de compras completa. Mia compara precios en múltiples tiendas por ti.',
       bullets: [
-        { icon: 'pi pi-search', iconColor: 'text-cyan-500', text: 'Búsqueda de precios en tiempo real' },
-        { icon: 'pi pi-arrows-h', iconColor: 'text-cyan-500', text: 'Compara con lo que pagaste antes' },
+        { icon: 'pi pi-search', iconColor: 'text-cyan-500', text: 'Búsqueda individual o por lista de compras' },
+        { icon: 'pi pi-shop', iconColor: 'text-cyan-500', text: 'Compara precios en Plaza Vea, Metro, Tottus y más' },
         { icon: 'pi pi-link', iconColor: 'text-cyan-500', text: 'Links directos para comprar' }
       ],
       chatTitle: 'Ejemplos de búsqueda',
       chatExamples: [
         { message: '¿Dónde compro pañales Huggies más baratos?', response: '🔍 Encontré 5 resultados:\n\n🏷️ Plaza Vea: S/ 62.90\n🏷️ Tottus: S/ 65.50\n🏷️ Wong: S/ 68.00' },
-        { message: '¿Cuánto cuesta un aire acondicionado?', response: '🔍 Resultados para aire acondicionado:\n\n🏷️ Falabella: S/ 1,299.00\n🏷️ Promart: S/ 1,149.00' }
+        { message: 'Compara mi lista: leche gloria, arroz 5kg, aceite primor, pañales Huggies XG', response: '📊 Comparación de precios:\n\n🏪 Plaza Vea (4/4)\n• Leche Gloria 1L — S/ 4.50\n• Arroz Costeño 5kg — S/ 17.90\n• Aceite Primor — S/ 9.10\n• Pañales Huggies XG — S/ 72.90\n\n🏪 Tottus (4/4)\n• Leche Gloria 1L — S/ 4.30\n• Arroz Tottus 5kg — S/ 17.50\n...' }
       ],
       extraChat: '💡 Te quedan 12 búsquedas este mes',
       bgGradient: 'from-cyan-50 to-teal-50',
@@ -213,13 +213,12 @@ export class FeaturesCarouselComponent implements OnInit, OnDestroy {
   setFeature(index: number) {
     this.activeIndex = index;
     this.stopAutoplay();
-    this.startAutoplay();
   }
 
   private startAutoplay() {
     this.intervalId = setInterval(() => {
       this.activeIndex = (this.activeIndex + 1) % this.features.length;
-    }, 6000);
+    }, 12000);
   }
 
   private stopAutoplay() {
