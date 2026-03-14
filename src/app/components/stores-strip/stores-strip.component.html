@@ -1,0 +1,31 @@
+<section class="py-12 md:py-16 px-4 bg-gray-50" id="tiendas">
+  <div class="max-w-6xl mx-auto">
+    <div class="text-center mb-10">
+      <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+        Buscamos en las mejores tiendas de Per&uacute;
+      </h2>
+      <p class="text-gray-500 text-sm max-w-xl mx-auto">
+        Comparamos precios en tiempo real para que encuentres la mejor oferta
+      </p>
+    </div>
+
+    <div class="flex flex-wrap justify-center items-center gap-6 md:gap-10">
+      <div *ngFor="let store of stores"
+        class="flex items-center justify-center h-12">
+        <img *ngIf="!logoFailed.has(store.name)"
+          [src]="store.logo"
+          [alt]="store.name"
+          class="h-10 md:h-14 w-auto object-contain max-w-[150px]"
+          [class.bg-red-600]="store.name === 'Plaza Vea'"
+          [class.rounded]="store.name === 'Plaza Vea'"
+          [class.px-2]="store.name === 'Plaza Vea'"
+          loading="lazy"
+          (error)="onLogoError(store.name)" />
+        <span *ngIf="logoFailed.has(store.name)"
+          class="text-sm font-semibold text-gray-600 px-3 py-1.5 bg-white rounded-lg border border-gray-200">
+          {{ store.name }}
+        </span>
+      </div>
+    </div>
+  </div>
+</section>

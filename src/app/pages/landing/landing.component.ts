@@ -10,6 +10,7 @@ import { CtaFinalComponent } from '../../components/cta-final/cta-final.componen
 import { FooterComponent } from '../../components/footer/footer.component';
 import { HeaderComponent } from '../../components/header/header.component';
 import { DashboardPreview } from '../../components/dashboard-preview/dashboard-preview';
+import { StoresStripComponent } from '../../components/stores-strip/stores-strip.component';
 
 @Component({
   selector: 'app-landing',
@@ -19,6 +20,7 @@ import { DashboardPreview } from '../../components/dashboard-preview/dashboard-p
     HeroComponent,
     HowItWorksComponent,
     FeaturesCarouselComponent,
+    StoresStripComponent,
     VideoDemoComponent,
     PricingComponent,
     BenefitsComponent,
