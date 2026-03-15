@@ -55,21 +55,10 @@
         </div>
 
         <div>
-          <label for="verificationCode" class="block text-sm font-medium text-gray-700 mb-2">
-            Código de verificación
-          </label>
-          <div class="flex gap-2">
-            <span class="p-input-icon-left flex-1">
-              <i class="pi pi-key"></i>
-              <input
-                pInputText
-                id="verificationCode"
-                formControlName="verificationCode"
-                placeholder="Ingresa los 6 dígitos"
-                class="w-full py-3 pl-10"
-                maxlength="6"
-              />
-            </span>
+          <div class="flex items-center justify-between mb-2">
+            <label for="verificationCode" class="text-sm font-medium text-gray-700">
+              Código de verificación
+            </label>
             <p-button
               type="button"
               [label]="codeSent ? 'Reenviar' : 'Enviar código'"
@@ -78,9 +67,20 @@
               [disabled]="!isPhoneValid || isSendingCode"
               [loading]="isSendingCode"
               severity="secondary"
-              styleClass="py-3 whitespace-nowrap"
+              styleClass="py-1 px-3 text-sm whitespace-nowrap"
             />
           </div>
+          <span class="p-input-icon-left w-full">
+            <i class="pi pi-key"></i>
+            <input
+              pInputText
+              id="verificationCode"
+              formControlName="verificationCode"
+              placeholder="Ingresa los 6 dígitos"
+              class="w-full py-3 pl-10"
+              maxlength="6"
+            />
+          </span>
           @if (registerForm.get('verificationCode')?.invalid && registerForm.get('verificationCode')?.touched) {
             <small class="text-red-500 text-sm mt-1 block">Ingresa el código de 6 dígitos</small>
           }
