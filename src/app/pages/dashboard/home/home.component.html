@@ -7,6 +7,47 @@
     </div>
   </div>
 
+  <!-- Trial Banner -->
+  @if (perfil?.esTrialActivo) {
+  <div class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center shrink-0">
+        <i class="pi pi-star text-amber-600 text-lg"></i>
+      </div>
+      <div>
+        <p class="font-semibold text-gray-900">Plan Premium - Periodo de prueba</p>
+        <p class="text-sm text-gray-600">
+          @if (perfil!.diasRestantesTrial <= 3) {
+            Te quedan <span class="font-bold text-red-600">{{ perfil!.diasRestantesTrial }} dias</span>. Suscribete para no perder acceso.
+          } @else {
+            Te quedan <span class="font-bold text-amber-700">{{ perfil!.diasRestantesTrial }} dias</span> de prueba gratuita.
+          }
+        </p>
+      </div>
+    </div>
+    <button (click)="obtenerPremium()" [disabled]="isCheckingOut"
+      class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-xl text-sm font-semibold transition-colors whitespace-nowrap disabled:opacity-50">
+      {{ isCheckingOut ? 'Cargando...' : 'Suscribirme' }}
+    </button>
+  </div>
+  } @else if (perfil && perfil.esPlanGratuito) {
+  <div class="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center shrink-0">
+        <i class="pi pi-lock text-green-600 text-lg"></i>
+      </div>
+      <div>
+        <p class="font-semibold text-gray-900">Desbloquea todo el potencial de Mia</p>
+        <p class="text-sm text-gray-600">Busca precios, compara tiendas, recibe alertas de ofertas y mucho mas con Premium.</p>
+      </div>
+    </div>
+    <button (click)="obtenerPremium()" [disabled]="isCheckingOut"
+      class="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-xl text-sm font-semibold transition-colors whitespace-nowrap disabled:opacity-50">
+      {{ isCheckingOut ? 'Cargando...' : 'Obtener Premium' }}
+    </button>
+  </div>
+  }
+
   <!-- Balance Cards -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
     @if (isLoadingBalance) {

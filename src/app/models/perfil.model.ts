@@ -11,6 +11,8 @@ export interface Perfil {
   esPlanGratuito: boolean;
   precioMensual: number | null;
   fechaProximoCobro: string | null;
+  esTrialActivo: boolean;
+  diasRestantesTrial: number;
 }
 
 export interface ActualizarPerfilRequest {
