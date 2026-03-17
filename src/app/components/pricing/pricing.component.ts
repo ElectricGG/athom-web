@@ -35,7 +35,7 @@ export class PricingComponent {
     'Memoria de corto plazo',
     'Registro de gastos en texto (manual)',
     'Reportes con resumen básico visual',
-    'Ofertas y descuentos estándar',
+    'Ofertas y descuentos estándar (disponible en Perú)',
     'Soporte estándar'
   ];
 
