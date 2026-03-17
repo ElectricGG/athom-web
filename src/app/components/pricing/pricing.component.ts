@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../services/auth.service';
+import { SuscripcionService } from '../../services/suscripcion.service';
 
 @Component({
   selector: 'app-pricing',
@@ -10,7 +12,23 @@ import { CommonModule } from '@angular/common';
   templateUrl: './pricing.component.html'
 })
 export class PricingComponent {
+  private authService = inject(AuthService);
+  private suscripcionService = inject(SuscripcionService);
+
   isAnnual = false;
+  isCheckingOut = false;
+
+  get isLoggedIn(): boolean {
+    return this.authService.isLoggedIn();
+  }
+
+  obtenerPremium(): void {
+    this.isCheckingOut = true;
+    this.suscripcionService.crearCheckout(2).subscribe({
+      next: (res) => window.location.href = res.url,
+      error: () => this.isCheckingOut = false,
+    });
+  }
 
   freeFeatures = [
     'Uso semanal estándar de Mia',

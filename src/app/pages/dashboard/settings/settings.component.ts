@@ -14,6 +14,7 @@ import { AuthService } from '../../../services/auth.service';
 import { PreferenciaNotificacionService } from '../../../services/preferencia-notificacion.service';
 import { EmailIntegrationService } from '../../../services/email-integration.service';
 import { MiembroFamiliarService } from '../../../services/miembro-familiar.service';
+import { SuscripcionService } from '../../../services/suscripcion.service';
 import { Perfil } from '../../../models/perfil.model';
 import { PreferenciaNotificacion } from '../../../models/preferencia-notificacion.model';
 import { EmailVinculadoInfo, ProveedorEmail, getProveedorNombre } from '../../../models/email-integration.model';
@@ -54,6 +55,8 @@ export class SettingsComponent implements OnInit {
   private readonly miembroFamiliarService = inject(MiembroFamiliarService);
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
+  private readonly suscripcionService = inject(SuscripcionService);
+  isCheckingOut = false;
 
   perfilForm: FormGroup = this.fb.group({
     nombreUsuario: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]]
@@ -373,6 +376,14 @@ export class SettingsComponent implements OnInit {
 
   get isMax(): boolean {
     return this.perfil?.planNombre?.toLowerCase() === 'max';
+  }
+
+  obtenerPremium(): void {
+    this.isCheckingOut = true;
+    this.suscripcionService.crearCheckout(2).subscribe({
+      next: (res) => window.location.href = res.url,
+      error: () => this.isCheckingOut = false,
+    });
   }
 
   isLockedNotification(key: string): boolean {

@@ -431,6 +431,8 @@
               icon="pi pi-star"
               severity="success"
               styleClass="w-full"
+              [loading]="isCheckingOut"
+              (click)="obtenerPremium()"
             />
           </div>
         </div>
