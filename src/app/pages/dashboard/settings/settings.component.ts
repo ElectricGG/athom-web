@@ -57,6 +57,7 @@ export class SettingsComponent implements OnInit {
   private readonly confirmationService = inject(ConfirmationService);
   private readonly suscripcionService = inject(SuscripcionService);
   isCheckingOut = false;
+  isCancelling = false;
 
   perfilForm: FormGroup = this.fb.group({
     nombreUsuario: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]]
@@ -376,6 +377,39 @@ export class SettingsComponent implements OnInit {
 
   get isMax(): boolean {
     return this.perfil?.planNombre?.toLowerCase() === 'max';
+  }
+
+  cancelarSuscripcion(): void {
+    this.confirmationService.confirm({
+      message: 'Tu suscripción se cancelará al final del periodo actual. Seguirás teniendo acceso hasta esa fecha. ¿Deseas continuar?',
+      header: 'Cancelar suscripción',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sí, cancelar',
+      rejectLabel: 'No, mantener',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: () => {
+        this.isCancelling = true;
+        this.suscripcionService.cancelar(false).subscribe({
+          next: () => {
+            this.isCancelling = false;
+            this.messageService.add({
+              severity: 'info',
+              summary: 'Suscripción cancelada',
+              detail: 'Tu plan se mantendrá activo hasta el final del periodo actual.'
+            });
+            this.loadPerfil();
+          },
+          error: () => {
+            this.isCancelling = false;
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'No se pudo cancelar la suscripción. Intenta de nuevo.'
+            });
+          }
+        });
+      }
+    });
   }
 
   obtenerPremium(): void {

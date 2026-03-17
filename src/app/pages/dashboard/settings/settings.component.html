@@ -384,9 +384,11 @@
           </div>
           <div class="mt-4 pt-4 border-t border-white/20">
             <button
-              class="w-full text-sm text-amber-200 hover:text-white transition-colors"
+              class="w-full text-sm text-amber-200 hover:text-white transition-colors disabled:opacity-50"
+              (click)="cancelarSuscripcion()"
+              [disabled]="isCancelling"
             >
-              Cancelar suscripción
+              {{ isCancelling ? 'Cancelando...' : 'Cancelar suscripción' }}
             </button>
           </div>
         </div>
@@ -410,9 +412,11 @@
           </div>
           <div class="mt-4 pt-4 border-t border-white/20">
             <button
-              class="w-full text-sm text-green-200 hover:text-white transition-colors"
+              class="w-full text-sm text-green-200 hover:text-white transition-colors disabled:opacity-50"
+              (click)="cancelarSuscripcion()"
+              [disabled]="isCancelling"
             >
-              Cancelar suscripción
+              {{ isCancelling ? 'Cancelando...' : 'Cancelar suscripción' }}
             </button>
           </div>
         </div>

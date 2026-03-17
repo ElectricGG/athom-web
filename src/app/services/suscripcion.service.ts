@@ -18,4 +18,8 @@ export class SuscripcionService {
   crearCheckout(planId: number, periodoCobro: number = 0): Observable<CheckoutResponse> {
     return this.http.post<CheckoutResponse>(`${this.apiUrl}/checkout`, { planId, periodoCobro });
   }
+
+  cancelar(inmediataCancelacion: boolean = false): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/cancelar`, { inmediataCancelacion });
+  }
 }
