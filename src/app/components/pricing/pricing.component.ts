@@ -45,7 +45,7 @@ export class PricingComponent {
     'Registro de gastos con foto de boletas (IA Vision)',
     'Registro de gastos por voz (audio a texto)',
     'Reportes avanzados y exportables',
-    'Búsqueda y comparación de precios (individual y por lista)',
+    'Búsqueda y comparación de precios (disponible en Perú)',
     'Soporte prioritario'
   ];
 
