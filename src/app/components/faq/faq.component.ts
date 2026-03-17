@@ -15,7 +15,7 @@ export class FaqComponent {
     },
     {
       question: '¿Qué diferencia hay entre los planes?',
-      answer: 'Tenemos 3 planes: El plan Gratis incluye registro de gastos por texto, reportes básicos y 20 mensajes diarios. El plan Premium (S/ 9.90/mes) agrega registro por foto y audio, reportes exportables, memoria inteligente, búsqueda de precios y miembros familiares. El plan Max (S/ 24.90/mes) incluye todo lo de Premium más un agente de compras con IA que recuerda tus compras, predice cuándo necesitas recomprar y te avisa cuando encuentra mejores precios.'
+      answer: 'Tenemos 2 planes disponibles: El plan Gratis incluye registro de gastos por texto, reportes básicos y 50 mensajes semanales. El plan Premium (S/ 4.90/mes - precio de lanzamiento) agrega registro por foto y audio, reportes exportables, memoria inteligente, búsqueda de precios y miembros familiares. Pronto lanzaremos el plan Max con agente de compras inteligente.'
     },
     {
       question: '¿Funciona con audios e imágenes?',
@@ -27,7 +27,7 @@ export class FaqComponent {
     },
     {
       question: '¿Tiene costo?',
-      answer: 'Ofrecemos un plan gratuito con funciones básicas. El plan Premium cuesta S/ 9.90/mes y el plan Max S/ 24.90/mes. También hay precios anuales con descuento. Puedes cancelar en cualquier momento sin compromiso.'
+      answer: 'Ofrecemos un plan gratuito con funciones básicas. El plan Premium tiene un precio de lanzamiento de S/ 4.90/mes. Puedes cancelar en cualquier momento sin compromiso.'
     },
     {
       question: '¿Puedo exportar mis datos?',
