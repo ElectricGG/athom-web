@@ -9,6 +9,8 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { ReporteService } from '../../../../services/reporte.service';
 import { CategoriaService } from '../../../../services/categoria.service';
 import { TransactionService } from '../../../../services/transaction.service';
+import { PerfilService } from '../../../../services/perfil.service';
+import { CurrencyService } from '../../../../services/currency.service';
 import { Categoria } from '../../../../models/categoria.model';
 import { ExpenseDistribution, TendenciaDiaria } from '../../../../models/transaction.model';
 import { forkJoin } from 'rxjs';
@@ -34,6 +36,11 @@ export class AnalisisGastosComponent implements OnInit {
   private reporteService = inject(ReporteService);
   private categoriaService = inject(CategoriaService);
   private transactionService = inject(TransactionService);
+  private perfilService = inject(PerfilService);
+  private currencyService = inject(CurrencyService);
+
+  currencySymbol = 'S/';
+  currencyLocale = 'es-PE';
 
   loading = signal(true);
   fechaDesde: Date = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
@@ -51,6 +58,12 @@ export class AnalisisGastosComponent implements OnInit {
   private defaultColors = ['#22c55e', '#ef4444', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316', '#14b8a6', '#6366f1'];
 
   ngOnInit(): void {
+    this.perfilService.getPerfil().subscribe(perfil => {
+      const config = this.currencyService.getConfig(perfil.codigoPais);
+      this.currencySymbol = config.symbol;
+      this.currencyLocale = config.locale;
+    });
+
     this.categoriaService.getAll().subscribe({
       next: (cats) => {
         this.categorias = cats.filter(c => c.tipoCategoria === 'Gasto');
@@ -110,7 +123,7 @@ export class AnalisisGastosComponent implements OnInit {
             label: (ctx: any) => {
               const total = ctx.dataset.data.reduce((s: number, v: number) => s + v, 0);
               const pct = total > 0 ? ((ctx.raw / total) * 100).toFixed(1) : '0';
-              return `${ctx.label}: S/ ${ctx.raw.toLocaleString('es-PE', { minimumFractionDigits: 2 })} (${pct}%)`;
+              return `${ctx.label}: ${this.currencySymbol} ${ctx.raw.toLocaleString(this.currencyLocale, { minimumFractionDigits: 2 })} (${pct}%)`;
             }
           }
         }
@@ -147,14 +160,14 @@ export class AnalisisGastosComponent implements OnInit {
         legend: { display: false },
         tooltip: {
           callbacks: {
-            label: (ctx: any) => `Acumulado: S/ ${ctx.raw.toLocaleString('es-PE', { minimumFractionDigits: 2 })}`
+            label: (ctx: any) => `Acumulado: ${this.currencySymbol} ${ctx.raw.toLocaleString(this.currencyLocale, { minimumFractionDigits: 2 })}`
           }
         }
       },
       scales: {
         y: {
           ticks: {
-            callback: (value: number) => `S/ ${(value / 1000).toFixed(0)}k`
+            callback: (value: number) => `${this.currencySymbol} ${(value / 1000).toFixed(0)}k`
           }
         }
       }
@@ -173,6 +186,6 @@ export class AnalisisGastosComponent implements OnInit {
   }
 
   formatCurrency(value: number): string {
-    return `S/ ${value.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    return `${this.currencySymbol} ${value.toLocaleString(this.currencyLocale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   }
 }

@@ -38,7 +38,7 @@
     } @else {
       <div class="bg-gradient-to-br from-red-500 to-red-600 rounded-2xl p-5 text-white">
         <p class="text-red-100 text-sm font-medium mb-1">Total este mes</p>
-        <p class="text-2xl font-bold">S/ {{ (resumen?.totalMesActual ?? 0) | number:'1.2-2' }}</p>
+        <p class="text-2xl font-bold">{{ cs }} {{ (resumen?.totalMesActual ?? 0) | number:'1.2-2' }}</p>
         <p class="text-red-100 text-sm mt-2">
           @if ((resumen?.porcentajeCambio ?? 0) >= 0) {
             <i class="pi pi-arrow-up text-xs mr-1"></i>
@@ -51,12 +51,12 @@
 
       <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
         <p class="text-gray-500 text-sm font-medium mb-1">Mes anterior</p>
-        <p class="text-2xl font-bold text-gray-900">S/ {{ (resumen?.totalMesAnterior ?? 0) | number:'1.2-2' }}</p>
+        <p class="text-2xl font-bold text-gray-900">{{ cs }} {{ (resumen?.totalMesAnterior ?? 0) | number:'1.2-2' }}</p>
       </div>
 
       <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
         <p class="text-gray-500 text-sm font-medium mb-1">Promedio diario</p>
-        <p class="text-2xl font-bold text-gray-900">S/ {{ (resumen?.promedioDiario ?? 0) | number:'1.2-2' }}</p>
+        <p class="text-2xl font-bold text-gray-900">{{ cs }} {{ (resumen?.promedioDiario ?? 0) | number:'1.2-2' }}</p>
       </div>
 
       <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
@@ -165,7 +165,7 @@
                 </td>
                 <td class="py-4 px-4 text-gray-500 hidden md:table-cell">{{ formatearFecha(gasto.fechaGasto) }}</td>
                 <td class="py-4 px-4 text-right">
-                  <span class="text-red-600 font-bold">-S/ {{ gasto.monto | number:'1.2-2' }}</span>
+                  <span class="text-red-600 font-bold">-{{ cs }} {{ gasto.monto | number:'1.2-2' }}</span>
                 </td>
                 <td class="py-4 px-4 text-right">
                   <div class="flex items-center justify-end gap-1">
@@ -222,8 +222,8 @@
       <p-inputNumber
         formControlName="monto"
         mode="currency"
-        currency="PEN"
-        locale="es-PE"
+        [currency]="currencyCode"
+        [locale]="currencyLocale"
         styleClass="w-full"
         placeholder="0.00"
       />

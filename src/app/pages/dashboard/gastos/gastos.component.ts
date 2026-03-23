@@ -15,6 +15,8 @@ import { InputIconModule } from 'primeng/inputicon';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { GastoService } from '../../../services/gasto.service';
 import { ReporteService } from '../../../services/reporte.service';
+import { PerfilService } from '../../../services/perfil.service';
+import { CurrencyService } from '../../../services/currency.service';
 import { TooltipModule } from 'primeng/tooltip';
 import {
   Gasto,
@@ -57,6 +59,13 @@ export class GastosComponent implements OnInit {
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
   private readonly reporteService = inject(ReporteService);
+  private readonly perfilService = inject(PerfilService);
+  private readonly currencyService = inject(CurrencyService);
+
+  // Moneda
+  cs = 'S/';
+  currencyCode = 'PEN';
+  currencyLocale = 'es-PE';
 
   // Estado
   gastos: Gasto[] = [];
@@ -113,6 +122,13 @@ export class GastosComponent implements OnInit {
     // Ajustar today al final del día para permitir seleccionar cualquier hora de hoy
     this.today.setHours(23, 59, 59, 999);
 
+    this.perfilService.getPerfil().subscribe(perfil => {
+      const config = this.currencyService.getConfig(perfil.codigoPais);
+      this.cs = config.symbol;
+      this.currencyCode = config.code;
+      this.currencyLocale = config.locale;
+    });
+
     this.inicializarMeses();
     this.cargarDatos();
   }
@@ -131,7 +147,7 @@ export class GastosComponent implements OnInit {
   }
 
   private formatearMes(fecha: Date): string {
-    return fecha.toLocaleDateString('es-PE', { month: 'long', year: 'numeric' });
+    return fecha.toLocaleDateString('es', { month: 'long', year: 'numeric' });
   }
 
   cargarDatos(): void {
@@ -303,7 +319,7 @@ export class GastosComponent implements OnInit {
   }
 
   formatearFecha(fecha: string): string {
-    return new Date(fecha).toLocaleDateString('es-PE', {
+    return new Date(fecha).toLocaleDateString('es', {
       day: '2-digit',
       month: 'short',
       year: 'numeric'

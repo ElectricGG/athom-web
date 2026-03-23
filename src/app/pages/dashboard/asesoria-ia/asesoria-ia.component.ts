@@ -235,7 +235,7 @@ Si el problema persiste, verifica tu conexión a internet o intenta más tarde.`
     if (diffHours === 1) return 'Hace 1 hora';
     if (diffHours < 24) return `Hace ${diffHours} horas`;
 
-    return date.toLocaleDateString('es-PE', {
+    return date.toLocaleDateString('es', {
       hour: '2-digit',
       minute: '2-digit'
     });

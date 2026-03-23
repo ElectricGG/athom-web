@@ -8,6 +8,8 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { DatePickerModule } from 'primeng/datepicker';
 import { SelectModule } from 'primeng/select';
 import { RecordatorioService } from '../../../services/recordatorio.service';
+import { PerfilService } from '../../../services/perfil.service';
+import { CurrencyService } from '../../../services/currency.service';
 import { RecordatoriosCalendarComponent } from './components/recordatorios-calendar/recordatorios-calendar.component';
 import { IconSelectorComponent } from '../../../shared/components/icon-selector/icon-selector.component';
 import {
@@ -42,6 +44,13 @@ interface FrecuenciaOption {
 })
 export class RecordatoriosComponent implements OnInit {
   private recordatorioService = inject(RecordatorioService);
+  private perfilService = inject(PerfilService);
+  private currencyService = inject(CurrencyService);
+
+  // Moneda
+  cs = 'S/';
+  currencyCode = 'PEN';
+  currencyLocale = 'es-PE';
 
   allReminders: Recordatorio[] = [];
   resumen: ResumenRecordatorios = { vencidos: 0, proximosSieteDias: 0, completadosEsteMes: 0 };
@@ -84,6 +93,13 @@ export class RecordatoriosComponent implements OnInit {
   isDeleting = false;
 
   ngOnInit(): void {
+    this.perfilService.getPerfil().subscribe(perfil => {
+      const config = this.currencyService.getConfig(perfil.codigoPais);
+      this.cs = config.symbol;
+      this.currencyCode = config.code;
+      this.currencyLocale = config.locale;
+    });
+
     this.loadData();
   }
 

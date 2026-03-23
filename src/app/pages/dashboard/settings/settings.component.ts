@@ -15,6 +15,7 @@ import { PreferenciaNotificacionService } from '../../../services/preferencia-no
 import { EmailIntegrationService } from '../../../services/email-integration.service';
 import { MiembroFamiliarService } from '../../../services/miembro-familiar.service';
 import { SuscripcionService } from '../../../services/suscripcion.service';
+import { CurrencyService } from '../../../services/currency.service';
 import { Perfil } from '../../../models/perfil.model';
 import { PreferenciaNotificacion } from '../../../models/preferencia-notificacion.model';
 import { EmailVinculadoInfo, ProveedorEmail, getProveedorNombre } from '../../../models/email-integration.model';
@@ -56,6 +57,7 @@ export class SettingsComponent implements OnInit {
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
   private readonly suscripcionService = inject(SuscripcionService);
+  private readonly currencyService = inject(CurrencyService);
   isCheckingOut = false;
   isCancelling = false;
 
@@ -426,7 +428,7 @@ export class SettingsComponent implements OnInit {
 
   formatDate(dateString: string | null): string {
     if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleDateString('es-PE', {
+    return new Date(dateString).toLocaleDateString('es', {
       day: '2-digit',
       month: 'short',
       year: 'numeric'
@@ -434,8 +436,9 @@ export class SettingsComponent implements OnInit {
   }
 
   formatCurrency(amount: number | null): string {
-    if (amount === null || amount === undefined) return 'S/ 0.00';
-    return `S/ ${amount.toFixed(2)}`;
+    const config = this.currencyService.getConfig(this.perfil?.codigoPais);
+    if (amount === null || amount === undefined) return `${config.symbol} 0.00`;
+    return `${config.symbol} ${amount.toFixed(2)}`;
   }
 
   // ==================== Miembros Familiares ====================

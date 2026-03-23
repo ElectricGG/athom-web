@@ -12,6 +12,7 @@ import { TransactionService } from '../../../services/transaction.service';
 import { MetaAhorroService } from '../../../services/meta-ahorro.service';
 import { PerfilService } from '../../../services/perfil.service';
 import { SuscripcionService } from '../../../services/suscripcion.service';
+import { CurrencyService } from '../../../services/currency.service';
 import { ExpenseDonutChartComponent } from './components/expense-donut-chart/expense-donut-chart.component';
 import { IncomeExpenseTrendComponent } from './components/income-expense-trend/income-expense-trend.component';
 
@@ -31,10 +32,12 @@ export class DashboardHomeComponent implements OnInit {
   private metaAhorroService = inject(MetaAhorroService);
   private perfilService = inject(PerfilService);
   private suscripcionService = inject(SuscripcionService);
+  private currencyService = inject(CurrencyService);
   private authService = inject(AuthService);
 
   perfil: Perfil | null = null;
   isCheckingOut = false;
+  cs = 'S/';
 
   userName$: Observable<string> = this.authService.currentUserData.pipe(
     map(user => user ? user.nombreUsuario : 'Invitado')
@@ -48,7 +51,7 @@ export class DashboardHomeComponent implements OnInit {
   isLoadingBalance = false;
   isLoadingSavingGoals = false;
   selectedPeriod = 1;
-  mesActual = new Date().toLocaleDateString('es-PE', { month: 'long', year: 'numeric' });
+  mesActual = new Date().toLocaleDateString('es', { month: 'long', year: 'numeric' });
 
   periodOptions: PeriodOption[] = [
     { label: 'Este mes', value: 1 },
@@ -74,7 +77,10 @@ export class DashboardHomeComponent implements OnInit {
 
   private loadPerfil(): void {
     this.perfilService.getPerfil().subscribe({
-      next: (perfil) => this.perfil = perfil,
+      next: (perfil) => {
+        this.perfil = perfil;
+        this.cs = this.currencyService.getConfig(perfil.codigoPais).symbol;
+      },
     });
   }
 

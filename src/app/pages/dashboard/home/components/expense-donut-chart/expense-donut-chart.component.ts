@@ -1,7 +1,9 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges, inject } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { ChartModule } from 'primeng/chart';
 import { ExpenseDistribution } from '../../../../../models/transaction.model';
+import { PerfilService } from '../../../../../services/perfil.service';
+import { CurrencyService } from '../../../../../services/currency.service';
 
 const MAX_VISIBLE = 5;
 const OTROS_COLOR = '#9ca3af';
@@ -27,7 +29,7 @@ const OTROS_COLOR = '#9ca3af';
             <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
               <span class="text-gray-400 text-[10px] font-bold uppercase tracking-wider">Total</span>
               <span class="text-xl font-black text-gray-900 leading-tight">
-                S/ {{ totalExpenses | number:'1.2-2' }}
+                {{ currencySymbol }} {{ totalExpenses | number:'1.2-2' }}
               </span>
             </div>
           </div>
@@ -60,7 +62,7 @@ const OTROS_COLOR = '#9ca3af';
                       <span class="text-[11px] font-bold text-gray-700 truncate mr-1.5">{{ item.nombre }}</span>
                       <span class="text-[9px] font-bold text-gray-400 shrink-0">{{ item.porcentaje }}%</span>
                     </div>
-                    <span class="text-[11px] font-black text-gray-900 shrink-0">S/{{ item.monto | number:'1.2-2' }}</span>
+                    <span class="text-[11px] font-black text-gray-900 shrink-0">{{ currencySymbol }}{{ item.monto | number:'1.2-2' }}</span>
                   </div>
                 </div>
               }
@@ -104,6 +106,12 @@ const OTROS_COLOR = '#9ca3af';
   `]
 })
 export class ExpenseDonutChartComponent implements OnInit, OnChanges {
+  private perfilService = inject(PerfilService);
+  private currencyService = inject(CurrencyService);
+
+  currencySymbol = 'S/';
+  currencyLocale = 'es-PE';
+
   @Input() data: ExpenseDistribution[] = [];
 
   chartData: any;
@@ -117,6 +125,13 @@ export class ExpenseDonutChartComponent implements OnInit, OnChanges {
   displayData: ExpenseDistribution[] = [];
 
   ngOnInit() {
+    this.perfilService.getPerfil().subscribe(perfil => {
+      const config = this.currencyService.getConfig(perfil.codigoPais);
+      this.currencySymbol = config.symbol;
+      this.currencyLocale = config.locale;
+      this.buildDisplay();
+    });
+
     this.buildDisplay();
   }
 
@@ -204,7 +219,7 @@ export class ExpenseDonutChartComponent implements OnInit, OnChanges {
           callbacks: {
             label: (context: any) => {
               const value = context.raw as number;
-              return ` S/ ${value.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+              return ` ${this.currencySymbol} ${value.toLocaleString(this.currencyLocale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
             }
           }
         }

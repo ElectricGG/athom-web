@@ -3,6 +3,8 @@ import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChartModule } from 'primeng/chart';
 import { TransactionService } from '../../../../../services/transaction.service';
+import { PerfilService } from '../../../../../services/perfil.service';
+import { CurrencyService } from '../../../../../services/currency.service';
 import { TendenciaMensual, TendenciaDiaria } from '../../../../../models/transaction.model';
 
 type TabType = 'mensual' | 'diario';
@@ -136,7 +138,7 @@ interface MonthOption {
                 <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
                 <div>
                   <p class="text-[11px] text-gray-500">Total ingresos</p>
-                  <p class="text-sm font-bold text-gray-900">S/ {{ totalIngresos | number:'1.0-0' }}</p>
+                  <p class="text-sm font-bold text-gray-900">{{ currencySymbol }} {{ totalIngresos | number:'1.0-0' }}</p>
                 </div>
               </div>
             }
@@ -145,7 +147,7 @@ interface MonthOption {
                 <div class="w-3 h-3 rounded-full bg-red-400"></div>
                 <div>
                   <p class="text-[11px] text-gray-500">Total gastos</p>
-                  <p class="text-sm font-bold text-gray-900">S/ {{ totalGastos | number:'1.0-0' }}</p>
+                  <p class="text-sm font-bold text-gray-900">{{ currencySymbol }} {{ totalGastos | number:'1.0-0' }}</p>
                 </div>
               </div>
             }
@@ -173,6 +175,10 @@ interface MonthOption {
 })
 export class IncomeExpenseTrendComponent implements OnInit {
   private transactionService = inject(TransactionService);
+  private perfilService = inject(PerfilService);
+  private currencyService = inject(CurrencyService);
+
+  currencySymbol = 'S/';
 
   activeTab: TabType = 'mensual';
   monthlyFilter: 'anio' | 'rolling' = 'anio';
@@ -198,6 +204,11 @@ export class IncomeExpenseTrendComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    this.perfilService.getPerfil().subscribe(perfil => {
+      const config = this.currencyService.getConfig(perfil.codigoPais);
+      this.currencySymbol = config.symbol;
+    });
+
     this.buildMonthOptions();
     this.loadData();
   }
@@ -366,7 +377,7 @@ export class IncomeExpenseTrendComponent implements OnInit {
           usePointStyle: true,
           callbacks: {
             label: (context: { dataset: { label: string }; raw: number }) => {
-              return ` ${context.dataset.label}: S/ ${context.raw.toLocaleString()}`;
+              return ` ${context.dataset.label}: ${this.currencySymbol} ${context.raw.toLocaleString()}`;
             }
           }
         }
@@ -393,9 +404,9 @@ export class IncomeExpenseTrendComponent implements OnInit {
             color: '#9ca3af',
             callback: (value: number) => {
               if (value >= 1000) {
-                return `S/${(value / 1000).toFixed(1)}k`;
+                return `${this.currencySymbol}${(value / 1000).toFixed(1)}k`;
               }
-              return `S/${value}`;
+              return `${this.currencySymbol}${value}`;
             }
           },
           border: { display: false }

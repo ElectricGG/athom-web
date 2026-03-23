@@ -7,6 +7,8 @@ import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 import { PresupuestoService } from '../../../../services/presupuesto.service';
 import { ReporteService } from '../../../../services/reporte.service';
+import { PerfilService } from '../../../../services/perfil.service';
+import { CurrencyService } from '../../../../services/currency.service';
 import { PresupuestoEstimado, PresupuestoCategoria, ResumenPresupuesto } from '../../../../models/presupuesto.model';
 import { forkJoin } from 'rxjs';
 
@@ -19,6 +21,11 @@ import { forkJoin } from 'rxjs';
 export class PresupuestoVsRealComponent implements OnInit {
   private presupuestoService = inject(PresupuestoService);
   private reporteService = inject(ReporteService);
+  private perfilService = inject(PerfilService);
+  private currencyService = inject(CurrencyService);
+
+  currencySymbol = 'S/';
+  currencyLocale = 'es-PE';
 
   loading = signal(true);
   loadingDetalle = signal(false);
@@ -34,6 +41,12 @@ export class PresupuestoVsRealComponent implements OnInit {
   chartHeight = 200;
 
   ngOnInit(): void {
+    this.perfilService.getPerfil().subscribe(perfil => {
+      const config = this.currencyService.getConfig(perfil.codigoPais);
+      this.currencySymbol = config.symbol;
+      this.currencyLocale = config.locale;
+    });
+
     this.presupuestoService.getPresupuestos().subscribe({
       next: (data) => {
         this.presupuestos = data;
@@ -113,14 +126,14 @@ export class PresupuestoVsRealComponent implements OnInit {
         legend: { position: 'top' },
         tooltip: {
           callbacks: {
-            label: (ctx: any) => `${ctx.dataset.label}: S/ ${ctx.raw.toLocaleString('es-PE', { minimumFractionDigits: 2 })}`
+            label: (ctx: any) => `${ctx.dataset.label}: ${this.currencySymbol} ${ctx.raw.toLocaleString(this.currencyLocale, { minimumFractionDigits: 2 })}`
           }
         }
       },
       scales: {
         x: {
           ticks: {
-            callback: (value: number) => `S/ ${value.toLocaleString('es-PE')}`
+            callback: (value: number) => `${this.currencySymbol} ${value.toLocaleString(this.currencyLocale)}`
           }
         }
       }
@@ -147,7 +160,7 @@ export class PresupuestoVsRealComponent implements OnInit {
   }
 
   formatCurrency(value: number): string {
-    return `S/ ${value.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    return `${this.currencySymbol} ${value.toLocaleString(this.currencyLocale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   }
 
   getPorcentaje(monto: number, gastado: number): number {

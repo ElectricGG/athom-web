@@ -5,27 +5,37 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { HttpClient } from '@angular/common/http';
 import { finalize } from 'rxjs/operators';
 
+import { CommonModule } from '@angular/common';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
-import { InputMaskModule } from 'primeng/inputmask';
+import { SelectModule } from 'primeng/select';
 
 interface VerifyCodeResponse {
   success: boolean;
+}
+
+interface CountryOption {
+  code: string;
+  name: string;
+  flag: string;
+  iso: string;
+  placeholder: string;
 }
 
 @Component({
   selector: 'app-register',
   standalone: true,
   imports: [
+    CommonModule,
     RouterLink,
     ReactiveFormsModule,
     InputTextModule,
     PasswordModule,
     ButtonModule,
     CheckboxModule,
-    InputMaskModule,
+    SelectModule,
   ],
   templateUrl: './register.component.html'
 })
@@ -38,9 +48,29 @@ export class RegisterComponent {
   private readonly verifyCodeUrl = `${environment.apiUrl}/auth/whatsapp/verify-code`;
   private readonly createUserUrl = `${environment.apiUrl}/Usuarios`;
 
+  countries: CountryOption[] = [
+    { code: '+51', name: 'Peru', flag: '🇵🇪', iso: 'pe', placeholder: '999 999 999' },
+    { code: '+52', name: 'Mexico', flag: '🇲🇽', iso: 'mx', placeholder: '55 1234 5678' },
+    { code: '+57', name: 'Colombia', flag: '🇨🇴', iso: 'co', placeholder: '301 234 5678' },
+    { code: '+56', name: 'Chile', flag: '🇨🇱', iso: 'cl', placeholder: '9 1234 5678' },
+    { code: '+54', name: 'Argentina', flag: '🇦🇷', iso: 'ar', placeholder: '11 1234 5678' },
+    { code: '+593', name: 'Ecuador', flag: '🇪🇨', iso: 'ec', placeholder: '99 123 4567' },
+    { code: '+591', name: 'Bolivia', flag: '🇧🇴', iso: 'bo', placeholder: '7123 4567' },
+    { code: '+595', name: 'Paraguay', flag: '🇵🇾', iso: 'py', placeholder: '981 123 456' },
+    { code: '+598', name: 'Uruguay', flag: '🇺🇾', iso: 'uy', placeholder: '94 123 456' },
+    { code: '+507', name: 'Panama', flag: '🇵🇦', iso: 'pa', placeholder: '6123 4567' },
+    { code: '+506', name: 'Costa Rica', flag: '🇨🇷', iso: 'cr', placeholder: '8312 3456' },
+    { code: '+502', name: 'Guatemala', flag: '🇬🇹', iso: 'gt', placeholder: '5123 4567' },
+    { code: '+503', name: 'El Salvador', flag: '🇸🇻', iso: 'sv', placeholder: '7012 3456' },
+    { code: '+504', name: 'Honduras', flag: '🇭🇳', iso: 'hn', placeholder: '9123 4567' },
+    { code: '+505', name: 'Nicaragua', flag: '🇳🇮', iso: 'ni', placeholder: '8123 4567' },
+    { code: '+809', name: 'Rep. Dominicana', flag: '🇩🇴', iso: 'do', placeholder: '809 123 4567' },
+  ];
+
   registerForm: FormGroup = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
-    phone: ['', [Validators.required]],
+    countryCode: ['+51', [Validators.required]],
+    phone: ['', [Validators.required, Validators.minLength(7)]],
     verificationCode: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]],
     password: ['', [Validators.required, Validators.minLength(8)]],
     acceptTerms: [false, [Validators.requiredTrue]],
@@ -51,14 +81,25 @@ export class RegisterComponent {
   codeSent = false;
   errorMessage: string | null = null;
 
+  get selectedCountry(): CountryOption {
+    const code = this.registerForm.get('countryCode')?.value;
+    return this.countries.find(c => c.code === code) ?? this.countries[0];
+  }
+
+  getIso(code: string): string {
+    return this.countries.find(c => c.code === code)?.iso ?? 'pe';
+  }
+
   get phoneNumber(): string {
+    const countryCode = this.registerForm.get('countryCode')?.value?.replace('+', '') || '51';
     const rawPhone = this.registerForm.get('phone')?.value || '';
-    return rawPhone.replace(/\s/g, '').replace('+', '');
+    const cleanPhone = rawPhone.replace(/\s/g, '');
+    return countryCode + cleanPhone;
   }
 
   get isPhoneValid(): boolean {
     const phoneControl = this.registerForm.get('phone');
-    return !!(phoneControl?.valid && phoneControl?.value?.length > 0);
+    return !!(phoneControl?.valid && phoneControl?.value?.trim().length >= 7);
   }
 
   get canSubmit(): boolean {
@@ -138,10 +179,9 @@ export class RegisterComponent {
   }
 
   private buildUserPayload(): object {
+    const countryCode = this.registerForm.get('countryCode')?.value?.replace('+', '') || '51';
     const rawPhone = this.registerForm.get('phone')?.value || '';
-    const phoneParts = rawPhone.replace('+', '').split(' ');
-    const countryCode = phoneParts.length > 1 ? phoneParts[0] : '';
-    const phoneNumber = phoneParts.length > 1 ? phoneParts.slice(1).join('') : phoneParts[0];
+    const phoneNumber = rawPhone.replace(/\s/g, '');
     const name = this.registerForm.get('name')?.value;
 
     return {

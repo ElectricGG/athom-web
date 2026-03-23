@@ -70,7 +70,7 @@
           <i class="pi pi-wallet text-lg"></i>
         </div>
       </div>
-      <p class="text-3xl font-bold">S/ {{ (balanceSummary?.balance ?? 0) | number:'1.2-2' }}</p>
+      <p class="text-3xl font-bold">{{ cs }} {{ (balanceSummary?.balance ?? 0) | number:'1.2-2' }}</p>
       <p class="text-green-100 text-sm mt-2">
         @if ((balanceSummary?.porcentajeCambioBalance ?? 0) >= 0) {
         <i class="pi pi-arrow-up text-xs mr-1"></i>
@@ -90,7 +90,7 @@
           <i class="pi pi-arrow-up text-blue-600 text-lg"></i>
         </div>
       </div>
-      <p class="text-2xl font-bold text-gray-900">S/ {{ (balanceSummary?.totalIngresos ?? 0) | number:'1.2-2' }}</p>
+      <p class="text-2xl font-bold text-gray-900">{{ cs }} {{ (balanceSummary?.totalIngresos ?? 0) | number:'1.2-2' }}</p>
       <p [class]="(balanceSummary?.porcentajeCambioIngresos ?? 0) >= 0 ? 'text-green-600' : 'text-red-600'"
         class="text-sm mt-2">
         @if ((balanceSummary?.porcentajeCambioIngresos ?? 0) >= 0) {
@@ -111,7 +111,7 @@
           <i class="pi pi-arrow-down text-red-600 text-lg"></i>
         </div>
       </div>
-      <p class="text-2xl font-bold text-gray-900">S/ {{ (balanceSummary?.totalGastos ?? 0) | number:'1.2-2' }}</p>
+      <p class="text-2xl font-bold text-gray-900">{{ cs }} {{ (balanceSummary?.totalGastos ?? 0) | number:'1.2-2' }}</p>
       <p [class]="(balanceSummary?.porcentajeCambioGastos ?? 0) <= 0 ? 'text-green-600' : 'text-red-600'"
         class="text-sm mt-2">
         @if ((balanceSummary?.porcentajeCambioGastos ?? 0) >= 0) {
@@ -132,7 +132,7 @@
           <i class="pi pi-calendar text-orange-600 text-lg"></i>
         </div>
       </div>
-      <p class="text-2xl font-bold text-gray-900">S/ {{ (balanceSummary?.promedioDiarioGastos ?? 0) | number:'1.2-2' }}
+      <p class="text-2xl font-bold text-gray-900">{{ cs }} {{ (balanceSummary?.promedioDiarioGastos ?? 0) | number:'1.2-2' }}
       </p>
       <p class="text-orange-600 text-sm mt-2">
         <i class="pi pi-chart-bar text-xs mr-1"></i>
@@ -148,7 +148,7 @@
           <i class="pi pi-bookmark text-purple-600 text-lg"></i>
         </div>
       </div>
-      <p class="text-2xl font-bold text-gray-900">S/ {{ (balanceSummary?.totalAhorros ?? 0) | number:'1.2-2' }}</p>
+      <p class="text-2xl font-bold text-gray-900">{{ cs }} {{ (balanceSummary?.totalAhorros ?? 0) | number:'1.2-2' }}</p>
       <p class="text-purple-600 text-sm mt-2">
         <i class="pi pi-flag text-xs mr-1"></i>
         Destinado a metas
@@ -237,7 +237,7 @@
             </div>
           </div>
           <p class="text-xs text-gray-500">
-            S/ {{ goal.montoActual | number:'1.2-2' }} de S/ {{ goal.montoObjetivo | number:'1.2-2' }}
+            {{ cs }} {{ goal.montoActual | number:'1.2-2' }} de {{ cs }} {{ goal.montoObjetivo | number:'1.2-2' }}
           </p>
         </div>
         }
@@ -297,7 +297,7 @@
             <td class="py-3 px-2 text-sm text-gray-500 hidden md:table-cell">{{ transaction.fecha | date:'d MMM' }}</td>
             <td class="py-3 px-2 text-right">
               <span [class]="isIncome(transaction) ? 'text-green-600' : 'text-red-600'" class="font-semibold text-sm">
-                {{ isIncome(transaction) ? '+' : '-' }}S/ {{ transaction.monto | number:'1.2-2' }}
+                {{ isIncome(transaction) ? '+' : '-' }}{{ cs }} {{ transaction.monto | number:'1.2-2' }}
               </span>
             </td>
           </tr>

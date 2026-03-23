@@ -12,6 +12,8 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { TooltipModule } from 'primeng/tooltip';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { PresupuestoService } from '../../../services/presupuesto.service';
+import { PerfilService } from '../../../services/perfil.service';
+import { CurrencyService } from '../../../services/currency.service';
 import {
   PresupuestoEstimado,
   PresupuestoCategoria,
@@ -51,6 +53,13 @@ export class PresupuestosComponent implements OnInit {
   private readonly presupuestoService = inject(PresupuestoService);
   private readonly messageService = inject(MessageService);
   private readonly confirmationService = inject(ConfirmationService);
+  private readonly perfilService = inject(PerfilService);
+  private readonly currencyService = inject(CurrencyService);
+
+  // Moneda
+  cs = 'S/';
+  currencyCode = 'PEN';
+  currencyLocale = 'es-PE';
 
   // Estado principal
   presupuestos = signal<PresupuestoEstimado[]>([]);
@@ -116,6 +125,13 @@ export class PresupuestosComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.perfilService.getPerfil().subscribe(perfil => {
+      const config = this.currencyService.getConfig(perfil.codigoPais);
+      this.cs = config.symbol;
+      this.currencyCode = config.code;
+      this.currencyLocale = config.locale;
+    });
+
     this.inicializarAnios();
     this.cargarPresupuestos();
   }
@@ -493,7 +509,7 @@ export class PresupuestosComponent implements OnInit {
 
   formatearMesAnio(mes: number, anio: number): string {
     const fecha = new Date(anio, mes - 1, 1);
-    return fecha.toLocaleDateString('es-PE', { month: 'long', year: 'numeric' });
+    return fecha.toLocaleDateString('es', { month: 'long', year: 'numeric' });
   }
 
   esMesActual(presupuesto: PresupuestoEstimado): boolean {

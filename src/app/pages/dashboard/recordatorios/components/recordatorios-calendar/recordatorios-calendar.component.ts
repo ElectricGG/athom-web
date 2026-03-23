@@ -1,6 +1,8 @@
-import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnChanges, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Recordatorio } from '../../../../../models/recordatorio.model';
+import { PerfilService } from '../../../../../services/perfil.service';
+import { CurrencyService } from '../../../../../services/currency.service';
 
 interface CalendarDay {
   date: number;
@@ -19,7 +21,12 @@ interface CalendarWeek {
   imports: [CommonModule],
   templateUrl: './recordatorios-calendar.component.html'
 })
-export class RecordatoriosCalendarComponent implements OnChanges {
+export class RecordatoriosCalendarComponent implements OnChanges, OnInit {
+  private readonly perfilService = inject(PerfilService);
+  private readonly currencyService = inject(CurrencyService);
+
+  cs = 'S/';
+
   @Input() reminders: Recordatorio[] = [];
   @Output() toggle = new EventEmitter<Recordatorio>();
   @Output() edit = new EventEmitter<Recordatorio>();
@@ -44,6 +51,13 @@ export class RecordatoriosCalendarComponent implements OnChanges {
   get isToday(): boolean {
     const now = new Date();
     return this.currentMonth === now.getMonth() && this.currentYear === now.getFullYear();
+  }
+
+  ngOnInit(): void {
+    this.perfilService.getPerfil().subscribe(perfil => {
+      const config = this.currencyService.getConfig(perfil.codigoPais);
+      this.cs = config.symbol;
+    });
   }
 
   ngOnChanges(): void {

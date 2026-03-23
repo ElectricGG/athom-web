@@ -154,7 +154,7 @@
 
         <!-- Amount & Date -->
         <div class="text-right hidden sm:block">
-          <p class="font-bold text-gray-900">S/ {{ reminder.monto | number:'1.2-2' }}</p>
+          <p class="font-bold text-gray-900">{{ cs }} {{ reminder.monto | number:'1.2-2' }}</p>
           <p class="text-sm text-gray-500">{{ reminder.fechaVencimiento | date:'d MMMM yyyy' }}</p>
         </div>
 
@@ -176,7 +176,7 @@
       <!-- Mobile amount -->
       <div class="mt-3 pt-3 border-t border-gray-100 flex justify-between sm:hidden">
         <span class="text-sm text-gray-500">{{ reminder.fechaVencimiento | date:'d MMMM yyyy' }}</span>
-        <span class="font-bold text-gray-900">S/ {{ reminder.monto | number:'1.2-2' }}</span>
+        <span class="font-bold text-gray-900">{{ cs }} {{ reminder.monto | number:'1.2-2' }}</span>
       </div>
     </div>
     }
@@ -209,7 +209,7 @@
     </div>
     <div>
       <label class="block text-sm font-medium text-gray-700 mb-2">Monto</label>
-      <p-inputNumber [(ngModel)]="formMonto" mode="currency" currency="PEN" locale="es-PE" styleClass="w-full"
+      <p-inputNumber [(ngModel)]="formMonto" mode="currency" [currency]="currencyCode" [locale]="currencyLocale" styleClass="w-full"
         placeholder="0.00" />
     </div>
     <div>

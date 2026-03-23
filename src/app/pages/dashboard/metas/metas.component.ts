@@ -13,6 +13,8 @@ import { MessageService, ConfirmationService } from 'primeng/api';
 import { MetaAhorroService } from '../../../services/meta-ahorro.service';
 import { MetaAhorro, EstadoMeta } from '../../../models/meta-ahorro.model';
 import { GastoService } from '../../../services/gasto.service';
+import { PerfilService } from '../../../services/perfil.service';
+import { CurrencyService } from '../../../services/currency.service';
 import { IconSelectorComponent } from '../../../shared/components/icon-selector/icon-selector.component';
 
 interface MetaEstadisticas {
@@ -46,6 +48,13 @@ export class MetasComponent implements OnInit {
   private gastoService = inject(GastoService);
   private messageService = inject(MessageService);
   private confirmationService = inject(ConfirmationService);
+  private perfilService = inject(PerfilService);
+  private currencyService = inject(CurrencyService);
+
+  // Moneda
+  cs = 'S/';
+  currencyCode = 'PEN';
+  currencyLocale = 'es-PE';
 
   // Estado
   metas: MetaAhorro[] = [];
@@ -103,6 +112,13 @@ export class MetasComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.perfilService.getPerfil().subscribe(perfil => {
+      const config = this.currencyService.getConfig(perfil.codigoPais);
+      this.cs = config.symbol;
+      this.currencyCode = config.code;
+      this.currencyLocale = config.locale;
+    });
+
     this.cargarMetas();
   }
 
@@ -299,7 +315,7 @@ export class MetasComponent implements OnInit {
 
   formatearFecha(fecha: string | null): string {
     if (!fecha) return 'Sin fecha límite';
-    return new Date(fecha).toLocaleDateString('es-PE', {
+    return new Date(fecha).toLocaleDateString('es', {
       month: 'short',
       year: 'numeric'
     });
@@ -353,7 +369,7 @@ export class MetasComponent implements OnInit {
         this.messageService.add({
           severity: 'success',
           summary: 'Ahorro registrado',
-          detail: `Se agregó S/ ${formValue.monto.toFixed(2)} a "${this.selectedMetaAhorro?.nombre}"`
+          detail: `Se agregó ${this.cs} ${formValue.monto.toFixed(2)} a "${this.selectedMetaAhorro?.nombre}"`
         });
         this.showAhorroDialog = false;
         this.isSavingAhorro = false;

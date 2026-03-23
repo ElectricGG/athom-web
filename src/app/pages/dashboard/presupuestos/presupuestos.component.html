@@ -108,11 +108,11 @@
             <div class="flex items-center justify-between text-sm">
               <div>
                 <span class="text-gray-500">Gastado:</span>
-                <span class="font-semibold text-gray-900 ml-1">S/ {{ getTotalGastado(presupuesto) | number:'1.2-2' }}</span>
+                <span class="font-semibold text-gray-900 ml-1">{{ cs }} {{ getTotalGastado(presupuesto) | number:'1.2-2' }}</span>
               </div>
               <div>
                 <span class="text-gray-500">de</span>
-                <span class="font-semibold text-gray-900 ml-1">S/ {{ getTotalPresupuesto(presupuesto) | number:'1.2-2' }}</span>
+                <span class="font-semibold text-gray-900 ml-1">{{ cs }} {{ getTotalPresupuesto(presupuesto) | number:'1.2-2' }}</span>
               </div>
             </div>
 
@@ -179,7 +179,7 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl p-5 text-white">
           <p class="text-emerald-100 text-sm font-medium mb-1">Total presupuestado</p>
-          <p class="text-2xl font-bold">S/ {{ (resumen()?.totalPresupuestado ?? 0) | number:'1.2-2' }}</p>
+          <p class="text-2xl font-bold">{{ cs }} {{ (resumen()?.totalPresupuestado ?? 0) | number:'1.2-2' }}</p>
           <p class="text-emerald-100 text-sm mt-2">
             {{ resumen()?.categoriasConPresupuesto ?? 0 }} categorías
           </p>
@@ -187,7 +187,7 @@
 
         <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
           <p class="text-gray-500 text-sm font-medium mb-1">Total gastado</p>
-          <p class="text-2xl font-bold text-gray-900">S/ {{ (resumen()?.totalGastado ?? 0) | number:'1.2-2' }}</p>
+          <p class="text-2xl font-bold text-gray-900">{{ cs }} {{ (resumen()?.totalGastado ?? 0) | number:'1.2-2' }}</p>
           <p class="text-sm mt-2" [class]="(resumen()?.porcentajeUtilizado ?? 0) >= 80 ? 'text-red-500' : 'text-gray-500'">
             {{ resumen()?.porcentajeUtilizado ?? 0 }}% utilizado
           </p>
@@ -196,7 +196,7 @@
         <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
           <p class="text-gray-500 text-sm font-medium mb-1">Disponible</p>
           <p class="text-2xl font-bold" [class]="(resumen()?.disponible ?? 0) >= 0 ? 'text-emerald-600' : 'text-red-600'">
-            S/ {{ (resumen()?.disponible ?? 0) | number:'1.2-2' }}
+            {{ cs }} {{ (resumen()?.disponible ?? 0) | number:'1.2-2' }}
           </p>
           <p class="text-gray-500 text-sm mt-2">
             @if ((resumen()?.disponible ?? 0) >= 0) {
@@ -230,8 +230,8 @@
           ></div>
         </div>
         <div class="flex justify-between mt-2 text-xs text-gray-500">
-          <span>S/ {{ (resumen()?.totalGastado ?? 0) | number:'1.0-0' }}</span>
-          <span>de S/ {{ (resumen()?.totalPresupuestado ?? 0) | number:'1.0-0' }}</span>
+          <span>{{ cs }} {{ (resumen()?.totalGastado ?? 0) | number:'1.0-0' }}</span>
+          <span>de {{ cs }} {{ (resumen()?.totalPresupuestado ?? 0) | number:'1.0-0' }}</span>
         </div>
       </div>
 
@@ -294,18 +294,18 @@
                   <div class="flex items-center gap-4">
                     <div>
                       <p class="text-xs text-gray-500">Gastado</p>
-                      <p class="font-semibold text-gray-900">S/ {{ cat.montoGastado | number:'1.2-2' }}</p>
+                      <p class="font-semibold text-gray-900">{{ cs }} {{ cat.montoGastado | number:'1.2-2' }}</p>
                     </div>
                     <div class="text-gray-300">|</div>
                     <div>
                       <p class="text-xs text-gray-500">Presupuesto</p>
-                      <p class="font-semibold text-gray-900">S/ {{ cat.monto | number:'1.2-2' }}</p>
+                      <p class="font-semibold text-gray-900">{{ cs }} {{ cat.monto | number:'1.2-2' }}</p>
                     </div>
                     <div class="text-gray-300">|</div>
                     <div>
                       <p class="text-xs text-gray-500">Disponible</p>
                       <p class="font-semibold" [class]="(cat.monto - cat.montoGastado) >= 0 ? 'text-emerald-600' : 'text-red-600'">
-                        S/ {{ (cat.monto - cat.montoGastado) | number:'1.2-2' }}
+                        {{ cs }} {{ (cat.monto - cat.montoGastado) | number:'1.2-2' }}
                       </p>
                     </div>
                   </div>
@@ -361,7 +361,7 @@
                   </div>
                   <div class="flex-1 min-w-0">
                     <p class="font-medium text-gray-900 truncate">{{ cat.nombreCategoria }}</p>
-                    <p class="text-sm text-amber-600 font-medium">S/ {{ cat.montoGastado | number:'1.2-2' }} gastado</p>
+                    <p class="text-sm text-amber-600 font-medium">{{ cs }} {{ cat.montoGastado | number:'1.2-2' }} gastado</p>
                   </div>
                   <i class="pi pi-plus text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity"></i>
                 </div>
@@ -509,8 +509,8 @@
       <p-inputNumber
         formControlName="monto"
         mode="currency"
-        currency="PEN"
-        locale="es-PE"
+        [currency]="currencyCode"
+        [locale]="currencyLocale"
         styleClass="w-full"
         placeholder="0.00"
       />

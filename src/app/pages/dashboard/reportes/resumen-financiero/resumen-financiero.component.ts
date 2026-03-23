@@ -7,6 +7,8 @@ import { ButtonModule } from 'primeng/button';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TransactionService } from '../../../../services/transaction.service';
 import { ReporteService } from '../../../../services/reporte.service';
+import { PerfilService } from '../../../../services/perfil.service';
+import { CurrencyService } from '../../../../services/currency.service';
 import { TendenciaMensual } from '../../../../models/transaction.model';
 
 @Component({
@@ -29,6 +31,11 @@ import { TendenciaMensual } from '../../../../models/transaction.model';
 export class ResumenFinancieroComponent implements OnInit {
   private transactionService = inject(TransactionService);
   private reporteService = inject(ReporteService);
+  private perfilService = inject(PerfilService);
+  private currencyService = inject(CurrencyService);
+
+  currencySymbol = 'S/';
+  currencyLocale = 'es-PE';
 
   loading = signal(true);
   fechaDesde: Date = new Date(new Date().getFullYear(), new Date().getMonth() - 11, 1);
@@ -47,6 +54,12 @@ export class ResumenFinancieroComponent implements OnInit {
   tendencia: TendenciaMensual[] = [];
 
   ngOnInit(): void {
+    this.perfilService.getPerfil().subscribe(perfil => {
+      const config = this.currencyService.getConfig(perfil.codigoPais);
+      this.currencySymbol = config.symbol;
+      this.currencyLocale = config.locale;
+    });
+
     this.cargarDatos();
   }
 
@@ -152,14 +165,14 @@ export class ResumenFinancieroComponent implements OnInit {
         legend: { position: 'top' },
         tooltip: {
           callbacks: {
-            label: (ctx: any) => `${ctx.dataset.label}: S/ ${ctx.raw.toLocaleString('es-PE', { minimumFractionDigits: 2 })}`
+            label: (ctx: any) => `${ctx.dataset.label}: ${this.currencySymbol} ${ctx.raw.toLocaleString(this.currencyLocale, { minimumFractionDigits: 2 })}`
           }
         }
       },
       scales: {
         y: {
           ticks: {
-            callback: (value: number) => `S/ ${(value / 1000).toFixed(0)}k`
+            callback: (value: number) => `${this.currencySymbol} ${(value / 1000).toFixed(0)}k`
           }
         }
       }
@@ -173,6 +186,6 @@ export class ResumenFinancieroComponent implements OnInit {
   }
 
   formatCurrency(value: number): string {
-    return `S/ ${value.toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    return `${this.currencySymbol} ${value.toLocaleString(this.currencyLocale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   }
 }
