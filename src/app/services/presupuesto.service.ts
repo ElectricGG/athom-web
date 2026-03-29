@@ -7,6 +7,7 @@ import {
   ResumenPresupuesto,
   CrearPresupuestoRequest,
   ActualizarPresupuestoRequest,
+  DuplicarPresupuestoRequest,
   CrearPresupuestoCategoriaRequest,
   ActualizarPresupuestoCategoriaRequest,
   CategoriaDisponible
@@ -51,6 +52,13 @@ export class PresupuestoService {
    */
   actualizarPresupuesto(id: number, request: ActualizarPresupuestoRequest): Observable<PresupuestoEstimado> {
     return this.http.put<PresupuestoEstimado>(`${this.apiUrl}/${id}`, request);
+  }
+
+  /**
+   * Duplica un presupuesto existente a otro mes/año
+   */
+  duplicarPresupuesto(id: number, request: DuplicarPresupuestoRequest): Observable<PresupuestoEstimado> {
+    return this.http.post<PresupuestoEstimado>(`${this.apiUrl}/${id}/duplicar`, request);
   }
 
   /**

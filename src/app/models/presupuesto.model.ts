@@ -69,6 +69,15 @@ export interface CrearPresupuestoCategoriaRequest {
   monto: number;
 }
 
+/**
+ * Request para duplicar un presupuesto a otro mes/año
+ */
+export interface DuplicarPresupuestoRequest {
+  mes: number;
+  anio: number;
+  nombre?: string;
+}
+
 export interface ActualizarPresupuestoCategoriaRequest {
   descripcion: string;
   monto: number;

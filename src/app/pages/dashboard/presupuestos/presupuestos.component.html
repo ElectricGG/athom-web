@@ -84,6 +84,13 @@
                   <i class="pi pi-pencil text-sm"></i>
                 </button>
                 <button
+                  class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                  (click)="abrirDialogoDuplicar(presupuesto, $event)"
+                  pTooltip="Duplicar al siguiente mes"
+                >
+                  <i class="pi pi-copy text-sm"></i>
+                </button>
+                <button
                   class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                   (click)="confirmarEliminarPresupuesto(presupuesto, $event)"
                   pTooltip="Eliminar"
@@ -532,6 +539,88 @@
       [label]="isEditingCategoria() ? 'Actualizar' : 'Agregar'"
       severity="success"
       (onClick)="guardarCategoria()"
+      [loading]="isSaving()"
+      [disabled]="isSaving()"
+    />
+  </ng-template>
+</p-dialog>
+
+<!-- Dialog Duplicar Presupuesto -->
+<p-dialog
+  header="Duplicar presupuesto"
+  [(visible)]="showDialogDuplicar"
+  [modal]="true"
+  [style]="{ width: '450px' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  @if (presupuestoDuplicarOrigen()) {
+    <p class="text-sm text-gray-500 mb-4">
+      Se copiarán todas las categorías y montos de
+      <strong>{{ presupuestoDuplicarOrigen()!.nombre }}</strong>
+      al nuevo presupuesto. Los gastos iniciarán en 0.
+    </p>
+  }
+
+  <form [formGroup]="duplicarForm" class="space-y-4">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-2">Nombre *</label>
+      <input
+        pInputText
+        formControlName="nombre"
+        class="w-full"
+        placeholder="Ej: Presupuesto Febrero 2026"
+      />
+      @if (duplicarForm.get('nombre')?.touched && duplicarForm.get('nombre')?.invalid) {
+        <small class="text-red-500 text-xs mt-1">El nombre es requerido (mín. 3 caracteres)</small>
+      }
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Mes *</label>
+        <p-select
+          formControlName="mes"
+          [options]="mesesOptions"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Seleccionar mes"
+          styleClass="w-full"
+          appendTo="body"
+        />
+        @if (duplicarForm.get('mes')?.touched && duplicarForm.get('mes')?.invalid) {
+          <small class="text-red-500 text-xs mt-1">Selecciona un mes</small>
+        }
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Año *</label>
+        <p-select
+          formControlName="anio"
+          [options]="aniosOptions"
+          placeholder="Seleccionar año"
+          styleClass="w-full"
+          appendTo="body"
+        />
+        @if (duplicarForm.get('anio')?.touched && duplicarForm.get('anio')?.invalid) {
+          <small class="text-red-500 text-xs mt-1">Selecciona un año</small>
+        }
+      </div>
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <p-button
+      label="Cancelar"
+      severity="secondary"
+      [text]="true"
+      (onClick)="showDialogDuplicar.set(false)"
+      [disabled]="isSaving()"
+    />
+    <p-button
+      label="Duplicar"
+      severity="success"
+      icon="pi pi-copy"
+      (onClick)="duplicarPresupuesto()"
       [loading]="isSaving()"
       [disabled]="isSaving()"
     />

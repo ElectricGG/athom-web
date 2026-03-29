@@ -18,7 +18,8 @@ import {
   PresupuestoEstimado,
   PresupuestoCategoria,
   ResumenPresupuesto,
-  CategoriaDisponible
+  CategoriaDisponible,
+  DuplicarPresupuestoRequest
 } from '../../../models/presupuesto.model';
 
 interface MesOption {
@@ -76,9 +77,11 @@ export class PresupuestosComponent implements OnInit {
   // Diálogos
   showDialogPresupuesto = signal(false);
   showDialogCategoria = signal(false);
+  showDialogDuplicar = signal(false);
   isEditingPresupuesto = signal(false);
   isEditingCategoria = signal(false);
   selectedCategoriaId = signal<number | null>(null);
+  presupuestoDuplicarOrigen = signal<PresupuestoEstimado | null>(null);
 
   // Opciones de meses
   mesesOptions: MesOption[] = [
@@ -100,6 +103,12 @@ export class PresupuestosComponent implements OnInit {
 
   // Formularios
   presupuestoForm: FormGroup = this.fb.group({
+    nombre: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
+    mes: [null, Validators.required],
+    anio: [null, Validators.required]
+  });
+
+  duplicarForm: FormGroup = this.fb.group({
     nombre: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
     mes: [null, Validators.required],
     anio: [null, Validators.required]
@@ -284,6 +293,64 @@ export class PresupuestosComponent implements OnInit {
         }
       });
     }
+  }
+
+  abrirDialogoDuplicar(presupuesto: PresupuestoEstimado, event: Event): void {
+    event.stopPropagation();
+    this.presupuestoDuplicarOrigen.set(presupuesto);
+
+    let mesSiguiente = presupuesto.mes + 1;
+    let anioSiguiente = presupuesto.anio;
+    if (mesSiguiente > 12) {
+      mesSiguiente = 1;
+      anioSiguiente++;
+    }
+
+    const mesLabel = this.mesesOptions.find(m => m.value === mesSiguiente)?.label ?? '';
+    this.duplicarForm.reset({
+      nombre: `Presupuesto ${mesLabel} ${anioSiguiente}`,
+      mes: mesSiguiente,
+      anio: anioSiguiente
+    });
+    this.showDialogDuplicar.set(true);
+  }
+
+  duplicarPresupuesto(): void {
+    if (this.duplicarForm.invalid) {
+      this.duplicarForm.markAllAsTouched();
+      return;
+    }
+
+    const origen = this.presupuestoDuplicarOrigen();
+    if (!origen) return;
+
+    const formValue = this.duplicarForm.value;
+    this.isSaving.set(true);
+
+    this.presupuestoService.duplicarPresupuesto(origen.presupuestoId, {
+      mes: formValue.mes,
+      anio: formValue.anio,
+      nombre: formValue.nombre
+    }).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Duplicado',
+          detail: 'Presupuesto duplicado correctamente'
+        });
+        this.showDialogDuplicar.set(false);
+        this.isSaving.set(false);
+        this.cargarPresupuestos();
+      },
+      error: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'No se pudo duplicar el presupuesto'
+        });
+        this.isSaving.set(false);
+      }
+    });
   }
 
   confirmarEliminarPresupuesto(presupuesto: PresupuestoEstimado, event: Event): void {
