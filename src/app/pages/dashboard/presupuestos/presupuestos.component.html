@@ -166,7 +166,7 @@
           icon="pi pi-plus"
           severity="success"
           (onClick)="abrirDialogoNuevaCategoria()"
-          [disabled]="categoriasSinPresupuesto().length === 0"
+          [disabled]="categoriasDisponibles().length === 0"
         />
       </div>
     </div>
@@ -472,7 +472,7 @@
         <label class="block text-sm font-medium text-gray-700 mb-2">Categoría *</label>
         <p-select
           formControlName="categoriaId"
-          [options]="categoriasSinPresupuesto()"
+          [options]="categoriasDisponibles()"
           optionLabel="nombreCategoria"
           optionValue="categoriaId"
           placeholder="Seleccionar categoría"
