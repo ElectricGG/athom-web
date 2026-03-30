@@ -82,6 +82,14 @@ export const routes: Routes = [
     ]
   },
   {
+    path: 'terms',
+    loadComponent: () => import('./pages/legal/terms.component').then(m => m.TermsComponent)
+  },
+  {
+    path: 'privacy',
+    loadComponent: () => import('./pages/legal/privacy.component').then(m => m.PrivacyComponent)
+  },
+  {
     path: '**',
     redirectTo: ''
   }
