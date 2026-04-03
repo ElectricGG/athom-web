@@ -1,6 +1,7 @@
 {
   "rewrites": [
     { "source": "/privacy", "destination": "/privacy/index.html" },
-    { "source": "/((?!assets|privacy).*)", "destination": "/index.html" }
+    { "source": "/r/:code", "destination": "https://athom-api-production.up.railway.app/r/:code" },
+    { "source": "/((?!assets|privacy|r/).*)", "destination": "/index.html" }
   ]
 }
