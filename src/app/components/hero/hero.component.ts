@@ -26,7 +26,7 @@ export class HeroComponent implements OnInit, OnDestroy {
       badgeText: '100% desde WhatsApp',
       title1: 'Registra tus finanzas',
       title2: 'hablando por chat',
-      description: 'El asistente financiero más simple del mundo. Registra gastos, ingresos y presupuestos con solo enviar un mensaje de texto o audio.',
+      description: 'MiaBot es el asistente financiero más simple del mundo. Registra gastos, ingresos y presupuestos con solo enviar un mensaje de texto o audio.',
       bullets: [
         'Sin descargar ninguna app adicional',
         'Texto, audio o imágenes: tú eliges',
