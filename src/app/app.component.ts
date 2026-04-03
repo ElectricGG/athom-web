@@ -12,7 +12,7 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     const staticContent = document.getElementById('static-content');
     if (staticContent) {
-      staticContent.remove();
+      staticContent.style.display = 'none';
     }
 
     AOS.init({
