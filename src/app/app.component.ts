@@ -10,6 +10,11 @@ import * as AOS from 'aos';
 })
 export class AppComponent implements OnInit {
   ngOnInit(): void {
+    const staticContent = document.getElementById('static-content');
+    if (staticContent) {
+      staticContent.remove();
+    }
+
     AOS.init({
       once: true,
       offset: 50,
