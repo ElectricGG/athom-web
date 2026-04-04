@@ -19,6 +19,10 @@ export class SuscripcionService {
     return this.http.post<CheckoutResponse>(`${this.apiUrl}/checkout`, { planId, periodoCobro });
   }
 
+  confirmar(preapprovalId: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.apiUrl}/confirmar`, { preapprovalId });
+  }
+
   cancelar(inmediataCancelacion: boolean = false): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/cancelar`, { inmediataCancelacion });
   }

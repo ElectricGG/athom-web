@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DatePipe, DecimalPipe, AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs';
@@ -34,6 +34,7 @@ export class DashboardHomeComponent implements OnInit {
   private suscripcionService = inject(SuscripcionService);
   private currencyService = inject(CurrencyService);
   private authService = inject(AuthService);
+  private route = inject(ActivatedRoute);
 
   perfil: Perfil | null = null;
   isCheckingOut = false;
@@ -60,6 +61,17 @@ export class DashboardHomeComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    // Confirmar suscripción de MercadoPago si viene del checkout
+    this.route.queryParams.subscribe(params => {
+      const preapprovalId = params['preapproval_id'];
+      if (preapprovalId) {
+        this.suscripcionService.confirmar(preapprovalId).subscribe({
+          next: () => console.log('Suscripción confirmada'),
+          error: (err) => console.error('Error confirmando suscripción:', err)
+        });
+      }
+    });
+
     this.loadPerfil();
     this.loadBalanceSummary();
     this.loadRecentTransactions();
