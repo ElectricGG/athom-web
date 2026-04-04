@@ -66,7 +66,7 @@ export class DashboardHomeComponent implements OnInit {
       const preapprovalId = params['preapproval_id'];
       if (preapprovalId) {
         this.suscripcionService.confirmar(preapprovalId).subscribe({
-          next: () => console.log('Suscripción confirmada'),
+          next: () => this.loadPerfil(),
           error: (err) => console.error('Error confirmando suscripción:', err)
         });
       }
