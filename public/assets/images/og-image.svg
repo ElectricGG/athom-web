@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <!-- Background gradient -->
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f0fdf4"/>
+      <stop offset="100%" style="stop-color:#ecfdf5"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Green accent bar top -->
+  <rect width="1200" height="6" fill="#22c55e"/>
+
+  <!-- Logo icon -->
+  <rect x="80" y="180" width="80" height="80" rx="18" fill="#22c55e"/>
+  <text x="120" y="237" font-family="Arial, Helvetica, sans-serif" font-size="48" font-weight="bold" fill="white" text-anchor="middle">M</text>
+
+  <!-- Title -->
+  <text x="180" y="225" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="800" fill="#111827">MiaBot</text>
+
+  <!-- Subtitle -->
+  <text x="80" y="310" font-family="Arial, Helvetica, sans-serif" font-size="32" fill="#22c55e" font-weight="600">Asistente Financiero por WhatsApp</text>
+
+  <!-- Description -->
+  <text x="80" y="380" font-family="Arial, Helvetica, sans-serif" font-size="24" fill="#6b7280">Controla tus gastos, ingresos y presupuestos</text>
+  <text x="80" y="415" font-family="Arial, Helvetica, sans-serif" font-size="24" fill="#6b7280">con mensajes de texto, audio o fotos.</text>
+
+  <!-- Features -->
+  <text x="80" y="490" font-family="Arial, Helvetica, sans-serif" font-size="20" fill="#22c55e" font-weight="600">✓ 100% desde WhatsApp</text>
+  <text x="400" y="490" font-family="Arial, Helvetica, sans-serif" font-size="20" fill="#22c55e" font-weight="600">✓ Inteligencia Artificial</text>
+  <text x="720" y="490" font-family="Arial, Helvetica, sans-serif" font-size="20" fill="#22c55e" font-weight="600">✓ Gratis para empezar</text>
+
+  <!-- URL -->
+  <text x="80" y="560" font-family="Arial, Helvetica, sans-serif" font-size="22" fill="#9ca3af">miabot.app</text>
+
+  <!-- Phone mockup (right side) -->
+  <rect x="900" y="100" width="220" height="430" rx="30" fill="#1f2937"/>
+  <rect x="912" y="115" width="196" height="400" rx="22" fill="white"/>
+
+  <!-- WhatsApp header in phone -->
+  <rect x="912" y="115" width="196" height="50" rx="22 22 0 0" fill="#075E54"/>
+  <circle cx="940" cy="140" r="14" fill="#86efac"/>
+  <text x="962" y="145" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="white" font-weight="600">MiaBot</text>
+
+  <!-- Chat messages -->
+  <rect x="960" y="185" width="130" height="35" rx="8" fill="#DCF8C6"/>
+  <text x="970" y="207" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#333">Gasté 35 en almuerzo</text>
+
+  <rect x="925" y="230" width="140" height="35" rx="8" fill="white" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="935" y="252" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#333">✅ S/ 35.00 en Comida</text>
+
+  <rect x="965" y="280" width="120" height="35" rx="8" fill="#DCF8C6"/>
+  <text x="975" y="302" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#333">Resumen del mes</text>
+
+  <rect x="925" y="325" width="155" height="70" rx="8" fill="white" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="935" y="345" font-family="Arial, Helvetica, sans-serif" font-size="11" fill="#333" font-weight="600">Resumen Abril 2026</text>
+  <text x="935" y="363" font-family="Arial, Helvetica, sans-serif" font-size="10" fill="#6b7280">Ingresos: S/ 3,500</text>
+  <text x="935" y="378" font-family="Arial, Helvetica, sans-serif" font-size="10" fill="#6b7280">Gastos: S/ 2,180</text>
+  <text x="935" y="393" font-family="Arial, Helvetica, sans-serif" font-size="10" fill="#22c55e" font-weight="600">Balance: +S/ 1,320</text>
+</svg>
