@@ -1,0 +1,41 @@
+# MiaBot - Asistente Financiero por WhatsApp
+
+## Resumen
+MiaBot es un asistente financiero personal que funciona a través de WhatsApp. Permite a los usuarios controlar sus finanzas personales enviando mensajes de texto, audio o fotos de recibos. Utiliza inteligencia artificial para categorizar gastos automáticamente.
+
+## URL
+https://miabot.app
+
+## Funcionalidades principales
+- Registro de gastos e ingresos por WhatsApp (texto, audio, fotos)
+- Categorización automática con inteligencia artificial
+- Presupuestos mensuales
+- Recordatorios de pagos
+- Reportes financieros y gráficos interactivos
+- Comparador de precios en tiendas
+- Metas de ahorro
+- Vinculación con email (Outlook/Gmail) para detectar consumos automáticamente
+- Dashboard web con exportación a Excel
+- Miembros familiares compartidos
+
+## Planes
+- Gratis: 50 mensajes/semana, funciones básicas
+- Premium: S/ 4.90/mes - Uso extendido, memoria inteligente, reportes avanzados
+- Max: S/ 9.90/mes - Todas las funciones, agente de compras, predicción de compras
+
+## Tecnología
+- Bot: WhatsApp Business API
+- IA: Google Gemini para procesamiento de lenguaje natural y visión
+- Backend: .NET 8, PostgreSQL
+- Frontend: Angular
+- Pagos: MercadoPago
+
+## Cobertura
+Disponible para usuarios con WhatsApp en cualquier país. Optimizado para Perú y Latinoamérica. Soporta múltiples monedas.
+
+## Contacto
+- Web: https://miabot.app
+- Email: contact@miabot.app
+
+## Operador
+AthomSystems
