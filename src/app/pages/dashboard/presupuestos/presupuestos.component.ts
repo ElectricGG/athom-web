@@ -546,8 +546,11 @@ export class PresupuestosComponent implements OnInit {
 
   getEstadoCategoria(cat: PresupuestoCategoria): { label: string; class: string } {
     const porcentaje = this.getPorcentaje(cat);
-    if (porcentaje >= 100) {
+    if (porcentaje > 100) {
       return { label: 'Excedido', class: 'bg-red-100 text-red-700' };
+    }
+    if (porcentaje === 100) {
+      return { label: 'En el límite', class: 'bg-amber-100 text-amber-700' };
     }
     if (porcentaje >= 80) {
       return { label: 'Cerca del límite', class: 'bg-amber-100 text-amber-700' };
