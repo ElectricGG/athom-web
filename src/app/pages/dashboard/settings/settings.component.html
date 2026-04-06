@@ -344,7 +344,7 @@
           <div class="mt-2 space-y-3 text-sm">
             @if (perfil?.fechaProximoCobro) {
               <div class="flex items-center justify-between">
-                <span class="text-amber-100">Próximo cobro</span>
+                <span class="text-amber-100">{{ perfil?.esTrialActivo ? 'Fin del periodo de prueba' : 'Próximo cobro' }}</span>
                 <span class="font-semibold">{{ formatDate(perfil!.fechaProximoCobro) }}</span>
               </div>
             }
@@ -372,7 +372,7 @@
           <div class="mt-2 space-y-3 text-sm">
             @if (perfil?.fechaProximoCobro) {
               <div class="flex items-center justify-between">
-                <span class="text-green-100">Próximo cobro</span>
+                <span class="text-green-100">{{ perfil?.esTrialActivo ? 'Fin del periodo de prueba' : 'Próximo cobro' }}</span>
                 <span class="font-semibold">{{ formatDate(perfil!.fechaProximoCobro) }}</span>
               </div>
             }
