@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideZoneChangeDetection, LOCALE_ID } from '@angular/core';
+import { ApplicationConfig, provideZoneChangeDetection, LOCALE_ID, isDevMode } from '@angular/core';
 import { provideRouter, withViewTransitions, withInMemoryScrolling } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
@@ -10,6 +10,7 @@ import { registerLocaleData } from '@angular/common';
 import { routes } from './app.routes';
 import { authInterceptor } from './interceptors/auth.interceptor';
 import { authErrorInterceptor } from './interceptors/auth-error.interceptor';
+import { provideServiceWorker } from '@angular/service-worker';
 
 registerLocaleData(localeEs);
 
@@ -42,6 +43,9 @@ export const appConfig: ApplicationConfig = {
         clear: 'Limpiar',
         weekHeader: 'Sm'
       }
-    })
+    }), provideServiceWorker('ngsw-worker.js', {
+            enabled: !isDevMode(),
+            registrationStrategy: 'registerWhenStable:30000'
+          })
   ]
 };
