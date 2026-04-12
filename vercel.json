@@ -2,6 +2,15 @@
   "rewrites": [
     { "source": "/privacy", "destination": "/privacy/index.html" },
     { "source": "/r/:code", "destination": "https://athom-api-production.up.railway.app/r/:code" },
-    { "source": "/((?!assets|privacy|icons|r/|\\.well-known|robots\\.txt|sitemap\\.xml|llms\\.txt|manifest\\.webmanifest|ngsw).*)", "destination": "/index.html" }
+    { "source": "/((?!assets|privacy|icons|r/|.well-known|robots.txt|sitemap.xml|llms.txt|manifest.webmanifest|ngsw).*)", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/.well-known/assetlinks.json",
+      "headers": [
+        { "key": "Content-Type", "value": "application/json" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    }
   ]
 }
