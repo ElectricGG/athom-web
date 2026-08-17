@@ -87,6 +87,7 @@ export class SettingsComponent implements OnInit {
   showAddMiembroForm = false;
   nuevoMiembroNombre = '';
   nuevoMiembroNumero = '';
+  nuevoMiembroCodigoPais = '';
 
   get maxMiembros(): number {
     if (this.isMax) return 5;
@@ -459,19 +460,29 @@ export class SettingsComponent implements OnInit {
 
   toggleAddMiembroForm(): void {
     this.showAddMiembroForm = !this.showAddMiembroForm;
-    if (!this.showAddMiembroForm) {
+    if (this.showAddMiembroForm) {
+      // Default: código de país del dueño (editable si el miembro es de otro país).
+      this.nuevoMiembroCodigoPais = (this.perfil?.codigoPais || '51').replace(/\D/g, '') || '51';
+    } else {
       this.nuevoMiembroNombre = '';
       this.nuevoMiembroNumero = '';
+      this.nuevoMiembroCodigoPais = '';
     }
   }
 
   agregarMiembro(): void {
-    if (!this.nuevoMiembroNombre.trim() || !this.nuevoMiembroNumero.trim()) return;
+    if (!this.nuevoMiembroNombre.trim() || !this.nuevoMiembroNumero.trim() || !this.nuevoMiembroCodigoPais.trim()) return;
+
+    // Armar el número en el formato de WhatsApp: código de país + número local
+    // (solo dígitos). El código lo elige el usuario, no se asume.
+    const cc = this.nuevoMiembroCodigoPais.replace(/\D/g, '');
+    const local = this.nuevoMiembroNumero.replace(/\D/g, '');
+    const numeroWhatsApp = cc && local.startsWith(cc) ? local : cc + local;
 
     this.isAddingMiembro = true;
     this.miembroFamiliarService.crear({
       nombre: this.nuevoMiembroNombre.trim(),
-      numeroWhatsApp: this.nuevoMiembroNumero.trim()
+      numeroWhatsApp
     }).subscribe({
       next: (miembro) => {
         this.miembrosFamiliares = [...this.miembrosFamiliares, miembro];
